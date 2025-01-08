@@ -30,8 +30,7 @@ sector_colors <- list(
 # UI ----------
 
 gui <- page_navbar(
-    
-        title = "SGDD Indicators Browser",
+        title = "SGDD Indicators",
         tags$head(
             tags$style(HTML(
                 paste0(
@@ -57,10 +56,11 @@ gui <- page_navbar(
         ),
         sidebar = sidebar(
                     width = 500,
+                    "The SGDD Indicators database is a collection of supply-side indicators to encourage gender-disaggregated data collection and analysis using supply-side data from across the financial system.",
                     accordion(
-                        open = c("Select use-case for measurement"),
+                        open = c("1. Select use-case for measurement"),
                         accordion_panel(
-                            "Select use-case for measurement",
+                            "1. Select use-case for measurement",
                             strong("Vision for the financial sector"), 
                             p(VISION),  
                             selectInput(
@@ -83,7 +83,7 @@ gui <- page_navbar(
                             p(textOutput("uc_analysis_needed")),
                         ), 
                         accordion_panel(
-                            "Additional filters", 
+                            "2. Additional filters", 
                             selectizeInput(
                                 inputId = "sector_select",
                                 label = col_codebook["sectors"],
