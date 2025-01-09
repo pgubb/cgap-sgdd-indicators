@@ -1,4 +1,5 @@
 library(shiny)
+library(tidyverse)
 library(readxl)
 library(dplyr)
 library(reactable)
@@ -7,7 +8,6 @@ library(kableExtra)
 
 # Preparing and loading data
 source("R/dataprep.R")
-source("R/utils.R")
 
 # Globals
 VISION <- "A stable, resilient, safe, competitive, efficient, inclusive and responsible financial system 
@@ -26,6 +26,11 @@ sector_colors <- list(
     "None" = "#E0E0E0"
 )
 
+# HELPERS ------
+
+conditional <- function(condition, success) {
+    if (condition) success else TRUE
+}
 
 # UI ----------
 
