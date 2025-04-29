@@ -26,7 +26,11 @@ indicators <- read_excel("data/INDICATORS_DB.xlsx", sheet = "5. Indicators") %>%
   separate_wider_delim(uc_sgdd_indicators_mandate_obj, ": ", names_sep = "", too_few = "align_start") %>% 
   mutate(uc_sgdd_indicators_mandate_obj = paste(uc_sgdd_indicators_mandate_obj1, uc_sgdd_indicators_mandate_obj2, sep = ": ")) %>% 
   select(-uc_sgdd_indicators_mandate_obj1, -uc_sgdd_indicators_mandate_obj2, -uc_sgdd_indicators_mandate_obj3) %>% 
-  mutate(sectors = str_to_title(sectors))
+  mutate(sectors = str_to_title(sectors)) %>% 
+  mutate(in_imf = 1, 
+         in_gpfi = 1, 
+         in_afi = 1, 
+         in_wef = 1)
 
 length(unique(indicators$indicator_name))
 # There are 212 unique indicators in the databse
@@ -40,3 +44,5 @@ challenges_codebook <-read_excel("data/INDICATORS_DB.xlsx", sheet = "challenges_
 coldescs <- read_excel("data/INDICATORS_DB.xlsx", sheet = "col_codebook")
 col_codebook <- coldescs[["coldescription"]]
 names(col_codebook) <- coldescs[["colname"]]
+
+instructions <- read_excel("data/INDICATORS_DB.xlsx", sheet = "1. instructions-indicators tab") %>% select(-`Column letter`)

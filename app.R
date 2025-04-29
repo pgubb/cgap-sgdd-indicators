@@ -1,363 +1,513 @@
 library(shiny)
 library(tidyverse)
 library(readxl)
-library(dplyr)
-library(reactable)
 library(bslib)
 library(kableExtra)
+library(janitor)
 
 # Preparing and loading data
-source("R/dataprep.R")
+load("data/indicators.RData")
 
 # Globals
 VISION <- "A stable, resilient, safe, competitive, efficient, inclusive and responsible financial system 
 to support an equitable, just and sustainable/green economy that promotes prosperity and climate resilience for all, 
 irrespective of their gender, income level and other personal conditions"
 
-# Map sectors to colors
-sector_colors <- list(
+SECTOR_COLORS <- list(
     "Payments" = "#FFD700",
     "Credit" = "#FFA07A",
     "Insurance" = "#98FB98",
     "Investments" = "#87CEFA",
     "Pensions" = "#DDA0DD",
     "Several/Others" = "#FFC0CB",
-    "Deposits" = "#B0C4DE",
-    "None" = "#E0E0E0"
+    "Savings" = "#B0C4DE"
 )
 
-# HELPERS ------
+USE_CASES <- c("Access to financial services", 
+               "Usage of financial services", 
+               "Quality of financial services", 
+               "Outcomes of the use of financial services", 
+               "Public dissemination of information and statistics", 
+               "Management and mitigation of consumer risks and foster competition", 
+               "Management and mitigation of prudential and stability risks", 
+               "Develop capital markets", 
+               "Building a sustainable and equitable financial sector", 
+               "Efficiency and effectiveness of currency management")
 
+COLUMN_DESCRIPTIONS <- c(
+    "indicator_id"= "Unique indicator id",
+    "indicator_name" = "Name of the indicator",
+    "indicator_description" = "Description of the indicator", 
+    "unit_of_analysis" = "Unit of analysis (Individual, SMEs, ", 
+    "measurement_type" = "Measurement type",       
+    "gender_questions" = "Exploratory questions that can help guide analysis by gender",         
+    "formula1_volume" = "Formula for volume indicator",        
+    "formula2_value" = "Formula for value indicator",            
+    "formula_3_other" = "Formulas used when there is more than one volume or value indicator, or other measurement types.",          
+    "main_mandate" = "Main mandate",           
+    "secondary_mandates"  = "Other applicable mandates",      
+    "main_objectives"  = "Main objectives",         
+    "main_sector" = "Main sector",               
+    "secondary_sectors" = "Other applicable sectors",      
+    "use_cases" = "Applicable use cases",             
+    "gender_priority" = "Indicators' prioritization by gender relevance", 
+    "costs_regsup" = "Estimated cost of collecting disaggregated data (based on example from National Bank of Rwanda)",             
+    "gender_priority_adjusted" =  "Indicator's gender prioritization adjusted by collection feasibility", 
+    "in_imf" = "Indicator is also part of IMF-FAS",                  
+    "in_gpfi" = "Indicator is also part of GPFI",                  
+    "in_afi" = "Indicator is also part of AFI", 
+    "in_wef" = "Indicator is also part of WeF",                  
+    "references" = "References",               
+    "essential_disagg" = "Suggested breakdowns for analysis (essential)",      
+    "nonessential_disagg" = "Suggested breakdowns for analysis (useful, but not essential)"
+)
+
+# Helpers --------
 conditional <- function(condition, success) {
     if (condition) success else TRUE
 }
 
-# UI ----------
+slugify <- function(text) {
+    text %>%
+        tolower() %>%
+        gsub("[^a-z0-9]+", "-", .) %>%
+        gsub("-$", "", .) %>%
+        gsub("^-", "", .)
+}
 
-gui <- page_navbar(
-        title = "SGDD Indicators",
-        tags$head(
-            tags$style(HTML(
-                paste0(
-                    ".selectize-dropdown-content .option {
-                    display: flex;
-                    align-items: center;
-                    padding: 5px;
-                    border-radius: 3px;
-                    color: black;
-                }",
-                    paste(
-                        sapply(names(sector_colors), function(sector) {
-                            paste0(
-                                ".selectize-control.multi .selectize-input .item[data-value=\"", sector, "\"] {
-                                background-color: ", sector_colors[[sector]], ";
-                            }"
-                            )
-                        }),
-                        collapse = "\n"
-                    )
-                )
-            ))
+render_disagg_table <- function(essential, nonessential) {
+    essentials <- if (!is.na(essential)) unlist(strsplit(essential, "; ")) else character()
+    nonessentials <- if (!is.na(nonessential)) unlist(strsplit(nonessential, "; ")) else character()
+    max_len <- max(length(essentials), length(nonessentials))
+    essentials <- c(essentials, rep("", max_len - length(essentials)))
+    nonessentials <- c(nonessentials, rep("", max_len - length(nonessentials)))
+    
+    tags$table(
+        style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
+        tags$thead(
+            tags$tr(
+                tags$th("Key segments", style = "border: 1px solid #ccc; padding: 4px; background-color: #f2f2f2;"),
+                tags$th("Other segments", style = "border: 1px solid #ccc; padding: 4px; background-color: #f2f2f2;")
+            )
         ),
-        sidebar = sidebar(
-                    width = 500,
-                    "The SGDD Indicators database is a collection of supply-side indicators to encourage gender-disaggregated data collection and analysis using supply-side data from across the financial system.",
-                    accordion(
-                        open = c("1. Select use-case for measurement"),
-                        accordion_panel(
-                            "1. Select use-case for measurement",
-                            strong("Vision for the financial sector"), 
-                            p(VISION),  
-                            selectInput(
-                                inputId = "challenge_select",
-                                label = col_codebook["uc_challenge"],
-                                choices = setNames(challenges_codebook$uc_sgdd_challenge_code, challenges_codebook$uc_challenge),
-                                selected = challenges_codebook$uc_sgdd_challenge_code[1],
-                            ),
-                            strong(col_codebook["uc_sgdd_opportunity"]),
-                            p(textOutput("challenge_opportunity")),
-                            selectInput(
-                                inputId = "usecase_select",
-                                label = col_codebook["uc_sgdd_usecase"],
-                                choices = NULL, 
-                                multiple = FALSE
-                            ), 
-                            strong(col_codebook["uc_explanation"]),
-                            p(textOutput("uc_explanation")),
-                            strong(col_codebook["uc_analysis_needed"]),
-                            p(textOutput("uc_analysis_needed")),
-                        ), 
-                        accordion_panel(
-                            "2. Additional filters", 
-                            selectizeInput(
-                                inputId = "sector_select",
-                                label = col_codebook["sectors"],
-                                choices = NULL, 
-                                multiple = TRUE, 
-                                options= list('plugins' = list('remove_button'))
-                            ), 
-                            selectizeInput(
-                                inputId = "genderpriority_select",
-                                label = col_codebook["priority_gender"],
-                                choices = NULL, 
-                                multiple = TRUE, 
-                                options= list('plugins' = list('remove_button'))
-                            ), 
-                            
-                        )
-                    ), 
-                ),
-        nav_spacer(), 
-        nav_panel(
-            title = "Browse indicators",
-            uiOutput("navigation_helper"),
-            uiOutput("indicator_cards")
-        ), 
-        nav_panel(
-            title = "Your Selected Indicators",
-            uiOutput("selected_indicators")
+        tags$tbody(
+            lapply(seq_along(essentials), function(i) {
+                tags$tr(
+                    tags$td(essentials[i], style = "border: 1px solid #ccc; padding: 4px;"),
+                    tags$td(nonessentials[i], style = "border: 1px solid #ccc; padding: 4px;")
+                )
+            })
         )
+    )
+}
+
+# UI ----------
+gui <- page_navbar(
+    title = span(span(style = "font-size: 26px;", "RGDD explorer"), 
+                 span(style = "font-size: 14px;", " by "), 
+                 tags$img(src = "cgap_logo.png", height = "26px")),
+    
+    tags$head(
+        tags$style(HTML(
+            paste0(
+                "
+                html { scroll-behavior: smooth; }
+                .btn-circle {
+                    border: none;
+                    background: none;
+                    padding: 0;
+                  }
+                .selectize-dropdown-content .option {
+          display: flex;
+          align-items: center;
+          padding: 5px;
+          border-radius: 3px;
+          color: black;
+        }",
+                paste(
+                    sapply(names(SECTOR_COLORS), function(sector) {
+                        paste0(
+                            ".selectize-control.multi .selectize-input .item[data-value=\"", sector, "\"] {
+                background-color: ", SECTOR_COLORS[[sector]], ";
+              }"
+                        )
+                    }),
+                    collapse = "\n"
+                )
+            )
+        ))
+    ),
+    
+    sidebar = sidebar(
+        width = 400,
+        "Gender disagreggated regulatory data (RGDD) explorer is a catalog of indicators developed by CGAP to support efforts by financial sector authorities and others to use regulatory data to better understand the role of gender in the financial system.",
+        
+        textInput("search_indicator", "Search", placeholder = "Search by indicator name, sector, use-case..."), 
+        
+        accordion(
+            open = c("Mandates"),
+            
+            accordion_panel(
+                "Mandates", icon = icon("scroll"),
+                uiOutput("mandate_links")
+            ), 
+            accordion_panel(
+                style = "font-size: 14px",
+                "Filters", icon = icon("filter"),
+                
+                selectizeInput("sector_select", "Sector", choices = NULL, multiple = TRUE, options = list(plugins = list("remove_button"))),
+                selectizeInput("gender_priority_select", "Gender Priority", choices = NULL, multiple = TRUE, options = list(plugins = list("remove_button"))),
+                #selectizeInput("use_cases_select", "Use case", choices = NULL, multiple = TRUE, options = list(plugins = list("remove_button"))),
+                br(),
+                actionButton("reset_filters", "Reset all filters", icon = icon("undo"), class = "btn  btn-sm btn-primary")
+            )
+        )
+    ),
+    
+    nav_spacer(),
+    
+    nav_panel(
+        title = "Browse indicators",
+        uiOutput("navigation_helper"),
+        uiOutput("key"),
+        uiOutput("indicator_cards")
+    ),
+    
+    nav_panel(
+        title = uiOutput("selected_tab_title"),
+        div(
+            style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;",
+            uiOutput("selected_count_badge"),
+            downloadButton("download_selected", "Download Selected Indicators", class = "btn btn-success")
+        ),
+        uiOutput("selected_indicators")
+    ),
+    
+    # nav_panel(
+    #     title = "About",
+    #     "The table below explains all metadata fields available.",
+    #     uiOutput("instructions_table")
+    # )
 )
 
-
+# SERVER ----------
 server <- function(input, output, session) {
     
     # Reactive value to store selected indicators
     selected_indicators <- reactiveVal(data.frame(
-        sectors = character(),
         indicator_name = character(),
-        indicator_measurement = character(),
-        mandate_main = character(),
-        objective_main = character(),
-        priority_gender = character(),
+        indicator_description = character(),
+        main_mandate = character(),
+        main_objectives = character(),
+        main_sector = character(),
+        gender_priority = character(),
         stringsAsFactors = FALSE
     ))
     
-    # Controls for page navbar -------
     
-    # Reactive to filter challenge data based on selected challenge
-    selected_challenge <- reactive({
-        challenges_codebook %>% 
-            filter(uc_sgdd_challenge_code == input$challenge_select)
+    # Initialize filters ---------
+    observe({
+ 
+        updateSelectizeInput(session, "sector_select",
+                             choices = sort(unique(indicators$main_sector)),
+                             selected = unique(indicators$main_sector))
+        
+        updateSelectizeInput(session, "gender_priority_select",
+                             choices = sort(unique(indicators$gender_priority)),
+                             selected = unique(indicators$gender_priority))
+        
+        # updateSelectizeInput(session, "use_cases_select",
+        #                      choices = USE_CASES,
+        #                      selected = USE_CASES)
+        
     })
     
-    # Display the opportunity text for the selected challenge
-    output$challenge_opportunity <- renderText({
-        challenge <- selected_challenge()
-        if (nrow(challenge) > 0) {
-            challenge$uc_sgdd_opportunity
-        } else {
-            "No opportunity description available."
-        }
+    # Reset filters ----------
+    observeEvent(input$reset_filters, {
+        
+        updateSelectizeInput(session, "sector_select",
+                             choices = sort(unique(indicators$main_sector)),
+                             selected = unique(indicators$main_sector))
+        
+        updateSelectizeInput(session, "gender_priority_select",
+                             choices = sort(unique(indicators$gender_priority)),
+                             selected = unique(indicators$gender_priority))
+        
+        # updateSelectizeInput(session, "use_cases_select",
+        #                      choices = USE_CASES,
+        #                      selected = USE_CASES)
+        
+        updateTextInput(session, "search_indicator", value = "")
     })
     
-    # Update use case choices based on the selected challenge
-    observeEvent(input$challenge_select, {
-        challenge <- selected_challenge()
-        if (nrow(challenge) > 0) {
-            usecases_for_challenge <- usecases %>% 
-                filter(uc_sgdd_challenge_code == challenge$uc_sgdd_challenge_code)
-            updateSelectInput(
-                session,
-                inputId = "usecase_select",
-                choices = setNames(usecases_for_challenge$uc_sgdd_usecase_code, usecases_for_challenge$uc_sgdd_usecase),
-                selected = usecases_for_challenge$uc_sgdd_usecase_code[1]
-            )
-        }
-    })
-    
-    
-    # User-selected use case
-    selected_usecase <- reactive({ 
-        usecases %>% filter(uc_sgdd_usecase_code %in% input$usecase_select)
-    })
-    
-    # Display the explanation text for the selected use case
-    output$uc_explanation <- renderText({
-        if (nrow(selected_usecase()) > 0) {
-            selected_usecase()$uc_explanation
-        } else {
-            "No explanation available."
-        }
-    })
-    
-    output$uc_analysis_needed <- renderText({
-        if (nrow(selected_usecase()) > 0) {
-            selected_usecase()$uc_analysis_needed
-        } else {
-            "No analysis available."
-        }
-    })
-    
-    
-    # Reactive to filter indicators based on selected use case
-    filtered_indicators <- reactive({
-        indicators %>% 
-            filter(uc_sgdd_indicators_mandate_obj %in% c(selected_usecase()$uc_sgdd_indicators_mandate_obj1, selected_usecase()$uc_sgdd_indicators_mandate_obj2, selected_usecase()$uc_sgdd_indicators_mandate_obj3, selected_usecase()$uc_sgdd_indicators_mandate_obj4, selected_usecase()$uc_sgdd_indicators_mandate_obj5))
-    })
-    
-    # Update sector choices based on the selected use case
-    observeEvent(input$usecase_select, {
-    if (nrow(filtered_indicators()) > 0) {
-        sectors_for_usecase <- unique(filtered_indicators()$sectors)
-        updateSelectInput(
-            session,
-            inputId = "sector_select",
-            choices = sectors_for_usecase,
-            selected = sectors_for_usecase
-        )
-    }
-    })
-    
-    
-    # Update gender priority based on the selected use case
-    observeEvent(input$usecase_select, {
-        if (nrow(filtered_indicators()) > 0) {
-            genderpriority_for_usecase <- unique(filtered_indicators()$priority_gender)
-            updateSelectInput(
-                session,
-                inputId = "genderpriority_select",
-                choices = genderpriority_for_usecase,
-                selected = genderpriority_for_usecase
-            )
-        }
-    })
-    
-    # Additional filtered indicators 
-    
+    # Filtered indicators ----------
     filtered_indicators_add <- reactive({
-        filtered_indicators() %>% filter(
-            conditional(length(input$sector_select) > 0, sectors %in% input$sector_select),
-            conditional(length(input$genderpriority_select) > 0, priority_gender %in% input$genderpriority_select),
+        indicators %>%
+            arrange(main_mandate, main_objectives, main_sector) %>%
+            filter(
+                main_sector %in% input$sector_select,
+                gender_priority %in% input$gender_priority_select
+            ) %>%
+            {
+                if (!is.null(input$search_indicator) && input$search_indicator != "") {
+                    filter(., str_detect(indicator_name, regex(input$search_indicator, ignore_case = TRUE)) |
+                               str_detect(indicator_description, regex(input$search_indicator, ignore_case = TRUE)) | 
+                               str_detect(gender_questions, regex(input$search_indicator, ignore_case = TRUE)) | 
+                               str_detect(main_sector, regex(input$search_indicator, ignore_case = TRUE)) |
+                               str_detect(main_mandate, regex(input$search_indicator, ignore_case = TRUE)) |
+                               str_detect(main_objectives, regex(input$search_indicator, ignore_case = TRUE)))
+                } else {
+                    .
+                }
+            }
+    })
+    
+    # Navigation helper -----
+    output$navigation_helper <- renderUI({
+        n <- nrow(filtered_indicators_add())
+        N <- nrow(indicators)
+        
+        div(
+            style = "font-size: 15px;",
+            span(icon("list", lib = "font-awesome"), 
+                 strong(paste(n, " of ", N)), "indicators")
         )
     })
-        
-    # Main output -------
     
-    # Navigation Helper -------
-    output$navigation_helper <- renderUI({
-        challenge <- selected_challenge()
-        usecase <- selected_usecase()
-        n <- nrow(filtered_indicators())
-        N <- nrow(indicators)
-        if (nrow(challenge) > 0 && nrow(usecase) > 0) {
-                HTML(
-                    as.character(
-                        div(
-                            style = "font-size: 15px;",
-                                strong("Challenge:"), paste(challenge$uc_challenge_short, ">"),
-                                strong("Use case:"), paste(usecase$uc_sgdd_usecase_short, ">"), 
-                                paste(n, "out of", N, "indicators available for this use case.")
-                        )
-                        )
-                )
-        } else {
-            HTML("Selection: Not specified.")
-        }
+    # Key ----- 
+    output$key <- renderUI({
+        span(
+            #style = paste0("background-color: ", sector_color, "; display: flex; align-items: center; padding:5px; border-radius: 4px; color:black; font-weight: bold;"),
+            span("Indicator name", style = paste0("background-color: white; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: bold; font-size: 14px")), 
+            span("Main objective(s)", style = paste0("background-color: #E5E7E6; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;")), 
+            span("Main sector", style = paste0("background-color: #FFD700; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px"))
+        )
     })
     
-    # Generate cards for each indicator
-    output$indicator_cards <- renderUI({
+    # Jump-links (right panel) -------
+    output$mandate_links <- renderUI({
+        indicators_data <- filtered_indicators_add()
+        mandates <- unique(indicators_data$main_mandate)
         
+        tagList(
+            lapply(mandates, function(mandate) {
+                tags$a(
+                    href = paste0("#mandate_", slugify(mandate)),
+                    mandate,
+                    style = "display: block;  margin-top: 5px; margin-bottom: 5px; font-size: 14px;"
+                )
+            })
+        )
+    })
+    
+    # Indicator cards grouped by mandate -------
+    output$indicator_cards <- renderUI({
         indicators_data <- filtered_indicators_add()
         
         if (nrow(indicators_data) == 0) {
-            return(h4("No indicators available for the selected use case."))
+            return(h4("No indicators available."))
         }
         
-        # Create a grid of cards
-        card_list <- lapply(unique(indicators_data$indicator_code), function(i) {
-            ind <- indicators_data[indicators_data$indicator_code == i, ]
-            sector_color <- sector_colors[[ind$sectors]]
+        mandates <- unique(indicators_data$main_mandate)
+        
+        mandate_sections <- lapply(mandates, function(mandate) {
             
-            card <- div(
-                class = "card border mb-3",
-                style = "width: 100%;",
-                div(
-                    class = "card-header",
-                    style = paste0("background-color: ", sector_color, "; display: flex; justify-content: space-between; align-items: center;"),
-                    h5(ind$indicator_name, class = "card-title"),
-                    actionButton(
-                        inputId = i,
-                        label = "+",
-                        class = "btn btn-sm btn-outline-dark"
+            indicators_in_mandate <- indicators_data %>% filter(main_mandate == mandate)
+            
+            indicator_cards <- lapply(1:nrow(indicators_in_mandate), function(i) {
+                ind <- indicators_in_mandate[i, ]
+                sector_color <- SECTOR_COLORS[[ind$main_sector]]
+                indicator_id <- ind$indicator_id
+                
+                img_tags <- div(
+                    style = "display: flex; justify-content: flex-start; gap: 10px; align-items: center; margin-top: 10px;",
+                    if (ind$in_imf == 1) span("IMF FAS", tags$img(src = "imf_logo.png", height = "44px")),
+                    if (ind$in_gpfi == 1)  tags$img(src = "gpfi_logo.png", height = "44px"),
+                    if (ind$in_afi == 1)  tags$img(src = "afi_logo.png", height = "44px")
+                )
+                
+                accordion_panel(
+                    value = ind$indicator_name,
+                    title = div(
+                        span(
+                        #style = paste0("background-color: ", sector_color, "; display: flex; align-items: center; padding:5px; border-radius: 4px; color:black; font-weight: bold;"),
+                        span(ind$indicator_name, style = paste0("background-color: white; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: bold; font-size: 14px")), 
+                        span(ind$main_objectives, style = paste0("background-color: #E5E7E6; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;")), 
+                        span(ind$main_sector, style = paste0("background-color: ", sector_color, "; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px"))
+                        )
+                    ),
+                    div(
+                    div(
+                        class = "card-body",
+                        style = "font-size: 13px; padding-top:10px;",
+                        p(strong("Description:"), ind$indicator_description),
+                        p(strong("Unit of analysis:"), ind$unit_of_analysis),
+                        p(strong("Measurement type:"), ind$measurement_type),
+                        p(strong("Formula (volume):"), ind$formula1_volume), 
+                        p(strong("Formula (value):"), ind$formula2_value), 
+                        p(strong("Main sector:"), ind$main_sector),
+                        p(strong("Other applicable sectors:"), ind$secondary_sectors),
+                        p(strong("Main mandate:"), ind$main_mandate),
+                        p(strong("Other applicable mandates:"), ind$secondary_mandates),
+                        p(strong("Main objectives:"), ind$main_objectives),
+                        p(strong("Applicable use-cases:"), ind$use_cases),
+                        p(strong("Gender priority:"), ind$gender_priority), 
+                        p(strong("Exploratory questions for gender analysis:"), ind$gender_questions), 
+                        render_disagg_table(ind$essential_disagg, ind$nonessential_disagg),
+                        br(), 
+                        p(strong("References:"), ind$references), 
+                        p(strong("Equivalent indicators also in:"), img_tags), 
+                    ),
+                    div(
+                        style = "display: flex; justify-content: flex-end; margin-bottom: 10px;",
+                        actionButton(
+                            inputId = paste0("select_", ind$indicator_id),
+                            label = "Add indicator to my list",
+                            icon = icon("plus-circle", lib = "font-awesome"),
+                            class = "btn btn-sm btn-outline-primary"
+                        )
                     )
-                ),
-                div(
-                    class = "card-body",
-                    style = "font-size: 14px", 
-                    p(strong(col_codebook["indicator_measurement"]), ind$indicator_measurement),
-                    p(strong(col_codebook["unit_of_analysis"]), ind$unit_of_analysis),
-                    p(strong(col_codebook["measurement_type"]), ind$measurement_type),
-                    p(strong(col_codebook["sectors"]), ind$sectors),
-                    p(strong(col_codebook["mandate_main"]), ind$mandate_main),
-                    p(strong(col_codebook["objective_main"]), ind$objective_main), 
-                    p(strong(col_codebook["objective_other"]), ind$objective_other), 
-                    p(strong(col_codebook["gender_questions"]), ind$gender_questions),
-                    p(strong(col_codebook["breakdowns"]), ind$breakdowns), 
-                    p(strong(col_codebook["priority_gender"]), ind$priority_gender),
-                    p(strong(col_codebook["costs_regsup"]), ind$costs_regsup),
-                    p(strong(col_codebook["costs_fsp"]), ind$costs_fsp),
-                    p(strong(col_codebook["priority_feasibility"]), ind$priority_feasibility),
-                    #p(strong(col_codebook["imf_fas_relevance"]), ind$imf_fas_relevance),
+                    )
+                )
+            })
+            
+            tagList(
+                tags$div(
+                    id = paste0("mandate_", slugify(mandate)),
+                    h5(str_to_upper(mandate), style = "margin-top: 30px; margin-bottom: 20px; color: #7E868C;"),
+                    accordion(!!!indicator_cards, open = FALSE),
+                    hr()
                 )
             )
-            
-            div(style = "flex: 1 1 45%; margin: 15px;", card)
         })
         
-        # Wrap cards in a container with two-column layout
         div(
-            style = "display: flex; flex-wrap: wrap; justify-content: space-between;",
-            do.call(tagList, card_list)
+            style = "display: flex; align-items: flex-start; gap: 30px;",
+            div(
+                style = "flex-grow: 2; padding: 10px;",
+                do.call(tagList, mandate_sections)
+            )
+            # div(
+            #     style = "flex-grow: 1.5; padding: 10px; border-left: 1px solid #ccc;",
+            #     h4("Mandates"), 
+            #     uiOutput("mandate_links")
+            # )
         )
     })
     
-    # Observe add button clicks
- # Observe add button clicks
+    # Selected indicators -------------
+    
+    # Track selected indicator codes
+    selected_codes <- reactiveVal(character())
+    
     observe({
-        lapply(unique(indicators$indicator_code), function(i) {
-            observeEvent(input[[i]], {
-                selected <- selected_indicators()
-                new_entry <- data.frame(
-                    sectors = indicators[indicators$indicator_code == i, "sectors"],
-                    indicator_name = indicators[indicators$indicator_code == i, "indicator_name"],
-                    indicator_measurement = indicators[indicators$indicator_code == i, "indicator_measurement"],
-                    mandate_main = indicators[indicators$indicator_code == i, "mandate_main"],
-                    objective_main = indicators[indicators$indicator_code == i, "objective_main"],
-                    priority_gender = indicators[indicators$indicator_code == i, "priority_gender"],
-                    stringsAsFactors = FALSE
-                )
-                selected_indicators(bind_rows(selected, new_entry))
+        lapply(unique(indicators$indicator_id), function(code) {
+            observeEvent(input[[paste0("select_", code)]], {
+                
+                selected <- selected_codes()
+                
+                if (code %in% selected) {
+                    # Unselect
+                    selected <- setdiff(selected, code)
+                    updateActionButton(session, paste0("select_", code),
+                                       icon = icon("circle", lib = "font-awesome"))
+                } else {
+                    # Select
+                    selected <- union(selected, code)
+                    updateActionButton(session, paste0("select_", code),
+                                       icon = icon("check-circle", lib = "font-awesome"))
+                }
+                
+                selected_codes(selected)
+                
+                # Update the selected_indicators() reactive too
+                selected_rows <- indicators %>%
+                    filter(indicator_id %in% selected) %>%
+                    select(indicator_name, indicator_description, main_mandate, main_objectives, main_sector, gender_priority)
+                
+                selected_indicators(selected_rows)
             })
         })
     })
     
-    # Display selected indicators
+    # Selected indicators table
     output$selected_indicators <- renderUI({
         selected <- selected_indicators()
         if (nrow(selected) == 0) {
-            h4("No indicators selected yet.")
+            h4("")
         } else {
-            table <- 
-                selected %>%
-                arrange(sectors)
+            table <- selected %>% arrange(main_mandate, main_objectives, main_sector)
             
-            desc_names <- col_codebook[names(table)]
-            names(table) <- desc_names
+            names(table) <- str_to_upper(COLUMN_DESCRIPTIONS[names(table)])
                 
-            table %>% 
-                kbl() %>%
-                column_spec(1, bold = F, background = sector_colors[table$`Sectors covered`]) %>%
+            kbl(table) %>%
+                column_spec(5, bold = F, background = SECTOR_COLORS[table$main_sector]) %>%
                 kable_styling("striped", full_width = FALSE) %>%
-                row_spec(0, bold = TRUE, color = "black") %>%
-                collapse_rows(1, valign = "middle") %>% 
+                row_spec(0, bold = TRUE, color = "#7E868C") %>%
+                collapse_rows(1, valign = "middle") %>%
                 as.character() %>%
                 HTML()
         }
     })
     
-} # Close server logic
+    output$selected_count_badge <- renderUI({
+        selected <- selected_indicators()
+        
+        if (nrow(selected) == 0) {
+            span(
+                icon("times-circle", class = "text-danger", lib = "font-awesome"),
+                "No indicators selected yet.",
+                style = "font-size: 16px;"
+            )
+        } else {
+            span(
+                icon("check-circle", class = "text-success", lib = "font-awesome"),
+                paste("You have selected", nrow(selected), "indicator(s)"),
+                style = "font-size: 16px; font-weight: bold;"
+            )
+        }
+    })
+    
+    output$selected_tab_title <- renderUI({
+        selected <- selected_indicators()
+        
+        if (nrow(selected) == 0) {
+            span(
+                icon("clipboard-list", lib = "font-awesome"),
+                " Your Selected Indicators"
+            )
+        } else {
+            span(
+                icon("clipboard-check", lib = "font-awesome"),
+                " Your Selected Indicators ",
+                span(
+                    paste0(nrow(selected)),
+                    style = "background-color: #198754; color: white; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin-left: 5px;"
+                )
+            )
+        }
+    })
+    
+    # Download selected indicators
+    output$download_selected <- downloadHandler(
+        filename = function() {
+            paste0("selected_indicators_", Sys.Date(), ".csv")
+        },
+        content = function(file) {
+            write.csv(selected_indicators(), file, row.names = FALSE)
+        }
+    )
+    
+    # Instructions table
+    output$instructions_table <- renderUI({
+        instructions %>% 
+            kbl() %>%
+            column_spec(1, bold = TRUE) %>%
+            kable_styling("striped", full_width = FALSE) %>%
+            as.character() %>%
+            HTML()
+    })
+}
 
 # Run the app
 shinyApp(ui = gui, server = server)
