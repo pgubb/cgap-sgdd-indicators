@@ -1,0 +1,260 @@
+/* www/custom.css - Custom styles for RGDD Explorer */
+
+html { 
+    scroll-behavior: smooth; 
+}
+
+/* Button styles */
+.btn-circle {
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+/* Selectize dropdown styling */
+.selectize-dropdown-content .option {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-radius: 3px;
+    color: black;
+}
+
+/* Form labels */
+.form-group > label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Modern checkbox styling */
+.modern-checkbox-group .checkbox {
+    margin: 4px 0;
+    padding: 4px 6px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.modern-checkbox-group .checkbox:hover {
+    background-color: #f0f0f0;
+    transform: translateX(3px);
+}
+
+.modern-checkbox-group input[type="checkbox"] {
+    display: none;
+}
+
+.modern-checkbox-group input[type="checkbox"] + span {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+}
+
+.modern-checkbox-group input[type="checkbox"] + span::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.modern-checkbox-group input[type="checkbox"]:checked + span::before {
+    background-color: #007bff;
+    border-color: #007bff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+    background-size: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Sector-specific checkbox colors */
+.sector-checkboxes input[type="checkbox"]:checked + span::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+}
+
+/* Custom Tooltip */
+.my-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.my-tooltip .my-tooltiptext {
+    visibility: hidden;
+    width: 400px;
+    background-color: white;
+    color: black;
+    text-align: left;
+    border: 1px solid #666666;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 13px;
+    box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -110px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.my-tooltip:hover .my-tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Tree box styling for use cases */
+.tree-box {
+    display: inline-block;
+    padding: 6px 20px;
+    border-left-style: solid;
+    border-width: 5px;
+    color: black;
+    font-size: 15px;
+    font-weight: normal;
+    margin: 5px 0;
+}
+
+.level-1 { border-color: #3b5998; }
+.level-2 { border-color: #0074D9; }
+.level-3 { border-color: #2ECC40; }
+.level-4 { border-color: #FF851B; }
+.level-5 { border-color: #B10DC9; }
+.level-6 { border-color: #85144b; }
+.level-7 { border-color: #111111; }
+
+/* Indicator card styles */
+.indicator-card {
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.indicator-header {
+    transition: background-color 0.2s ease;
+}
+
+.indicator-header:hover {
+    background-color: #e9ecef !important;
+}
+
+.indicator-content {
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+/* Loading indicator styles */
+.loading-overlay {
+    position: relative;
+    min-height: 200px;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.spinner-small {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Fade in/out for loading states */
+.fade-content {
+    transition: opacity 0.3s ease;
+}
+
+.loading .fade-content {
+    opacity: 0.3;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Performance optimization - reduce reflows */
+.indicator-container {
+    contain: layout;
+}
+
+/* Mandate sidebar styling */
+.mandate-sidebar {
+    background-color: #f8f9fa;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+}
+
+.mandate-sidebar a {
+    display: block;
+    padding: 8px 15px;
+    margin: 2px 0;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.mandate-sidebar a:hover {
+    background-color: #e9ecef;
+    color: #0056b3;
+    transform: translateX(5px);
+}
+
+.mandate-sidebar a.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* PDF report styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+    
+    .indicator-report {
+        page-break-inside: avoid;
+    }
+    
+    body {
+        font-size: 11pt;
+        line-height: 1.5;
+    }
+}
