@@ -22,7 +22,23 @@ noStar <- function(x) {
 notNA_noStar <- function(x) { 
   ifelse(isnotNA(x) & noStar(x), 1, 0)
   }
+
+add_dash <- function(vec) {
+  # vector of “trigger” phrases
+  targets <- c(
+    "Definitions and concepts:",
+    "Data requirements:",
+    "Limitations and considerations:",
+    "Derivable indicators:"
+  )
   
+  # build a single regex that matches any target NOT already preceded by “- ”
+  pattern <- paste0("(?<!-)\\b(", paste(targets, collapse = "|"), ")")
+  
+  # insert “- ” in front of each match
+  stringr::str_replace_all(vec, pattern, "!- \\1")
+}
+
   
 # Globals
 MND_OBJ <- 
@@ -51,11 +67,15 @@ COST_CODES <-
 
 # Data pipeline 
 
-filename <- "data/RGDD indicators_051225.xlsx"
+#filename <- "data/RGDD indicators_051225.xlsx"
+
+filename <- "data/RGDD indicators_051225.csv"
 
 # STEP 1: Cleaning and columns
 
-data <- read_excel(filename, sheet = "4. Indicators full list") %>% 
+#data <- read_excel(filename, sheet = "4. Indicators full list") %>% 
+
+data <- read_csv(filename) %>% 
   clean_names() %>% 
   rename(indicator_name = indicator, 
          indicator_description = description, 
@@ -71,7 +91,9 @@ data <- read_excel(filename, sheet = "4. Indicators full list") %>%
     unit_of_analysis = ifelse(unit_of_analysis == "N/A", "Not applicable", unit_of_analysis),
     measurement_type = str_to_title(measurement_type), 
     measurement_type = ifelse(measurement_type == "Volume And Value", "Volume & Value", measurement_type), 
-    high_priority = ifelse(high_priority == "yes", "High priority", "Other")
+    high_priority = ifelse(high_priority == "yes", "High priority", "Other"), 
+    high_priority = ifelse(is.na(high_priority), "Other", high_priority), 
+    indicator_long_description = add_dash(indicator_long_description)
   )
 
 # Checking for duplicated indicators
@@ -160,44 +182,42 @@ sectors <- data %>%
 # Cleaning use cases 
 
 use_cases <- data %>% select(indicator_id, use_cases) %>% 
-  separate_wider_delim(use_cases, delim = "\r\n", names_sep = "_", too_few = "align_start") %>% 
+  separate_wider_delim(use_cases, delim = "\n", names_sep = "_", too_few = "align_start") %>% 
   unite("use_cases", starts_with("use_cases_"), na.rm = TRUE, sep = ", ") 
 
 # Gender prioritization and costs 
-
-gender_priority <- read_excel(filename, sheet = "0. Indicators Master Data", skip = 2) %>% 
-  select(`Indicator ID`, `Indicator's prioritization by gender relevance`, `Indicator's RegSup expected costs`, `Indicator's prioritization adjusted by collection feasibility`) %>% 
-  clean_names() %>% 
-  rename(
-    gender_priority = indicators_prioritization_by_gender_relevance, 
-    costs_regsup = indicators_reg_sup_expected_costs, 
-    gender_priority_adjusted = indicators_prioritization_adjusted_by_collection_feasibility
-  ) %>% 
-  mutate(
-    indicator_id = as.character(indicator_id),
-  gender_priority = case_when(
-    gender_priority %in% c("1-Must have", "1-must have") ~ "Must have", 
-    gender_priority %in% c("2-Good to have", "2-good to have") ~ "Good to have", 
-    gender_priority %in% c("3-aspirational") ~ "Aspirational"
-  ), 
-  gender_priority = ifelse(is.na(gender_priority), "(Not assigned)", gender_priority), 
-  gender_priority_top = ifelse(gender_priority == "Must have", "High priority", "Other"), 
-  gender_priority_adjusted = case_when(
-    gender_priority_adjusted %in% c("1-must have") ~ "Must have", 
-    gender_priority_adjusted %in% c("2-good to have") ~ "Good to have", 
-    gender_priority_adjusted %in% c("3-aspirational") ~ "Aspirational", 
-    gender_priority_adjusted %in% c("4-not a priority") ~ "Not a priority", 
-    gender_priority_adjusted %in% c("6-not Feasible", "6-not feasible" ) ~ "Not feasible"
-  ), 
-  gender_priority_adjusted = ifelse(is.na(gender_priority_adjusted), "(Not assigned)", gender_priority_adjusted),   
-  costs_regsup = ifelse(is.na(costs_regsup), "(Not assigned)", costs_regsup),
-  )
+# 
+# gender_priority <- read_excel(filename, sheet = "0. Indicators Master Data", skip = 2) %>% 
+#   select(`Indicator ID`, `Indicator's prioritization by gender relevance`, `Indicator's RegSup expected costs`, `Indicator's prioritization adjusted by collection feasibility`) %>% 
+#   clean_names() %>% 
+#   rename(
+#     gender_priority = indicators_prioritization_by_gender_relevance, 
+#     costs_regsup = indicators_reg_sup_expected_costs, 
+#     gender_priority_adjusted = indicators_prioritization_adjusted_by_collection_feasibility
+#   ) %>% 
+#   mutate(
+#     indicator_id = as.character(indicator_id),
+#   gender_priority = case_when(
+#     gender_priority %in% c("1-Must have", "1-must have") ~ "Must have", 
+#     gender_priority %in% c("2-Good to have", "2-good to have") ~ "Good to have", 
+#     gender_priority %in% c("3-aspirational") ~ "Aspirational"
+#   ), 
+#   gender_priority = ifelse(is.na(gender_priority), "(Not assigned)", gender_priority), 
+#   gender_priority_top = ifelse(gender_priority == "Must have", "High priority", "Other"), 
+#   gender_priority_adjusted = case_when(
+#     gender_priority_adjusted %in% c("1-must have") ~ "Must have", 
+#     gender_priority_adjusted %in% c("2-good to have") ~ "Good to have", 
+#     gender_priority_adjusted %in% c("3-aspirational") ~ "Aspirational", 
+#     gender_priority_adjusted %in% c("4-not a priority") ~ "Not a priority", 
+#     gender_priority_adjusted %in% c("6-not Feasible", "6-not feasible" ) ~ "Not feasible"
+#   ), 
+#   gender_priority_adjusted = ifelse(is.na(gender_priority_adjusted), "(Not assigned)", gender_priority_adjusted),   
+#   costs_regsup = ifelse(is.na(costs_regsup), "(Not assigned)", costs_regsup),
+#  )
 
 # External sources
 
-references <- read_excel(filename, sheet = "0. Indicators Master Data", skip = 2) %>% 
-  select(`Indicator ID`, `IMF FAS core`, `GPFI`, `AFI`, `WeF`, `References`) %>% 
-  clean_names() %>% 
+references <- data %>% 
   rename(
     in_imf = imf_fas_core, 
     in_gpfi = gpfi, 
@@ -212,7 +232,8 @@ references <- read_excel(filename, sheet = "0. Indicators Master Data", skip = 2
     in_wef = ifelse(is.na(in_wef), 0, in_wef), 
     references = ifelse(references == " ", NA, references)
   ) %>% 
-  filter(!is.na(indicator_id))
+  filter(!is.na(indicator_id)) %>% 
+  select(indicator_id, in_imf, in_gpfi, in_afi, in_wef, references)
 
 # Breakdowns
 
@@ -261,11 +282,13 @@ indicators <- core_columns %>%
                 left_join(mandates, by = "indicator_id") %>% 
                 left_join(sectors, by = "indicator_id") %>% 
                 left_join(use_cases, by = "indicator_id") %>% 
-                left_join(gender_priority, by = "indicator_id") %>% 
+                #left_join(gender_priority, by = "indicator_id") %>% 
                 left_join(references, by = "indicator_id") %>% 
                 left_join(breakdowns, by = "indicator_id") 
   
 # Saving file 
+
+filename <- "data/RGDD indicators_051225.xlsx"
 
 usecases <-  read_excel(filename, sheet = "Use cases", skip = 1) %>% 
   clean_names() %>% 

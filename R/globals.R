@@ -63,7 +63,7 @@ BREAKDOWNS <- list(
   "Transaction type" = c("DIGITAL/CASHLESS TRANSACTIONS", "-Payments and transfers", "-Deposits (digital)", "-Remittances (in/out flows)", "-EFT transactions", "-Fast payments", "-E-money", "-Mobile money", "-Cards", "CASH", "-Withdrawals/cash-out", "-Deposits (cash-in)", "-Remittances (in/out flows)", "CHEQUES", "-Cheque transactions", "NON-FINANCIAL", "-Balance enquiry", "-Payment initiation request", "-Data sharing consent"), 
   "Customer location" = c("Urban", "Rural", "By region", "By district", "By administrative unit level (State/province; city/municipality)"), 
   "Average size category" = c("AVERAGE SIZE FOR LOANS", "- By loan term brackets (eg nano, micro individual, micro MSMS, by amounts, etc)"),  
-  "Average term category" = c("AVERAGE TERM FOR LOANS", "-A day or less (<= 1 day)"), 
+  "Average term category" = c("AVERAGE TERM FOR LOANS", "-A day or less (<= 1 day)", "A week or less (=<1w)", "30 days or less (=<1m)", "180 days or less (=<6m)", "A year or less (=<1y)"), 
   "Average interest rate category"= c(""), 
   "Customer income category" = c("By income brackets (eg. monthly income)", "By government categorization (eg. GP2 beneficiary)", "By account balance brackets")
 )

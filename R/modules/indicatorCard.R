@@ -24,7 +24,7 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
              style = "background-color: #E5E7E6; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
         span(indicator$main_sector, 
              style = paste0("background-color: ", sector_color, "; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px")), 
-        if (indicator$high_priority == "Yes") {
+        if (indicator$high_priority == "High priority") {
           tags$i(class = "fas fa-star", style = "color: gold; margin-left: 8px; font-size: 14px;")
         }
       )

@@ -96,7 +96,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                    style = "background-color: #E5E7E6; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
               span(ind$main_sector, 
                    style = paste0("background-color: ", sector_color, "; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px")), 
-              if (!is.na(ind$high_priority) && ind$high_priority == "Yes") {
+              if (!is.na(ind$high_priority) && ind$high_priority == "High priority") {
                 tags$i(class = "fas fa-star", 
                        style = "color: gold; margin-left: 8px; font-size: 14px;")
               }
@@ -327,7 +327,7 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                 <span class="objective-badge">', htmlEscape(ind$main_objectives), '</span>
                 <span class="sector-badge" style="background-color: ', sector_color, ';">', 
                   htmlEscape(ind$main_sector), '</span>',
-                  if (ind$high_priority == "Yes") '<span class="priority-star">★ Priority</span>' else '',
+                  if (ind$high_priority == "High priority") '<span class="priority-star">★ Priority</span>' else '',
                   '</div>
             
             <div class="field">
