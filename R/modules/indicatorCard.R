@@ -65,7 +65,7 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
 
 # Add JavaScript for custom message handling
 indicatorCardJS <- function() {
-  tags$script("
+  tags$script(HTML("
         // Setup event delegation for select buttons
         Shiny.addCustomMessageHandler('setupSelectButtons', function(data) {
             // Remove any existing delegated handlers
@@ -201,5 +201,5 @@ indicatorCardJS <- function() {
                 }, 500);
             });
         });
-    ")
+    "))
 }
