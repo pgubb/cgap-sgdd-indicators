@@ -2,7 +2,6 @@ library(shiny)
 library(tidyverse)
 library(readxl)
 library(bslib)
-library(kableExtra)
 library(janitor)
 
 # Load data
@@ -15,19 +14,20 @@ source("R/modules/indicatorCard.R")
 source("R/modules/filterPanel.R")
 source("R/modules/selectedIndicators.R")
 
+tags$head(
+  includeCSS("www/custom.css"),
+  tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
+  # Add the JavaScript for indicator card toggling
+  indicatorCardJS()
+)
+
 # UI ----------
 ui <- page_navbar(
+  
   title = span(
     span(style = "font-size: 26px;", "RGDD explorer"), 
     span(style = "font-size: 14px;", " by "), 
     tags$img(src = "cgap_logo.png", height = "26px")
-  ),
-  
-  tags$head(
-    includeCSS("www/custom.css"),
-    tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
-    # Add the JavaScript for indicator card toggling
-    indicatorCardJS()
   ),
   
   sidebar = sidebar(
