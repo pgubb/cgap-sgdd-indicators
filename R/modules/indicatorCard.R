@@ -33,9 +33,11 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
       class = "card-body",
       style = "font-size: 14px;",
       
-      render_disagg_table_vertical(indicator, c("main_mandate", "secondary_mandates", "main_objectives", "main_sector", "secondary_sectors", "indicator_description", "indicator_long_description", "gender_questions")),
-      
-      render_disagg_table_vertical_pre(indicator, c("unit_of_analysis", "measurement_type", "formula1_volume", "formula2_value", "formula_3_other")),
+      render_disagg_table_vertical(indicator, 
+                                   columns = c("main_mandate", "secondary_mandates", "main_objectives", "secondary_objectives", "main_sector", 
+                                               "secondary_sectors", "indicator_description", "indicator_long_description", "gender_questions", 
+                                               "unit_of_analysis", "measurement_type", "formula1_volume", "formula2_value", "formula_3_other"), 
+                                   pre_columns = c("formula1_volume", "formula2_value", "formula_3_other")),
 
       render_disagg_table_generalized(indicator, c("essential_disagg", "nonessential_disagg")),
       

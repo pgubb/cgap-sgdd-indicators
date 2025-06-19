@@ -56,14 +56,19 @@ MND_OBJ <-
   )
 
 
-COST_CODES <- 
-  c(
-    "L" = "I can have it with low effort/cost", 
-    "M" = " I can collect the data but entails a relevant effort (time, budget, coordination)", 
-    "H" = "I could collect the data but entails a high effort/cost (budget, regulatory, capacity, internal support, coordination, time, etc)", 
-    "NC" = "I already have it", 
-    "NF" = "I cannot collect this data and at this stage"
-  )
+# ---- Vector with the 10 mandate-column names ----
+mandate_cols <- c(
+  "m1_financial_inclusion",
+  "m10_competition",
+  "m2_statistics_reasearch",
+  "m3_financial_consumer_protection",
+  "m4_microprudential_supervision",
+  "m5_financial_safety_net",
+  "m6_central_banking",
+  "m7_macroprudential_supervision",
+  "m8_sustainability",
+  "m9_capital_markets_development"
+)
 
 # Data pipeline 
 
@@ -138,10 +143,28 @@ mandates <- data %>%
       str_detect(m9_capital_markets_development, "\\*") == TRUE ~ m9_capital_markets_development, 
       str_detect(m10_competition, "\\*") == TRUE ~ m10_competition
     ), 
-    main_objectives = ifelse(main_objectives == "Access Usage", "Access, usage", main_objectives),
-    across(starts_with(c("m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10")), notNA_noStar, .names = "sm_{.col}"), 
-  ) %>% 
+    main_objectives = ifelse(main_objectives == "*Access Usage", "Access, usage", main_objectives)
+  ) 
+
+mandates <- mandates %>%                                # <-- your data frame
+  rowwise() %>%                             # operate row-by-row
   mutate(
+    secondary_objectives = {
+      # pull the ten values as a character vector
+      vals <- c_across(all_of(mandate_cols)) |> as.character()
+      # keep only those that are not NA and do not start with "*"
+      vals <- vals[!is.na(vals) & !str_starts(vals, fixed("*"))]
+      # Str
+      vals <- str_trim(str_to_sentence(vals))
+      # collapse them with commas (returns "" if nothing qualified)
+      paste(vals, collapse = ", ")
+    }
+  ) %>%
+  ungroup()
+  
+mandates <- mandates %>% 
+  mutate(
+    across(starts_with(c("m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10")), notNA_noStar, .names = "sm_{.col}"), 
     sm_m1_financial_inclusion = ifelse(sm_m1_financial_inclusion == 1,names(MND_OBJ[9]), NA), 
     sm_m2_statistics_reasearch = ifelse(sm_m2_statistics_reasearch == 1, names(MND_OBJ[2]), NA), 
     sm_m3_financial_consumer_protection = ifelse(sm_m3_financial_consumer_protection == 1, names(MND_OBJ[8]), NA), 
@@ -162,13 +185,19 @@ mandates <- data %>%
     main_objectives_3 = str_trim(str_to_title(main_objectives_3))
   ) %>% 
   unite("main_objectives", starts_with("main_objectives"), na.rm = TRUE, sep = ", ") %>% 
-  mutate(main_objectives = ifelse(main_objectives == "Currency management cash handling", "Currency management & cash handling", main_objectives)) %>% 
-  select(indicator_id, main_mandate, secondary_mandates, main_objectives)
+  mutate(main_objectives = ifelse(main_objectives == "Currency management cash handling", "Currency management & cash handling", main_objectives)) %>%
+  mutate(secondary_objectives = str_replace(secondary_objectives, "All microprudential objectives", paste(MND_OBJ[["Microprudential supervision"]], collapse = ", "))) %>% 
+  mutate(secondary_objectives = ifelse(str_detect(secondary_objectives, "All"), paste(unlist(MND_OBJ), collapse = ", "), secondary_objectives)) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("safety", ignore_case = TRUE), "Safety")) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("Aml/cft", ignore_case = TRUE), "AML/CFT")) %>% 
+  #mutate(secondary_objectives = ifelse(secondary_objectives == "", NA, secondary_objectives)) %>%
+  select(indicator_id, main_mandate, secondary_mandates, main_objectives, secondary_objectives)
 
 # Cleaning sectors ------
 
 sectors <- data %>% 
-  select(indicator_id, sectors) %>% 
+  select(indicator_id, sectors, starts_with("s")) %>% 
+  select(-starts_with("suggested")) %>% 
   separate_wider_delim(sectors, delim = " ", names_sep = "_", too_few = "align_start") %>% 
   mutate(across(starts_with(c("sectors_")), isnotNA, .names = "bin_{.col}")) %>% 
   mutate(N = bin_sectors_1 + bin_sectors_2 + bin_sectors_3 + bin_sectors_4 + bin_sectors_5 + bin_sectors_6 + bin_sectors_7) %>% 
@@ -288,13 +317,13 @@ indicators <- core_columns %>%
   
 # Saving file 
 
-filename <- "data/RGDD indicators_051225.xlsx"
+#filename <- "data/RGDD indicators_051225.xlsx"
 
-usecases <-  read_excel(filename, sheet = "Use cases", skip = 1) %>% 
-  clean_names() %>% 
-  fill(overarching_vision_for_the_fs, gender_related_challenge_opportunity, how_sgdd_can_help_market_actors_tackle_challenge_opportunity)
+#usecases <-  read_excel(filename, sheet = "Use cases", skip = 1) %>% 
+#  clean_names() %>% 
+#  fill(overarching_vision_for_the_fs, gender_related_challenge_opportunity, how_sgdd_can_help_market_actors_tackle_challenge_opportunity)
 
-names(usecases) <- c("vision", "opportunity", "rgdd_role", "use_case", "indicators_explanation", "type_of_analysis", "indicator_mandates")
+#names(usecases) <- c("vision", "opportunity", "rgdd_role", "use_case", "indicators_explanation", "type_of_analysis", "indicator_mandates")
 
 # Saving file 
 

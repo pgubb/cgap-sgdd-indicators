@@ -37,6 +37,7 @@ COLUMN_DESCRIPTIONS <- c(
   "main_mandate" = "Main mandate",           
   "secondary_mandates"  = "Other applicable mandates",      
   "main_objectives"  = "Main objectives",         
+  "secondary_objectives"  = "Other applicable objectives",    
   "main_sector" = "Main sector",               
   "secondary_sectors" = "Other applicable sectors",      
   "use_cases" = "Applicable use cases of indicator for FSAs",             

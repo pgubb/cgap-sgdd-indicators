@@ -243,80 +243,7 @@ render_cols_as_table <- function(indicator_row, columns, descriptions = COLUMN_D
 }
 
 
-# Vertical table renderer - displays column names in first column, values in second
-render_disagg_table_vertical <- function(indicator_row, columns, 
-                                         delimiter = ";", 
-                                         descriptions = COLUMN_DESCRIPTIONS,
-                                         mapping = BREAKDOWNS) {
-  
-  # Helper function to render items with tooltips
-  render_item <- function(item) {
-    item <- trimws(item)
-    if (item == "") return("")
-    
-    tooltip <- mapping[[item]]
-    if (!is.null(tooltip)) {
-      shiny::HTML(
-        paste0(
-          '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-          htmlEscape(item),
-          ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
-          '<div class="my-tooltiptext">',
-          paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
-          '</div></div>'
-        )
-      )
-    } else {
-      htmlEscape(item)
-    }
-  }
-  
-  # Create rows for each column
-  rows <- lapply(columns, function(col) {
-    val <- indicator_row[[col]]
-    
-    # Handle NA, NULL, or empty values
-    if (is.na(val) || is.null(val) || val == "") {
-      content <- ""
-    } else {
-      # Split by delimiter if provided
-      items <- unlist(strsplit(val, delimiter))
-      items <- trimws(items)
-      items <- items[items != ""]
-      
-      if (length(items) == 0) {
-        content <- ""
-      } else if (length(items) == 1) {
-        content <- render_item(items[1])
-      } else {
-        # Multiple items - render as a list within the cell
-        content <- tags$ul(
-          style = "margin: 0; padding-left: 20px;",
-          lapply(items, function(item) {
-            tags$li(render_item(item))
-          })
-        )
-      }
-    }
-    
-    tags$tr(
-      tags$td(
-        descriptions[[col]] %||% col,
-        style = "border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2; font-weight: bold; width: 30%;"
-      ),
-      tags$td(
-        content,
-        style = "border: 1px solid #ccc; padding: 8px;"
-      )
-    )
-  })
-  
-  # Return the table
-  tags$table(
-    style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
-    tags$tbody(rows)
-  )
-}
+
 
 # Alternative version that groups multiple values in a single cell without bullets
 render_disagg_table_vertical_grouped <- function(indicator_row, columns, 
@@ -392,21 +319,16 @@ render_disagg_table_vertical_grouped <- function(indicator_row, columns,
   )
 }
 
-# Vertical table renderer - displays column names in first column, values in second
+
+# Merged vertical table renderer with optional pre-formatting for specified columns
 render_disagg_table_vertical <- function(indicator_row, columns, 
                                          delimiter = "!-", 
                                          descriptions = COLUMN_DESCRIPTIONS,
-                                         mapping = BREAKDOWNS) {
+                                         mapping = BREAKDOWNS,
+                                         pre_columns = character()) {  # New parameter
   
-  # Replace the render_item function inside render_disagg_table_vertical with this simpler version:
-  
-  # Replace the render_item function inside render_disagg_table_vertical with this:
-  
-  # Replace the render_item function inside render_disagg_table_vertical with this:
-  
-  # Replace the render_item function inside render_disagg_table_vertical with this:
-  
-  render_item <- function(item) {
+  # Helper function to render items with tooltips
+  render_item <- function(item, use_pre = FALSE) {
     item <- trimws(item)
     if (item == "") return("")
     
@@ -442,113 +364,65 @@ render_disagg_table_vertical <- function(indicator_row, columns,
         # Replace this specific URL with button
         modified_text <- sub(url, link_button, modified_text, fixed = TRUE)
       }
-      
-      return(HTML(modified_text))
-    }
+        
+        # If using pre, wrap the non-URL parts
+        if (use_pre) {
+          return(HTML(paste0('<pre style="display: inline; margin: 0; background: none; padding: 0;">', htmlEscape(modified_text), '</pre>')))
+        } else {
+          return(HTML(modified_text))
+        }
+      }
     
-    # If no URL, check for tooltips
+    # Then check for tooltips
     tooltip <- mapping[[item]]
     if (!is.null(tooltip)) {
-      shiny::HTML(
-        paste0(
-          '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-          htmlEscape(item),
-          ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
-          '<div class="my-tooltiptext">',
-          paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
-          '</div></div>'
-        )
+      tooltip_html <- paste0(
+        '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
+        htmlEscape(item),
+        ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
+        '<div class="my-tooltiptext">',
+        paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
+        '</div></div>'
       )
-    } else {
-      htmlEscape(item)
-    }
-  }
-  
-  # Create rows for each column
-  rows <- lapply(columns, function(col) {
-    val <- indicator_row[[col]]
-    
-    # Handle NA, NULL, or empty values
-    if (is.na(val) || is.null(val) || val == "") {
-      content <- ""
-    } else {
-      # Split by delimiter if provided
-      items <- unlist(strsplit(val, delimiter))
-      items <- trimws(items)
-      items <- items[items != ""]
       
-      if (length(items) == 0) {
-        content <- ""
-      } else if (length(items) == 1) {
-        content <- render_item(items[1])
+      if (use_pre) {
+        # For pre-formatted content with tooltips, we need special handling
+        return(HTML(paste0(
+          '<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;">',
+          tooltip_html,
+          '</pre>'
+        )))
       } else {
-        # Multiple items - render as a list within the cell
-        content <- tags$ul(
-          style = "margin: 0; padding-left: 20px;",
-          lapply(items, function(item) {
-            tags$li(render_item(item))
-          })
-        )
+        return(HTML(tooltip_html))
       }
     }
     
-    tags$tr(
-      tags$td(
-        descriptions[[col]] %||% col,
-        style = "border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2; font-weight: bold; width: 30%;"
-      ),
-      tags$td(
-        content,
-        style = "border: 1px solid #ccc; padding: 8px;"
-      )
-    )
-  })
-  
-  # Return the table
-  tags$table(
-    style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
-    tags$tbody(rows)
-  )
-}
-
-# Alternative version with <pre> styling for formulas and code-like content
-render_disagg_table_vertical_pre <- function(indicator_row, columns, 
-                                             delimiter = ";", 
-                                             descriptions = COLUMN_DESCRIPTIONS,
-                                             mapping = BREAKDOWNS) {
-  
-  render_item <- function(item) {
-    item <- trimws(item)
-    if (item == "") return("")
-    
-    tooltip <- mapping[[item]]
-    if (!is.null(tooltip)) {
-      # For pre-formatted content with tooltips, we need to handle it differently
-      shiny::HTML(
-        paste0(
-          '<span class="my-tooltip" style="white-space: normal; display: inline-block;">',
-          htmlEscape(item),
-          ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
-          '<span class="my-tooltiptext">',
-          paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
-          '</span></span>'
-        )
-      )
+    # Default case
+    if (use_pre) {
+      return(tags$pre(
+        style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
+        htmlEscape(item)
+      ))
     } else {
-      htmlEscape(item)
+      return(htmlEscape(item))
     }
   }
   
   # Create rows for each column
   rows <- lapply(columns, function(col) {
     val <- indicator_row[[col]]
+    use_pre <- col %in% pre_columns  # Check if this column should use pre formatting
     
     # Handle NA, NULL, or empty values
     if (is.na(val) || is.null(val) || val == "") {
-      content <- tags$pre(
-        style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
+      content <- if (use_pre) {
+        tags$pre(
+          style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
+          ""
+        )
+      } else {
         ""
-      )
+      }
     } else {
       # Split by delimiter if provided
       items <- unlist(strsplit(val, delimiter))
@@ -556,29 +430,37 @@ render_disagg_table_vertical_pre <- function(indicator_row, columns,
       items <- items[items != ""]
       
       if (length(items) == 0) {
-        content <- tags$pre(
-          style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
+        content <- if (use_pre) {
+          tags$pre(
+            style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
+            ""
+          )
+        } else {
           ""
-        )
+        }
       } else if (length(items) == 1) {
-        content <- tags$pre(
-          style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
-          render_item(items[1])
-        )
+        content <- render_item(items[1], use_pre)
       } else {
-        # Multiple items - render each in its own pre block
-        content <- tags$div(
-          lapply(seq_along(items), function(i) {
-            tags$pre(
-              style = paste0(
-                "margin: 0; white-space: pre-wrap; word-break: break-word; ",
-                "background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
-                if (i < length(items)) " margin-bottom: 8px;" else ""
-              ),
-              render_item(items[i])
-            )
-          })
-        )
+        # Multiple items
+        if (use_pre) {
+          # Multiple pre blocks
+          content <- tags$div(
+            lapply(seq_along(items), function(i) {
+              tags$div(
+                style = if (i < length(items)) "margin-bottom: 8px;" else "",
+                render_item(items[i], use_pre)
+              )
+            })
+          )
+        } else {
+          # List format for regular items
+          content <- tags$ul(
+            style = "margin: 0; padding-left: 20px;",
+            lapply(items, function(item) {
+              tags$li(render_item(item, use_pre))
+            })
+          )
+        }
       }
     }
     
@@ -600,3 +482,124 @@ render_disagg_table_vertical_pre <- function(indicator_row, columns,
     tags$tbody(rows)
   )
 }
+
+# # Vertical table renderer - displays column names in first column, values in second
+# render_disagg_table_vertical <- function(indicator_row, columns, 
+#                                          delimiter = "!-", 
+#                                          descriptions = COLUMN_DESCRIPTIONS,
+#                                          mapping = BREAKDOWNS) {
+#   
+#   # Replace the render_item function inside render_disagg_table_vertical with this simpler version:
+#   
+#   # Replace the render_item function inside render_disagg_table_vertical with this:
+#   
+#   # Replace the render_item function inside render_disagg_table_vertical with this:
+#   
+#   # Replace the render_item function inside render_disagg_table_vertical with this:
+#   
+#   render_item <- function(item) {
+#     item <- trimws(item)
+#     if (item == "") return("")
+#     
+#     # Check for URLs first
+#     # Updated pattern to capture full URLs including paths, query params, and fragments
+#     url_pattern <- "(?i)\\bhttps?://[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+"
+#     
+#     if (grepl(url_pattern, item, perl = TRUE)) {
+#       # Extract all URLs (in case there are multiple)
+#       #urls <- gregexpr(url_pattern, item, perl = TRUE)
+#       url_matches <- str_extract_all(item, url_pattern)[[1]]
+#       
+#       # Create modified text with all URLs replaced
+#       modified_text <- item
+#       for (url in url_matches) {
+#         # Clean up any trailing punctuation that might have been captured
+#         clean_url <- str_replace(url, "[\\.,;!?]+$", "")
+#         
+#         # Create inline link button
+#         link_button <- paste0(
+#           '<a href="', clean_url, '" target="_blank" ',
+#           'style="display: inline-block; padding: 3px 10px; ',
+#           'border: 1px solid #333; border-radius: 15px; ',
+#           'text-decoration: none; color: #333; font-size: 12px; ',
+#           'background-color: white; margin: 0 4px; ',
+#           'transition: all 0.2s ease;" ',
+#           'onmouseover="this.style.backgroundColor=\'#007bff\'; this.style.borderColor=\'#007bff\'; this.style.color=\'white\';" ',
+#           'onmouseout="this.style.backgroundColor=\'white\'; this.style.borderColor=\'#333\'; this.style.color=\'#333\';">',
+#           'Link <i class="fa-solid fa-link" style="margin-left: 4px; font-size: 10px;"></i>',
+#           '</a>'
+#         )
+#         
+#         # Replace this specific URL with button
+#         modified_text <- sub(url, link_button, modified_text, fixed = TRUE)
+#       }
+#       
+#       return(HTML(modified_text))
+#     }
+#     
+#     # If no URL, check for tooltips
+#     tooltip <- mapping[[item]]
+#     if (!is.null(tooltip)) {
+#       shiny::HTML(
+#         paste0(
+#           '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
+#           htmlEscape(item),
+#           ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
+#           '<div class="my-tooltiptext">',
+#           paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
+#           '</div></div>'
+#         )
+#       )
+#     } else {
+#       htmlEscape(item)
+#     }
+#   }
+#   
+#   # Create rows for each column
+#   rows <- lapply(columns, function(col) {
+#     val <- indicator_row[[col]]
+#     
+#     # Handle NA, NULL, or empty values
+#     if (is.na(val) || is.null(val) || val == "") {
+#       content <- ""
+#     } else {
+#       # Split by delimiter if provided
+#       items <- unlist(strsplit(val, delimiter))
+#       items <- trimws(items)
+#       items <- items[items != ""]
+#       
+#       if (length(items) == 0) {
+#         content <- ""
+#       } else if (length(items) == 1) {
+#         content <- render_item(items[1])
+#       } else {
+#         # Multiple items - render as a list within the cell
+#         content <- tags$ul(
+#           style = "margin: 0; padding-left: 20px;",
+#           lapply(items, function(item) {
+#             tags$li(render_item(item))
+#           })
+#         )
+#       }
+#     }
+#     
+#     tags$tr(
+#       tags$td(
+#         descriptions[[col]] %||% col,
+#         style = "border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2; font-weight: bold; width: 30%;"
+#       ),
+#       tags$td(
+#         content,
+#         style = "border: 1px solid #ccc; padding: 8px;"
+#       )
+#     )
+#   })
+#   
+#   # Return the table
+#   tags$table(
+#     style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
+#     tags$tbody(rows)
+#   )
+# }
+
+
