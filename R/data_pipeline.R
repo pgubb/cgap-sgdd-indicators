@@ -190,6 +190,10 @@ mandates <- mandates %>%
   mutate(secondary_objectives = ifelse(str_detect(secondary_objectives, "All"), paste(unlist(MND_OBJ), collapse = ", "), secondary_objectives)) %>% 
   mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("safety", ignore_case = TRUE), "Safety")) %>% 
   mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("Aml/cft", ignore_case = TRUE), "AML/CFT")) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("access", ignore_case = TRUE), "Access")) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("operational", ignore_case = TRUE), "Operational")) %>% 
+  mutate(main_objectives = str_replace_all(main_objectives, regex("Treatment", ignore_case = TRUE), "treatment")) %>% 
+  mutate(secondary_objectives = ifelse(indicator_id == "107", str_replace_all(secondary_objectives, regex("Data privacy", ignore_case = TRUE), "Data privacy and protection"), secondary_objectives)) %>% 
   #mutate(secondary_objectives = ifelse(secondary_objectives == "", NA, secondary_objectives)) %>%
   select(indicator_id, main_mandate, secondary_mandates, main_objectives, secondary_objectives)
 
