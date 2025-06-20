@@ -17,14 +17,17 @@ selectedIndicatorsUI <- function(id) {
   
   tagList(
     div(
-      style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;",
+      class = "d-flex align-items-center mb-2",
+
       uiOutput(ns("count_badge")),
+
       div(
-        style = "display: flex; gap: 10px;",
+        class = "d-flex gap-2 ms-auto",
         uiOutput(ns("download_csv_button")),
         uiOutput(ns("download_pdf_button"))
       )
     ),
+    
     uiOutput(ns("indicators"))
   )
 }

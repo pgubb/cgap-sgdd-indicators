@@ -24,7 +24,7 @@ ui <- page_navbar(
     tags$img(src = "cgap_logo.png", height = "26px")
   ),
   
-  tags$head(
+  header = tagList(
     includeCSS("www/custom.css"),
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
     # Add the JavaScript for indicator card toggling
@@ -42,6 +42,7 @@ ui <- page_navbar(
   
   nav_panel(
     title = "Browse indicators",
+    
     layout_sidebar(
       sidebar = sidebar(
         position = "right",
