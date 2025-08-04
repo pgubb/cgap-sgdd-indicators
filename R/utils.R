@@ -321,33 +321,59 @@ render_disagg_table_vertical_grouped <- function(indicator_row, columns,
 
 
 # Merged vertical table renderer with optional pre-formatting for specified columns
+# Updated render_disagg_table_vertical function in R/utils.R
 render_disagg_table_vertical <- function(indicator_row, columns, 
                                          delimiter = "!-", 
                                          descriptions = COLUMN_DESCRIPTIONS,
                                          mapping = BREAKDOWNS,
-                                         pre_columns = character()) {  # New parameter
+                                         pre_columns = character()) {
   
-  # Helper function to render items with tooltips
+  # Define target strings that should be bolded
+  bold_targets <- c(
+    "Definitions and concepts:",
+    "Data requirements:",
+    "Limitations and considerations:",
+    "Derivable indicators:"
+  )
+  
+  # Helper function to render items with tooltips and bold formatting
   render_item <- function(item, use_pre = FALSE) {
     item <- trimws(item)
     if (item == "") return("")
     
+    # Check if this item contains any of the bold targets
+    contains_bold_target <- any(sapply(bold_targets, function(target) {
+      grepl(target, item, fixed = TRUE)
+    }))
+    
+    # If it contains a bold target, apply bold formatting
+    if (contains_bold_target) {
+      # Apply bold formatting to each target found in the item
+      formatted_item <- item
+      for (target in bold_targets) {
+        if (grepl(target, formatted_item, fixed = TRUE)) {
+          formatted_item <- gsub(
+            target, 
+            paste0("<strong>", target, "</strong>"), 
+            formatted_item, 
+            fixed = TRUE
+          )
+        }
+      }
+      item <- formatted_item
+    }
+    
     # Check for URLs first
-    # Updated pattern to capture full URLs including paths, query params, and fragments
     url_pattern <- "(?i)\\bhttps?://[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+"
     
     if (grepl(url_pattern, item, perl = TRUE)) {
-      # Extract all URLs (in case there are multiple)
-      #urls <- gregexpr(url_pattern, item, perl = TRUE)
       url_matches <- str_extract_all(item, url_pattern)[[1]]
       
       # Create modified text with all URLs replaced
       modified_text <- item
       for (url in url_matches) {
-        # Clean up any trailing punctuation that might have been captured
         clean_url <- str_replace(url, "[\\.,;!?]+$", "")
         
-        # Create inline link button
         link_button <- paste0(
           '<a href="', clean_url, '" target="_blank" ',
           'style="display: inline-block; padding: 3px 10px; ',
@@ -361,24 +387,22 @@ render_disagg_table_vertical <- function(indicator_row, columns,
           '</a>'
         )
         
-        # Replace this specific URL with button
         modified_text <- sub(url, link_button, modified_text, fixed = TRUE)
       }
-        
-        # If using pre, wrap the non-URL parts
-        if (use_pre) {
-          return(HTML(paste0('<pre style="display: inline; margin: 0; background: none; padding: 0;">', htmlEscape(modified_text), '</pre>')))
-        } else {
-          return(HTML(modified_text))
-        }
+      
+      if (use_pre) {
+        return(HTML(paste0('<pre style="display: inline; margin: 0; background: none; padding: 0;">', modified_text, '</pre>')))
+      } else {
+        return(HTML(modified_text))
       }
+    }
     
-    # Then check for tooltips
+    # Check for tooltips
     tooltip <- mapping[[item]]
     if (!is.null(tooltip)) {
       tooltip_html <- paste0(
         '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-        htmlEscape(item),
+        if (contains_bold_target) item else htmlEscape(item),  # Use raw item if it contains bold formatting
         ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
         '<div class="my-tooltiptext">',
         paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
@@ -386,7 +410,6 @@ render_disagg_table_vertical <- function(indicator_row, columns,
       )
       
       if (use_pre) {
-        # For pre-formatted content with tooltips, we need special handling
         return(HTML(paste0(
           '<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;">',
           tooltip_html,
@@ -399,27 +422,30 @@ render_disagg_table_vertical <- function(indicator_row, columns,
     
     # Default case
     if (use_pre) {
-      return(tags$pre(
-        style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
-        htmlEscape(item)
-      ))
+      content_to_display <- if (contains_bold_target) item else htmlEscape(item)
+      return(HTML(paste0(
+        '<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;">',
+        content_to_display,
+        '</pre>'
+      )))
     } else {
-      return(htmlEscape(item))
+      if (contains_bold_target) {
+        return(HTML(item))  # Return as HTML to preserve bold formatting
+      } else {
+        return(htmlEscape(item))  # Regular HTML escaping for non-bold content
+      }
     }
   }
   
   # Create rows for each column
   rows <- lapply(columns, function(col) {
     val <- indicator_row[[col]]
-    use_pre <- col %in% pre_columns  # Check if this column should use pre formatting
+    use_pre <- col %in% pre_columns
     
     # Handle NA, NULL, or empty values
     if (is.na(val) || is.null(val) || val == "") {
       content <- if (use_pre) {
-        tags$pre(
-          style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
-          ""
-        )
+        HTML('<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;"></pre>')
       } else {
         ""
       }
@@ -431,10 +457,7 @@ render_disagg_table_vertical <- function(indicator_row, columns,
       
       if (length(items) == 0) {
         content <- if (use_pre) {
-          tags$pre(
-            style = "margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;",
-            ""
-          )
+          HTML('<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;"></pre>')
         } else {
           ""
         }
