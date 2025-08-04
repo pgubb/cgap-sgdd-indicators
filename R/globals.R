@@ -31,9 +31,9 @@ COLUMN_DESCRIPTIONS <- c(
   "unit_of_analysis" = "Unit of analysis", 
   "measurement_type" = "Measurement type",       
   "gender_questions" = "Exploratory questions that can help guide analysis by gender",         
-  "formula1_volume" = "Formula (Volume)",        
-  "formula2_value" = "Formula (Value)",            
-  "formula_3_other" = "Formulas (Other)",          
+  "formula1" = "Formula 1",        
+  "formula2" = "Formula 2",            
+  "formula3" = "Formulas 3",          
   "main_mandate" = "Main mandate",           
   "secondary_mandates"  = "Other applicable mandates",      
   "main_objectives"  = "Main objectives",         
@@ -42,8 +42,6 @@ COLUMN_DESCRIPTIONS <- c(
   "secondary_sectors" = "Other applicable sectors",      
   "use_cases" = "Applicable use cases of indicator for FSAs",             
   "high_priority" = "High priority indicator for mandate", 
-  "costs_regsup" = "Estimated cost of collecting disaggregated data (based on example from National Bank of Rwanda)",             
-  "gender_priority_adjusted" =  "Indicator's gender prioritization adjusted by collection feasibility", 
   "in_imf" = "Indicator is also part of IMF-FAS",                  
   "in_gpfi" = "Indicator is also part of GPFI",                  
   "in_afi" = "Indicator is also part of AFI", 
@@ -66,5 +64,11 @@ BREAKDOWNS <- list(
   "Average size category" = c("AVERAGE SIZE FOR LOANS", "- By loan term brackets (eg nano, micro individual, micro MSMS, by amounts, etc)"),  
   "Average term category" = c("AVERAGE TERM FOR LOANS", "-A day or less (<= 1 day)", "A week or less (=<1w)", "30 days or less (=<1m)", "180 days or less (=<6m)", "A year or less (=<1y)"), 
   "Average interest rate category"= c(""), 
-  "Customer income category" = c("By income brackets (eg. monthly income)", "By government categorization (eg. GP2 beneficiary)", "By account balance brackets")
+  "Customer income category" = c("By income brackets (eg. monthly income)", "By government categorization (eg. GP2 beneficiary)", "By account balance brackets"), 
+  "Complaint issue category" = c("Fraudulent or unauthorized transactions", "Unfair treatment", "Unexpected fees", "Statement errors"), 
+  "Processing and resolution status" = c("Dismissed (rejected without being processed)", "Open", "Accepted - in process (no incidences)", "Accepted - escalated", "Resolved in favor of the customer", "Resolved against the customer"), 
+  "Complaint filing channel" = c("Phone", "Branch location", "Agent location (where applicable)", "Email", "Social media", "Text message or chatbot"), 
+  "Complaint closure assessment" = c("Unfavorable to the customer - no financial losses", "Unfavorable to the customer - with financial losses", "Favorable to the customer - no financial losses", "Favorable to the customer - financial losses"), 
+  "Complaint resolution time" = c("Less than 1 week", "2 weeks up to 1 month", "Between 1 and 3 months", "More than 3 months")
 )
+

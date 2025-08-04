@@ -4,6 +4,7 @@ library(readxl)
 library(bslib)
 library(kableExtra)
 library(janitor)
+library(writexl)
 
 # Helpers 
 
@@ -74,7 +75,7 @@ mandate_cols <- c(
 
 #filename <- "data/RGDD indicators_051225.xlsx"
 
-filename <- "data/RGDD indicators_051225.csv"
+filename <- "data/RGDD indicators_070125_final.csv"
 
 # STEP 1: Cleaning and columns
 
@@ -106,11 +107,12 @@ data %>% get_dupes(indicator_id)
 
 # Core columns ------
 core_columns <- data %>% 
-  select(indicator_id, indicator_name, indicator_description, indicator_long_description, unit_of_analysis, measurement_type, gender_questions, high_priority, formula1_volume, formula2_value, formula_3_other) %>% 
+  select(indicator_id, indicator_name, indicator_description, indicator_long_description, unit_of_analysis, measurement_type, gender_questions, high_priority, formula1, formula2, formula_3) %>% 
   mutate(
-    formula1_volume = ifelse(formula1_volume %in% c("No formula", "No formular", "NA") | is.na(formula1_volume), "Not applicable", formula1_volume), 
-    formula2_value = ifelse(formula2_value %in% c("No formula", "No formular", "NA") | is.na(formula2_value), "Not applicable", formula2_value), 
-  )
+    formula1 = ifelse(formula1 %in% c("No formula", "No formular", "NA") | is.na(formula1), "Not applicable", formula1), 
+    formula2 = ifelse(formula2 %in% c("No formula", "No formular", "NA") | is.na(formula2), "Not applicable", formula2), 
+  ) %>% 
+  rename(formula3 = formula_3)
 
 # Cleaning mandates-objectives -------
 
@@ -287,7 +289,12 @@ segment_map <- c(
   d10_average_size_bands          = "Average size category",
   d11_average_term_bands          = "Average term category",
   d12_average_interest_rate_bands = "Average interest rate category",
-  d13_customer_income             = "Customer income category"
+  d13_customer_income             = "Customer income category", 
+  d14_complaints_top_issues       = "Complaint issue category",                
+  d15_processing_and_resolution_status = "Processing and resolution status",
+  d16_channels_available_for_filling_complaints = "Complaint filing channel", 
+  d17_complaint_solutions = "Complaint closure assessment",                      
+  d18_complaints_resolution_time = "Complaint resolution time"  
 )
 
 # 2.  reshape + collapse  ---------------------------------
@@ -331,7 +338,10 @@ indicators <- core_columns %>%
 
 # Saving file 
 
-save(indicators, usecases, file = "data/indicators.RData")
+save(indicators, file = "data/indicators.RData")
 
+# Save as excel
+
+write_xlsx(indicators %>% select(-starts_with("in_")), "data/RGDD_indicators_08042025.xlsx")
 
   
