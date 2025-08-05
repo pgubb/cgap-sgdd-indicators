@@ -9,9 +9,9 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
   # Create organization logos
   img_tags <- div(
     style = "display: flex; justify-content: flex-start; gap: 10px; align-items: center; margin-top: 10px;",
-    if (indicator$in_imf == 1) span("IMF FAS", tags$img(src = "imf_logo.png", height = "44px")),
-    if (indicator$in_gpfi == 1) tags$img(src = "gpfi_logo.png", height = "44px"),
-    if (indicator$in_afi == 1) tags$img(src = "afi_logo.png", height = "44px")
+    if (!is.na(indicator$IMF)) tags$img(src = "imf_logo.png", height = "44px"),
+    if (!is.na(indicator$GPFI)) tags$img(src = "gpfi_logo.png", height = "44px"),
+    if (!is.na(indicator$AFI)) tags$img(src = "afi_logo.png", height = "44px")
   )
   
   accordion_panel(
@@ -29,6 +29,7 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
         }
       )
     ),
+    
     div(
       class = "card-body",
       style = "font-size: 14px;",
@@ -43,6 +44,8 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
       
       render_disagg_table_generalized(indicator, c("use_cases"), delimiter = ",", mapping = USE_CASES),
       
+      br(), 
+      p(strong("Equivalent indicators also in:"), img_tags),
       render_disagg_table_vertical(indicator, 
                                    columns = c("GPFI", "IMF",  "AFI", "WEF"),
                                    delimiter = ";"), 
