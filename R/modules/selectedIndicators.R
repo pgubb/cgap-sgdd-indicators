@@ -2,7 +2,7 @@
 
 
 # UI function
-function(id) {
+selectedIndicatorsUI <- function(id) {
   ns <- NS(id)
   
   tagList(
@@ -107,7 +107,11 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
               div(
                 style = "flex-grow: 1; padding: 10px;",
                 p(icon("scroll", lib = "font-awesome"), 
-                  strong("Primary mandate:"), ind$main_mandate), 
+                  strong("Main mandate:"), ind$main_mandate), 
+                p(icon("person", lib = "font-awesome"), 
+                  icon("person-dress", lib = "font-awesome"), 
+                  strong("Long description:"), 
+                  ind$indicator_long_description),
                 p(icon("person", lib = "font-awesome"), 
                   icon("person-dress", lib = "font-awesome"), 
                   strong("Example questions to get started on analysis of indicator by gender:"), 
@@ -306,8 +310,8 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
     <div class="summary">
         <h2>Summary</h2>
         <p><strong>Total indicators selected:</strong> ', nrow(indicators), '</p>
+        <p><strong>Main mandates covered:</strong> ', paste(unique(indicators$main_mandate), collapse = ", "), '</p>
         <p><strong>Sectors covered:</strong> ', paste(unique(indicators$main_sector), collapse = ", "), '</p>
-        <p><strong>Mandates covered:</strong> ', paste(unique(indicators$main_mandate), collapse = ", "), '</p>
     </div>
     
     <div class="indicators-list">

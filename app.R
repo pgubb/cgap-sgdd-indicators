@@ -98,6 +98,7 @@ server <- function(input, output, session) {
       main_objectives = character(),
       main_sector = character(),
       high_priority = character(),
+      indicator_long_description = character(), 
       gender_questions = character(), 
       comment = character(),
       stringsAsFactors = FALSE
@@ -233,7 +234,7 @@ server <- function(input, output, session) {
       # Update selected indicators dataframe
       values$selected_indicators <- indicators %>%
         filter(indicator_id %in% values$selected_codes) %>%
-        select(indicator_id, indicator_name, indicator_description, 
+        select(indicator_id, indicator_name, indicator_description, indicator_long_description, 
                main_mandate, main_objectives, main_sector, 
                high_priority, gender_questions)
     })

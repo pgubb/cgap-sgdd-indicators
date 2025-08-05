@@ -320,9 +320,7 @@ render_disagg_table_vertical_grouped <- function(indicator_row, columns,
   )
 }
 
-
-# Merged vertical table renderer with optional pre-formatting for specified columns
-# Updated render_disagg_table_vertical function in R/utils.R
+# Fixed render_disagg_table_vertical function in R/utils.R
 render_disagg_table_vertical <- function(indicator_row, columns, 
                                          delimiter = "!-", 
                                          descriptions = COLUMN_DESCRIPTIONS,
@@ -342,36 +340,50 @@ render_disagg_table_vertical <- function(indicator_row, columns,
     item <- trimws(item)
     if (item == "") return("")
     
+    # Store original item for processing
+    original_item <- item
+    
     # Check if this item contains any of the bold targets
     contains_bold_target <- any(sapply(bold_targets, function(target) {
       grepl(target, item, fixed = TRUE)
     }))
     
-    # If it contains a bold target, apply bold formatting
+    # If it contains a bold target, apply bold formatting AFTER escaping the content
     if (contains_bold_target) {
-      # Apply bold formatting to each target found in the item
-      formatted_item <- item
+      # First escape the entire content
+      escaped_item <- htmlEscape(item)
+      
+      # Then apply bold formatting to the escaped targets
+      formatted_item <- escaped_item
       for (target in bold_targets) {
-        if (grepl(target, formatted_item, fixed = TRUE)) {
+        if (grepl(target, original_item, fixed = TRUE)) {
+          # Escape the target for searching in the escaped text
+          escaped_target <- htmlEscape(target)
+          # Replace with bold version
           formatted_item <- gsub(
-            target, 
-            paste0("<strong>", target, "</strong>"), 
+            escaped_target, 
+            paste0("<strong>", escaped_target, "</strong>"), 
             formatted_item, 
             fixed = TRUE
           )
         }
       }
       item <- formatted_item
+    } else {
+      # For non-bold content, escape normally
+      item <- htmlEscape(item)
     }
     
-    # Check for URLs first
+    # Check for URLs in the original (unescaped) text
     url_pattern <- "(?i)\\bhttps?://[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+"
     
-    if (grepl(url_pattern, item, perl = TRUE)) {
-      url_matches <- str_extract_all(item, url_pattern)[[1]]
+    if (grepl(url_pattern, original_item, perl = TRUE)) {
+      url_matches <- str_extract_all(original_item, url_pattern)[[1]]
       
       # Create modified text with all URLs replaced
+      # Start with the current item (which may already have bold formatting)
       modified_text <- item
+      
       for (url in url_matches) {
         clean_url <- str_replace(url, "[\\.,;!?]+$", "")
         
@@ -388,7 +400,9 @@ render_disagg_table_vertical <- function(indicator_row, columns,
           '</a>'
         )
         
-        modified_text <- sub(url, link_button, modified_text, fixed = TRUE)
+        # Replace the escaped URL in the modified text
+        escaped_url <- htmlEscape(url)
+        modified_text <- sub(escaped_url, link_button, modified_text, fixed = TRUE)
       }
       
       if (use_pre) {
@@ -398,12 +412,12 @@ render_disagg_table_vertical <- function(indicator_row, columns,
       }
     }
     
-    # Check for tooltips
-    tooltip <- mapping[[item]]
+    # Check for tooltips using the original item
+    tooltip <- mapping[[original_item]]
     if (!is.null(tooltip)) {
       tooltip_html <- paste0(
         '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-        if (contains_bold_target) item else htmlEscape(item),  # Use raw item if it contains bold formatting
+        item,  # Use the already processed item (escaped and potentially bolded)
         ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
         '<div class="my-tooltiptext">',
         paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
@@ -423,18 +437,14 @@ render_disagg_table_vertical <- function(indicator_row, columns,
     
     # Default case
     if (use_pre) {
-      content_to_display <- if (contains_bold_target) item else htmlEscape(item)
       return(HTML(paste0(
         '<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;">',
-        content_to_display,
+        item,
         '</pre>'
       )))
     } else {
-      if (contains_bold_target) {
-        return(HTML(item))  # Return as HTML to preserve bold formatting
-      } else {
-        return(htmlEscape(item))  # Regular HTML escaping for non-bold content
-      }
+      # Return as HTML since we've already handled escaping properly
+      return(HTML(item))
     }
   }
   
@@ -506,5 +516,3 @@ render_disagg_table_vertical <- function(indicator_row, columns,
     tags$tbody(rows)
   )
 }
-
-
