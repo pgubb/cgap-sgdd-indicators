@@ -316,6 +316,22 @@ breakdowns <- breakdowns %>%                                   # your data
               values_fill = "")                    # empty string if none
 
 
+# Preparing sources 
+
+sources <- read_csv("data/Official indicator's sources(CGAP indicators).csv") %>% 
+  clean_names() %>% 
+  rename(source_indicators = indicator2, 
+         source_organization = organization) %>% 
+  mutate(source_organization = ifelse(str_detect(source_organization, "IMF"), "IMF", source_organization)) %>%
+  select(indicator_id, starts_with("source_")) %>% 
+  group_by(indicator_id, source_organization) %>% 
+  summarise(source_indicators = paste(source_indicators, collapse = "; ")) %>% 
+  mutate(source_indicators = ifelse(source_indicators == "NA", NA, source_indicators)) %>% 
+  filter(!is.na(source_organization)) %>% 
+  pivot_wider(names_from = source_organization, values_from = source_indicators) %>% 
+  mutate(indicator_id = as.character(indicator_id))
+
+  
 
 # Combining all components together
 indicators <- core_columns %>% 
@@ -324,7 +340,8 @@ indicators <- core_columns %>%
                 left_join(use_cases, by = "indicator_id") %>% 
                 #left_join(gender_priority, by = "indicator_id") %>% 
                 left_join(references, by = "indicator_id") %>% 
-                left_join(breakdowns, by = "indicator_id") 
+                left_join(breakdowns, by = "indicator_id") %>% 
+                left_join(sources)
   
 # Saving file 
 
@@ -342,6 +359,6 @@ save(indicators, file = "data/indicators.RData")
 
 # Save as excel
 
-write_xlsx(indicators %>% select(-starts_with("in_")), "data/RGDD_indicators_08042025.xlsx")
+write_xlsx(indicators %>% select(-starts_with("in_", "source")), "data/RGDD_indicators_08042025.xlsx")
 
   

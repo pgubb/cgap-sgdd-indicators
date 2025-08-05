@@ -1,4 +1,4 @@
-# R/modules/filterPanel.R - Module for filter panel
+# R/modules/filterPanel.R - Module for filter panel with priority switch
 
 # UI function
 filterPanelUI <- function(id) {
@@ -72,6 +72,20 @@ filterPanelUI <- function(id) {
             label = "Include secondary sectors",
             value = FALSE
           )
+        )
+      )
+    ),
+    
+    # Priority filter switch (new addition)
+    div(
+      style = "margin-top: 15px; padding: 15px; background-color: #fff3cd; border-radius: 5px; border: 1px solid #ffeaa7;",
+      div(
+        style = "display: flex; align-items: center; gap: 10px;",
+        tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
+        input_switch(
+          ns("priority_only"), 
+          label = "Show only high priority indicators",
+          value = FALSE
         )
       )
     ),
@@ -178,6 +192,9 @@ filterPanelServer <- function(id, indicators_data) {
       updateInputSwitch(session, "include_secondary_mandates", value = FALSE)
       updateInputSwitch(session, "include_secondary_objectives", value = FALSE)
       updateInputSwitch(session, "include_secondary_sectors", value = FALSE)
+      
+      # Reset priority filter
+      updateInputSwitch(session, "priority_only", value = FALSE)
     })
     
     # Return reactive with filtered data
@@ -281,6 +298,12 @@ filterPanelServer <- function(id, indicators_data) {
           !is.na(use_cases) & 
             str_detect(use_cases, regex(pattern, ignore_case = TRUE))
         )
+      
+      # Priority filter (new addition)
+      if (input$priority_only) {
+        filtered <- filtered %>%
+          filter(high_priority == "High priority")
+      }
       
       # Apply search filter if not empty
       if (!is.null(input$search) && input$search != "") {

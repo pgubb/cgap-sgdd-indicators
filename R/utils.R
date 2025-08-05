@@ -32,6 +32,7 @@ htmlEscape <- function(text) {
   text
 }
 
+
 # Generate CSS for sector colors
 generate_sector_styles <- function(sector_colors) {
   paste(

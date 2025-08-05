@@ -1,38 +1,32 @@
 # R/modules/selectedIndicators.R - Module for selected indicators
 
-# Helper function for HTML escaping
-htmlEscape <- function(text) {
-  text <- as.character(text)
-  text <- gsub("&", "&amp;", text, fixed = TRUE)
-  text <- gsub("<", "&lt;", text, fixed = TRUE)
-  text <- gsub(">", "&gt;", text, fixed = TRUE)
-  text <- gsub("\"", "&quot;", text, fixed = TRUE)
-  text <- gsub("'", "&#039;", text, fixed = TRUE)
-  text
-}
 
 # UI function
-selectedIndicatorsUI <- function(id) {
+function(id) {
   ns <- NS(id)
   
   tagList(
     div(
-      class = "d-flex align-items-center mb-2",
-
-      uiOutput(ns("count_badge")),
-
+      class = "d-flex justify-content-between align-items-center mb-3",
+      style = "width: 100%; min-height: 40px;",
+      
+      # Left side - count badge
       div(
-        class = "d-flex gap-2 ms-auto",
-        uiOutput(ns("download_csv_button")),
-        uiOutput(ns("download_pdf_button"))
-      )
+        class = "d-flex align-items-center",
+        uiOutput(ns("count_badge"))
+      ),
+      
+      # Right side - buttons (rendered together)
+      uiOutput(ns("action_buttons"))
     ),
     
     uiOutput(ns("indicators"))
   )
 }
 
-# Server function
+
+# Updated server function for selectedIndicators with combined button rendering
+
 selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -56,24 +50,24 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
       }
     })
     
-    # Download CSV button
-    output$download_csv_button <- renderUI({
+    # Combined action buttons (recommended approach)
+    output$action_buttons <- renderUI({
       selected <- selected_indicators()
+      
       if (!is.null(selected) && nrow(selected) > 0) {
-        downloadButton(ns("download"), 
-                       "Download CSV", 
-                       class = "btn btn-success btn-sm")
-      }
-    })
-    
-    # PDF button
-    output$download_pdf_button <- renderUI({
-      selected <- selected_indicators()
-      if (!is.null(selected) && nrow(selected) > 0) {
-        actionButton(ns("generate_pdf"), 
-                     "Generate PDF Report", 
-                     icon = icon("file-pdf"),
-                     class = "btn btn-info btn-sm")
+        div(
+          class = "d-flex gap-2",
+          downloadButton(ns("download"), 
+                         "Download CSV", 
+                         class = "btn btn-success btn-sm"),
+          actionButton(ns("generate_pdf"), 
+                       "Generate PDF Report", 
+                       icon = icon("file-pdf"),
+                       class = "btn btn-info btn-sm")
+        )
+      } else {
+        # Return empty div to maintain layout
+        div(style = "height: 1px;")
       }
     })
     
@@ -366,19 +360,4 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
 </html>')
   
 }# R/modules/selectedIndicators.R - Module for selected indicators
-
-# UI function
-selectedIndicatorsUI <- function(id) {
-  ns <- NS(id)
-  
-  tagList(
-    div(
-      style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;",
-      uiOutput(ns("count_badge")),
-      uiOutput(ns("download_csv_button")), 
-      uiOutput(ns("download_pdf_button"))
-    ),
-    uiOutput(ns("indicators"))
-  )
-}
 
