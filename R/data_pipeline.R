@@ -100,7 +100,7 @@ data <- read_csv(filename) %>%
     high_priority = ifelse(high_priority == "yes", "High priority", "Other"), 
     high_priority = ifelse(is.na(high_priority), "Other", high_priority), 
     indicator_long_description = add_dash(indicator_long_description)
-  )
+  ) %>% select(-starts_with("in_"))
 
 # Checking for duplicated indicators
 data %>% get_dupes(indicator_id)
@@ -318,7 +318,7 @@ breakdowns <- breakdowns %>%                                   # your data
 
 # Preparing sources 
 
-sources <- read_csv("data/Official indicator's sources(CGAP indicators).csv") %>% 
+sources <- read_csv("NOT_PUBLIC/Official indicator's sources(CGAP indicators).csv") %>% 
   clean_names() %>% 
   rename(source_indicators = indicator2, 
          source_organization = organization) %>% 
@@ -329,7 +329,8 @@ sources <- read_csv("data/Official indicator's sources(CGAP indicators).csv") %>
   mutate(source_indicators = ifelse(source_indicators == "NA", NA, source_indicators)) %>% 
   filter(!is.na(source_organization)) %>% 
   pivot_wider(names_from = source_organization, values_from = source_indicators) %>% 
-  mutate(indicator_id = as.character(indicator_id))
+  mutate(indicator_id = as.character(indicator_id)) %>% 
+  mutate(sources_any = 1)
 
   
 
@@ -359,6 +360,6 @@ save(indicators, file = "data/indicators.RData")
 
 # Save as excel
 
-write_xlsx(indicators %>% select(-starts_with("in_", "source")), "data/RGDD_indicators_08042025.xlsx")
+write_xlsx(indicators, "NOT_PUBLIC/RGDD_indicators_08062025.xlsx")
 
   
