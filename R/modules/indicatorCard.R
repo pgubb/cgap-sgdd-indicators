@@ -67,9 +67,7 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
     )
   )
 }
-
-# Add JavaScript for custom message handling
-# Fixed indicatorCardJS function in R/modules/indicatorCard.R
+# Original working indicatorCardJS function from R/modules/indicatorCard.R
 
 indicatorCardJS <- function() {
   tags$script(HTML("
@@ -172,124 +170,40 @@ indicatorCardJS <- function() {
             `;
         }
         
-        // Improved mandate link highlighting with better error handling
+        // Highlight active mandate link on scroll
         $(document).ready(function() {
             // Show initial loading spinner
             $('#loading_spinner').show();
             
-            var scrollTimeout;
-            var isScrolling = false;
-            
             function highlightActiveMandate() {
-                // Only proceed if we're on the correct tab and have mandate links
-                if ($('.mandate-link').length === 0) {
-                    return;
-                }
-                
-                var scrollPos = $(window).scrollTop() + 150; // Increased offset for better detection
-                var foundActive = false;
+                var scrollPos = $(window).scrollTop() + 100;
                 
                 $('.mandate-link').each(function() {
                     var currLink = $(this);
-                    var href = currLink.attr('href');
+                    var refElement = $(currLink.attr('href'));
                     
-                    // Ensure we have a valid href
-                    if (!href || !href.startsWith('#')) {
-                        return;
-                    }
-                    
-                    var refElement = $(href);
-                    
-                    // Check if element exists and is visible
-                    if (refElement.length && refElement.is(':visible')) {
-                        var elementTop = refElement.offset().top;
-                        var elementBottom = elementTop + refElement.outerHeight();
-                        
-                        // Check if element is in viewport
-                        if (elementTop <= scrollPos && elementBottom > scrollPos) {
-                            if (!foundActive) {
-                                $('.mandate-link').removeClass('active');
-                                currLink.addClass('active');
-                                foundActive = true;
-                            }
-                        }
+                    if (refElement.length && refElement.position() && 
+                        refElement.position().top <= scrollPos &&
+                        refElement.position().top + refElement.height() > scrollPos) {
+                        $('.mandate-link').removeClass('active');
+                        currLink.addClass('active');
                     }
                 });
-                
-                // If no element is found in viewport, remove all active states
-                if (!foundActive) {
-                    $('.mandate-link').removeClass('active');
-                }
             }
             
-            // Debounced scroll handler to improve performance
-            function debouncedHighlight() {
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
-                }
-                
-                scrollTimeout = setTimeout(function() {
-                    if (!isScrolling) {
-                        return;
-                    }
-                    highlightActiveMandate();
-                    isScrolling = false;
-                }, 100); // Reduced debounce time for more responsive highlighting
-            }
+            // Highlight on scroll
+            $(window).scroll(highlightActiveMandate);
             
-            // Scroll event with throttling
-            $(window).on('scroll', function() {
-                isScrolling = true;
-                debouncedHighlight();
-            });
-            
-            // Reset active states when content changes
-            $(document).on('shiny:value', function(event) {
-                if (event.target.id.includes('indicator_container')) {
-                    setTimeout(function() {
-                        $('.mandate-link').removeClass('active');
-                        highlightActiveMandate();
-                    }, 500);
-                }
-            });
-            
-            // Manual highlight on load (with delay to ensure content is rendered)
-            setTimeout(function() {
-                $('.mandate-link').removeClass('active');
-                highlightActiveMandate();
-            }, 1000);
+            // Highlight on load
+            highlightActiveMandate();
             
             // Smooth scroll when clicking mandate links
-            $(document).off('click', '.mandate-link'); // Remove any existing handlers
-            $(document).on('click', '.mandate-link', function(e) {
+            $('.mandate-link').on('click', function(e) {
                 e.preventDefault();
-                
-                // Remove all active states first
-                $('.mandate-link').removeClass('active');
-                
                 var target = $(this).attr('href');
-                var targetElement = $(target);
-                
-                if (targetElement.length) {
-                    // Add active state to clicked link
-                    $(this).addClass('active');
-                    
-                    $('html, body').animate({
-                        scrollTop: targetElement.offset().top - 80
-                    }, 500, function() {
-                        // Ensure the clicked link remains active after scroll
-                        $('.mandate-link').removeClass('active');
-                        $('a[href=\"' + target + '\"]').addClass('active');
-                    });
-                }
-            });
-            
-            // Clean up on page unload
-            $(window).on('beforeunload', function() {
-                $('.mandate-link').removeClass('active');
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
-                }
+                $('html, body').animate({
+                    scrollTop: $(target).offset().top - 80
+                }, 500);
             });
         });
     "))
