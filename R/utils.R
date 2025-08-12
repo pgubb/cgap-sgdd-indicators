@@ -321,6 +321,7 @@ render_disagg_table_vertical_grouped <- function(indicator_row, columns,
 }
 
 # Fixed render_disagg_table_vertical function in R/utils.R
+# Updated render_disagg_table_vertical function in R/utils.R
 render_disagg_table_vertical <- function(indicator_row, columns, 
                                          delimiter = "!-", 
                                          descriptions = COLUMN_DESCRIPTIONS,
@@ -334,6 +335,23 @@ render_disagg_table_vertical <- function(indicator_row, columns,
     "Limitations and considerations:",
     "Derivable indicators:"
   )
+  
+  # Helper function to check if a value has actual content
+  has_content <- function(val) {
+    if (is.na(val) || is.null(val) || val == "") {
+      return(FALSE)
+    }
+    
+    # If there's a delimiter, check if there are any non-empty items after splitting
+    if (!is.null(delimiter) && delimiter != "") {
+      items <- unlist(strsplit(val, delimiter))
+      items <- trimws(items)
+      items <- items[items != ""]
+      return(length(items) > 0)
+    }
+    
+    return(TRUE)
+  }
   
   # Helper function to render items with tooltips and bold formatting
   render_item <- function(item, use_pre = FALSE) {
@@ -448,53 +466,50 @@ render_disagg_table_vertical <- function(indicator_row, columns,
     }
   }
   
-  # Create rows for each column
-  rows <- lapply(columns, function(col) {
+  # Filter columns to only include those with content
+  columns_with_content <- columns[sapply(columns, function(col) {
+    val <- indicator_row[[col]]
+    has_content(val)
+  })]
+  
+  # If no columns have content, return empty
+  if (length(columns_with_content) == 0) {
+    return(NULL)
+  }
+  
+  # Create rows only for columns with content
+  rows <- lapply(columns_with_content, function(col) {
     val <- indicator_row[[col]]
     use_pre <- col %in% pre_columns
     
-    # Handle NA, NULL, or empty values
-    if (is.na(val) || is.null(val) || val == "") {
-      content <- if (use_pre) {
-        HTML('<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;"></pre>')
-      } else {
-        ""
-      }
+    # We already know this column has content from the filter above
+    # Split by delimiter if provided
+    items <- unlist(strsplit(val, delimiter))
+    items <- trimws(items)
+    items <- items[items != ""]
+    
+    if (length(items) == 1) {
+      content <- render_item(items[1], use_pre)
     } else {
-      # Split by delimiter if provided
-      items <- unlist(strsplit(val, delimiter))
-      items <- trimws(items)
-      items <- items[items != ""]
-      
-      if (length(items) == 0) {
-        content <- if (use_pre) {
-          HTML('<pre style="margin: 0; white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 8px; border-radius: 4px;"></pre>')
-        } else {
-          ""
-        }
-      } else if (length(items) == 1) {
-        content <- render_item(items[1], use_pre)
+      # Multiple items
+      if (use_pre) {
+        # Multiple pre blocks
+        content <- tags$div(
+          lapply(seq_along(items), function(i) {
+            tags$div(
+              style = if (i < length(items)) "margin-bottom: 8px;" else "",
+              render_item(items[i], use_pre)
+            )
+          })
+        )
       } else {
-        # Multiple items
-        if (use_pre) {
-          # Multiple pre blocks
-          content <- tags$div(
-            lapply(seq_along(items), function(i) {
-              tags$div(
-                style = if (i < length(items)) "margin-bottom: 8px;" else "",
-                render_item(items[i], use_pre)
-              )
-            })
-          )
-        } else {
-          # List format for regular items
-          content <- tags$ul(
-            style = "margin: 0; padding-left: 20px;",
-            lapply(items, function(item) {
-              tags$li(render_item(item, use_pre))
-            })
-          )
-        }
+        # List format for regular items
+        content <- tags$ul(
+          style = "margin: 0; padding-left: 20px;",
+          lapply(items, function(item) {
+            tags$li(render_item(item, use_pre))
+          })
+        )
       }
     }
     
@@ -510,9 +525,13 @@ render_disagg_table_vertical <- function(indicator_row, columns,
     )
   })
   
-  # Return the table
-  tags$table(
-    style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
-    tags$tbody(rows)
-  )
+  # Return the table only if there are rows to display
+  if (length(rows) > 0) {
+    tags$table(
+      style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
+      tags$tbody(rows)
+    )
+  } else {
+    return(NULL)
+  }
 }

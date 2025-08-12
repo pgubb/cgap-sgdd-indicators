@@ -11,8 +11,17 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
     style = "display: flex; justify-content: flex-start; gap: 10px; align-items: center; margin-top: 10px;",
     if (!is.na(indicator$IMF)) tags$img(src = "imf_logo.png", height = "44px"),
     if (!is.na(indicator$GPFI)) tags$img(src = "gpfi_logo.png", height = "44px"),
-    if (!is.na(indicator$AFI)) tags$img(src = "afi_logo.png", height = "44px")
+    if (!is.na(indicator$AFI)) tags$img(src = "afi_logo.png", height = "44px"), 
+    if (!is.na(indicator$WEF)) tags$img(src = "wef_logo.png", height = "44px")
   )
+  
+  # Check if sources_any field exists and has content
+  show_sources <- if ("sources_any" %in% names(indicator)) {
+    !is.na(indicator$sources_any) && !is.null(indicator$sources_any) && indicator$sources_any != ""
+  } else {
+    # Fallback: check if any of the individual source indicators are 1
+    (indicator$IMF == 1) || (indicator$GPFI == 1) || (indicator$AFI == 1) || (indicator$WEF == 1)
+  }
   
   accordion_panel(
     value = indicator$indicator_id,
@@ -44,8 +53,14 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
       
       render_disagg_table_generalized(indicator, c("use_cases"), delimiter = ",", mapping = USE_CASES),
       
-      br(), 
-      p(strong("Equivalent or related indicators can also be found from the following sources:"), img_tags),
+      # Conditional rendering of sources section
+      if (show_sources) {
+        tagList(
+          br(),
+          p(strong("Equivalent or related indicators can also be found from the following sources:"), img_tags)
+        )
+      },
+      
       render_disagg_table_vertical(indicator, columns = c("GPFI", "IMF",  "AFI", "WEF"), delimiter = ";"),
       
       

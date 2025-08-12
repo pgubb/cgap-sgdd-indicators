@@ -61,7 +61,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                          "Download CSV", 
                          class = "btn btn-success btn-sm"),
           actionButton(ns("generate_pdf"), 
-                       "Generate PDF Report", 
+                       "Generate PDF", 
                        icon = icon("file-pdf"),
                        class = "btn btn-info btn-sm")
         )
@@ -147,8 +147,8 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
       
       # Show modal with print-friendly report
       showModal(modalDialog(
-        title = "PDF Report - Use Print to Save as PDF",
-        size = "xl",
+        title = "",
+        size = "l",
         easyClose = TRUE,
         footer = tagList(
           modalButton("Close"),
@@ -209,11 +209,12 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
         }
         body {
             font-family: Arial, sans-serif;
+            font-size: 13px; 
             line-height: 1.6;
             color: #333;
         }
         .header {
-            text-align: center;
+            text-align: left;
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid #007bff;
@@ -303,19 +304,18 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
 </head>
 <body>
     <div class="header">
-        <h1>RGDD Selected Indicators Report</h1>
+        <h2>RGDD Selected Indicators Report</h2>
         <div class="date">Generated on: ', Sys.Date(), '</div>
     </div>
     
     <div class="summary">
-        <h2>Summary</h2>
         <p><strong>Total indicators selected:</strong> ', nrow(indicators), '</p>
         <p><strong>Main mandates covered:</strong> ', paste(unique(indicators$main_mandate), collapse = ", "), '</p>
         <p><strong>Sectors covered:</strong> ', paste(unique(indicators$main_sector), collapse = ", "), '</p>
     </div>
     
     <div class="indicators-list">
-        <h2>Selected Indicators</h2>',
+        <h4>Selected  indicators</h4>',
          paste0(lapply(1:nrow(indicators), function(i) {
            ind <- indicators[i, ]
            comment <- comments[i]
@@ -328,7 +328,7 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                 <span class="objective-badge">', htmlEscape(ind$main_objectives), '</span>
                 <span class="sector-badge" style="background-color: ', sector_color, ';">', 
                   htmlEscape(ind$main_sector), '</span>',
-                  if (ind$high_priority == "High priority") '<span class="priority-star">★ Priority</span>' else '',
+                  if (ind$high_priority == "High priority") '<span class="priority-star">★</span> Priority' else '',
                   '</div>
             
             <div class="field">
@@ -338,6 +338,11 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
             <div class="field">
                 <span class="field-label">Description:</span><br>
                 ', htmlEscape(ind$indicator_description), '
+            </div>
+            
+               <div class="field">
+                <span class="field-label">Long description:</span><br>
+                ', htmlEscape(ind$indicator_long_description), '
             </div>
             
             <div class="field">
