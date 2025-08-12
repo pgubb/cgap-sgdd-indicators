@@ -273,15 +273,13 @@ html {
 }
 
 .mandate-sidebar a:hover {
-    background-color: #e9ecef;
-    color: #0056b3;
-    transform: translateX(5px);
+    background-color: rgba(0, 123, 255, 0.15) !important;
+    border-left: 4px solid #007bff !important;
+    padding-left: 11px !important;
+    color: #0056b3 !important;
+   transform: translateX(5px);
 }
 
-.mandate-sidebar a.active {
-    background-color: #007bff;
-    color: white;
-}
 
 /* Link button styles */
 .link-button {
@@ -336,19 +334,6 @@ html {
     font-size: 12px;
 }
 
-/* Reduce the intensity of the active state to make persistent highlighting less jarring */
-.mandate-link.active {
-    background-color: rgba(0, 123, 255, 0.15) !important;
-    border-left: 4px solid #007bff !important;
-    padding-left: 11px !important;
-    color: #0056b3 !important;
-}
-
-/* Keep the full highlight on hover for better UX */
-.mandate-link.active:hover {
-    background-color: #007bff !important;
-    color: white !important;
-}
 
 /* PDF report styles */
 @media print {
