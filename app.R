@@ -48,7 +48,8 @@ ui <- page_navbar(
         position = "right",
         width = 300,
         class = "mandate-sidebar",
-        h4("Primary mandate", style = "margin-bottom: 20px;"),
+        h5("Quick navigation", style = "margin-bottom: 0px;"),
+        "Indicators grouped by primary mandate",
         uiOutput("mandate_links")
       ),
       # Main content area

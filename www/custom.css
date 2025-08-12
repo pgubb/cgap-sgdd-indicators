@@ -254,6 +254,7 @@ html {
 
 /* Mandate sidebar styling */
 .mandate-sidebar {
+    font-size: 14px;
     background-color: #f8f9fa;
     height: calc(100vh - 100px);
     overflow-y: auto;
@@ -263,7 +264,7 @@ html {
 
 .mandate-sidebar a {
     display: block;
-    padding: 8px 15px;
+    padding: 8px 12px;
     margin: 2px 0;
     color: #333;
     text-decoration: none;
