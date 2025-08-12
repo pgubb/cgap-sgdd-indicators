@@ -45,13 +45,9 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
       render_disagg_table_generalized(indicator, c("use_cases"), delimiter = ",", mapping = USE_CASES),
       
       br(), 
-      p(strong("Equivalent indicators also in:"), img_tags),
-      render_disagg_table_vertical(indicator, 
-                                   columns = c("GPFI", "IMF",  "AFI", "WEF"),
-                                   delimiter = ";"), 
-                                   
-      #br(),
-      #p(strong("Equivalent indicators also in:"), img_tags),
+      p(strong("Equivalent or related indicators can also be found from the following sources:"), img_tags),
+      render_disagg_table_vertical(indicator, columns = c("GPFI", "IMF",  "AFI", "WEF"), delimiter = ";"),
+      
       
       # Action button
       div(
