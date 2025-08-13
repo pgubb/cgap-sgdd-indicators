@@ -17,14 +17,26 @@ filterPanelUI <- function(id) {
           value = FALSE
         ), 
         #tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
-    ),
+      ),
     
     accordion(
-      open = c("Mandates"),
+      open = c("mandates"),
       
-      # Mandates filter with toggle and tooltip
+      # Mandates filter with toggle and CSS tooltip
       accordion_panel(
-        HTML('Mandates <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter indicators by their primary regulatory mandate. Toggle to include secondary mandates in the search."></i>'), 
+        value = "mandates",
+        title = div(
+          style = "display: inline-flex; align-items: center; gap: 8px;",
+          "Mandates",
+          div(
+            class = "my-tooltip",
+            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
+            div(
+              class = "my-tooltiptext",
+              "Filter indicators by their primary regulatory mandate. Toggle below to include secondary mandates in the search."
+            )
+          )
+        ), 
         icon = icon("scroll"),
         div(
           class = "modern-checkbox-group",
@@ -40,9 +52,21 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Objectives filter with toggle and tooltip
+      # Objectives filter with toggle and CSS tooltip
       accordion_panel(
-        HTML('Objectives <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by specific regulatory objectives within each mandate (e.g., Access, Usage, Consumer protection). Toggle to include secondary objectives."></i>'), 
+        value = "objectives",
+        title = div(
+          style = "display: inline-flex; align-items: center; gap: 8px;",
+          "Objectives",
+          div(
+            class = "my-tooltip",
+            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
+            div(
+              class = "my-tooltiptext",
+              "Filter by specific regulatory objectives within each mandate (e.g., Access, Usage, Consumer protection). Toggle below to include secondary objectives."
+            )
+          )
+        ), 
         icon = icon("bullseye"),
         div(
           class = "modern-checkbox-group",
@@ -58,9 +82,21 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Use cases filter with tooltip (no toggle)
+      # Use cases filter with CSS tooltip (no toggle)
       accordion_panel(
-        HTML('Use cases <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by practical applications showing how these indicators can be used to address specific regulatory challenges and policy goals."></i>'), 
+        value = "use_cases",
+        title = div(
+          style = "display: inline-flex; align-items: center; gap: 8px;",
+          "Use cases",
+          div(
+            class = "my-tooltip",
+            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
+            div(
+              class = "my-tooltiptext",
+              "Filter by practical applications showing how these indicators can be used to address specific regulatory challenges and policy goals."
+            )
+          )
+        ), 
         icon = icon("sliders"),
         div(
           class = "modern-checkbox-group",
@@ -68,9 +104,21 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Sectors filter with toggle and tooltip
+      # Sectors filter with toggle and CSS tooltip
       accordion_panel(
-        HTML('Sectors <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by financial sector (Payments, Credit, Insurance, etc.). Toggle to include indicators that apply to multiple sectors."></i>'), 
+        value = "sectors",
+        title = div(
+          style = "display: inline-flex; align-items: center; gap: 8px;",
+          "Sectors",
+          div(
+            class = "my-tooltip",
+            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
+            div(
+              class = "my-tooltiptext",
+              "Filter by financial sector (Payments, Credit, Insurance, etc.). Toggle below to include indicators that apply to multiple sectors."
+            )
+          )
+        ), 
         icon = icon("chart-pie"),
         div(
           class = "modern-checkbox-group sector-checkboxes",

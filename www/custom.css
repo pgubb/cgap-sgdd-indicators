@@ -131,7 +131,7 @@ html {
 
 .my-tooltip .my-tooltiptext {
     visibility: hidden;
-    width: 400px;
+    width: 350px;
     background-color: white;
     color: black;
     text-align: left;
