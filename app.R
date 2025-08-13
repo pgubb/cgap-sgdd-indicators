@@ -50,7 +50,7 @@ ui <- page_navbar(
         width = 300,
         class = "mandate-sidebar",
         h5("Quick navigation", style = "margin-bottom: 0px;"),
-        "Indicators grouped by primary mandate",
+        "Jump to indicators grouped by their primary mandate",
         uiOutput("mandate_links")
       ),
       # Main content area

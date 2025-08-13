@@ -187,13 +187,20 @@ mandates <- mandates %>%
     main_objectives_3 = str_trim(str_to_title(main_objectives_3))
   ) %>% 
   unite("main_objectives", starts_with("main_objectives"), na.rm = TRUE, sep = ", ") %>% 
-  mutate(main_objectives = ifelse(main_objectives == "Currency management cash handling", "Currency management & cash handling", main_objectives)) %>%
+  mutate(main_objectives = str_replace_all(main_objectives, regex("Liquidity Risk", ignore_case = TRUE), "Liquidity risk")) %>% 
+  mutate(main_objectives = ifelse(main_objectives %in% c("Currency management cash handling", "Currency management & cash handling"), "Currency management and cash handling", main_objectives)) %>%
+  mutate(main_objectives = ifelse(main_objectives == "Outcomes, Uptake (Account Ownership)", "Outcomes, Uptake (account ownership)", main_objectives)) %>%
   mutate(secondary_objectives = str_replace(secondary_objectives, "All microprudential objectives", paste(MND_OBJ[["Microprudential supervision"]], collapse = ", "))) %>% 
   mutate(secondary_objectives = ifelse(str_detect(secondary_objectives, "All"), paste(unlist(MND_OBJ), collapse = ", "), secondary_objectives)) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("Currency management & cash handling", ignore_case = TRUE), "Currency management and cash handling")) %>% 
   mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("safety", ignore_case = TRUE), "Safety")) %>% 
   mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("Aml/cft", ignore_case = TRUE), "AML/CFT")) %>% 
   mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("access", ignore_case = TRUE), "Access")) %>% 
   mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("operational", ignore_case = TRUE), "Operational")) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("outcomes", ignore_case = TRUE), "Outcomes")) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("soundness", ignore_case = TRUE), "Soundness")) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("credit risk", ignore_case = TRUE), "Credit risk")) %>% 
+  mutate(secondary_objectives = str_replace_all(secondary_objectives, regex("Liquidity Risk", ignore_case = TRUE), "Liquidity risk")) %>% 
   mutate(main_objectives = str_replace_all(main_objectives, regex("Treatment", ignore_case = TRUE), "treatment")) %>% 
   mutate(secondary_objectives = ifelse(indicator_id == "107", str_replace_all(secondary_objectives, regex("Data privacy", ignore_case = TRUE), "Data privacy and protection"), secondary_objectives)) %>% 
   #mutate(secondary_objectives = ifelse(secondary_objectives == "", NA, secondary_objectives)) %>%

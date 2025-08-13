@@ -8,6 +8,17 @@ filterPanelUI <- function(id) {
     textInput(ns("search"), "Search", 
               placeholder = "Search by indicator name, sector, use-case..."),
     
+    # Priority filter switch (new addition)
+      div(
+        style = "display: flex; align-items: center; gap: 2px;",
+        input_switch(
+          ns("priority_only"), 
+          label = "CGAP priority indicators",
+          value = FALSE
+        ), 
+        #tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
+    ),
+    
     accordion(
       open = c("Mandates"),
       
@@ -72,20 +83,6 @@ filterPanelUI <- function(id) {
             label = "Include secondary sectors",
             value = FALSE
           )
-        )
-      )
-    ),
-    
-    # Priority filter switch (new addition)
-    div(
-      style = "margin-top: 15px; padding: 15px; background-color: #fff3cd; border-radius: 5px; border: 1px solid #ffeaa7;",
-      div(
-        style = "display: flex; align-items: center; gap: 10px;",
-        tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
-        input_switch(
-          ns("priority_only"), 
-          label = "Show only high priority indicators",
-          value = FALSE
         )
       )
     ),
