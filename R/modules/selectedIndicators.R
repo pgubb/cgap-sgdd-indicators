@@ -1,7 +1,6 @@
-# R/modules/selectedIndicators.R - Module for selected indicators
+# Updated selectedIndicators module with direct PDF download
 
-
-# UI function
+# UI function (replace the existing one)
 selectedIndicatorsUI <- function(id) {
   ns <- NS(id)
   
@@ -17,16 +16,17 @@ selectedIndicatorsUI <- function(id) {
       ),
       
       # Right side - buttons (rendered together)
-      uiOutput(ns("action_buttons"))
+      div(
+        class = "d-flex gap-2",
+        uiOutput(ns("action_buttons"))
+      )
     ),
     
     uiOutput(ns("indicators"))
   )
 }
 
-
-# Updated server function for selectedIndicators with combined button rendering
-
+# Updated server function with direct PDF download
 selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -50,24 +50,23 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
       }
     })
     
-    # Combined action buttons (recommended approach)
+    # Combined action buttons with PDF in new tab
     output$action_buttons <- renderUI({
       selected <- selected_indicators()
       
       if (!is.null(selected) && nrow(selected) > 0) {
-        div(
-          class = "d-flex gap-2",
-          downloadButton(ns("download"), 
+        tagList(
+          downloadButton(ns("download_csv"), 
                          "Download CSV", 
                          class = "btn btn-success btn-sm"),
-          actionButton(ns("generate_pdf"), 
-                       "Generate PDF", 
-                       icon = icon("file-pdf"),
+          actionButton(ns("open_pdf"), 
+                       "Open PDF Report", 
+                       icon = icon("external-link-alt"),
                        class = "btn btn-info btn-sm")
         )
       } else {
-        # Return empty div to maintain layout
-        div(style = "height: 1px;")
+        # Return NULL when no indicators
+        NULL
       }
     })
     
@@ -107,11 +106,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
               div(
                 style = "flex-grow: 1; padding: 10px;",
                 p(icon("scroll", lib = "font-awesome"), 
-                  strong("Main mandate:"), ind$main_mandate), 
-                p(icon("person", lib = "font-awesome"), 
-                  icon("person-dress", lib = "font-awesome"), 
-                  strong("Long description:"), 
-                  ind$indicator_long_description),
+                  strong("Primary mandate:"), ind$main_mandate), 
                 p(icon("person", lib = "font-awesome"), 
                   icon("person-dress", lib = "font-awesome"), 
                   strong("Example questions to get started on analysis of indicator by gender:"), 
@@ -133,44 +128,53 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
       accordion(!!!indicator_cards, open = TRUE)
     })
     
-    # Generate PDF report
-    observeEvent(input$generate_pdf, {
+    # Open PDF in new tab
+    observeEvent(input$open_pdf, {
       selected <- selected_indicators()
       
-      # Get comments
-      comments <- sapply(selected$indicator_id, function(id) {
-        input[[paste0("comment_", id)]] %||% ""
-      })
-      
-      # Create HTML content for the report
-      report_html <- create_pdf_report(selected, comments, sector_colors)
-      
-      # Show modal with print-friendly report
-      showModal(modalDialog(
-        title = "",
-        size = "l",
-        easyClose = TRUE,
-        footer = tagList(
-          modalButton("Close"),
-          actionButton(ns("print_window"), "Print / Save as PDF", 
-                       icon = icon("print"),
-                       class = "btn btn-primary")
-        ),
-        tags$div(
-          id = ns("report_content"),
-          class = "report-container",
-          HTML(report_html)
-        )
-      ))
+      if (!is.null(selected) && nrow(selected) > 0) {
+        # Get comments from UI
+        comments <- sapply(selected$indicator_id, function(id) {
+          input[[paste0("comment_", id)]] %||% ""
+        })
+        
+        # Create HTML content for the report
+        report_html <- create_pdf_report(selected, comments, sector_colors)
+        
+        # Send custom message to open in new tab
+        session$sendCustomMessage("openPdfInNewTab", list(html = report_html))
+      }
     })
     
-    # Print handler
-    observeEvent(input$print_window, {
-      session$sendCustomMessage("printReport", list(id = ns("report_content")))
-    })
+    # Keep the direct download option as well (optional)
+    output$download_pdf <- downloadHandler(
+      filename = function() {
+        paste0("RGDD_indicators_report_", Sys.Date(), ".html")
+      },
+      content = function(file) {
+        selected <- selected_indicators()
+        
+        if (!is.null(selected) && nrow(selected) > 0) {
+          # Get comments from UI
+          comments <- sapply(selected$indicator_id, function(id) {
+            input[[paste0("comment_", id)]] %||% ""
+          })
+          
+          # Create HTML content for the report
+          report_html <- create_pdf_report(selected, comments, sector_colors)
+          
+          # Write to file
+          writeLines(report_html, file, useBytes = TRUE)
+        } else {
+          # Write empty report
+          writeLines("<html><body><h1>No indicators selected</h1></body></html>", file)
+        }
+      },
+      contentType = "text/html"
+    )
     
-    # Download handler
-    output$download <- downloadHandler(
+    # CSV download handler (renamed to avoid conflicts)
+    output$download_csv <- downloadHandler(
       filename = function() {
         paste0("selected_indicators_", Sys.Date(), ".csv")
       },
@@ -190,11 +194,22 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
         }
       }
     )
-    
   })
 }
 
-# Function to create PDF report HTML
+# Updated create_pdf_report function in R/modules/selectedIndicators.R
+
+# Helper function to convert Shiny tags to HTML string
+shiny_tags_to_html <- function(tags_object) {
+  if (is.null(tags_object)) {
+    return("")
+  }
+  
+  # Use as.character to convert Shiny tags to HTML
+  return(as.character(tags_object))
+}
+
+# Updated create_pdf_report function
 create_pdf_report <- function(indicators, comments, sector_colors) {
   paste0('
 <!DOCTYPE html>
@@ -209,12 +224,11 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
         }
         body {
             font-family: Arial, sans-serif;
-            font-size: 13px; 
             line-height: 1.6;
             color: #333;
         }
         .header {
-            text-align: left;
+            text-align: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid #007bff;
@@ -292,9 +306,65 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
             color: #666;
             font-size: 12px;
         }
+        
+        /* Styles for the rendered tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 11pt;
+        }
+        td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            vertical-align: top;
+        }
+        td:first-child {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            width: 30%;
+        }
+        
+        /* Tooltip styling for print */
+        .my-tooltip {
+            position: relative;
+            display: inline;
+        }
+        .my-tooltip .my-tooltiptext {
+            display: none; /* Hide tooltips in print */
+        }
+        .my-tooltip .fa-info-circle {
+            display: none; /* Hide info icons in print */
+        }
+        
+        /* Link button styling for print */
+        a {
+            color: #007bff;
+            text-decoration: none;
+            border: 1px solid #007bff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10pt;
+        }
+        
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 0;
+            font-size: 10pt;
+        }
+        
+        ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
         @media print {
             body {
-                font-size: 11pt;
+                font-size: 10pt;
             }
             .indicator {
                 break-inside: avoid;
@@ -304,22 +374,32 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
 </head>
 <body>
     <div class="header">
-        <h2>RGDD Selected Indicators Report</h2>
+        <h1>RGDD Selected Indicators Report</h1>
         <div class="date">Generated on: ', Sys.Date(), '</div>
     </div>
     
     <div class="summary">
+        <h2>Summary</h2>
         <p><strong>Total indicators selected:</strong> ', nrow(indicators), '</p>
-        <p><strong>Main mandates covered:</strong> ', paste(unique(indicators$main_mandate), collapse = ", "), '</p>
         <p><strong>Sectors covered:</strong> ', paste(unique(indicators$main_sector), collapse = ", "), '</p>
+        <p><strong>Mandates covered:</strong> ', paste(unique(indicators$main_mandate), collapse = ", "), '</p>
     </div>
     
     <div class="indicators-list">
-        <h4>Selected  indicators</h4>',
+        <h2>Selected Indicators</h2>',
          paste0(lapply(1:nrow(indicators), function(i) {
            ind <- indicators[i, ]
            comment <- comments[i]
            sector_color <- sector_colors[[ind$main_sector]] %||% "#cccccc"
+           
+           # Generate the simplified table with only essential details
+           detail_table_html <- shiny_tags_to_html(
+             render_disagg_table_vertical(
+               ind, 
+               columns = c("indicator_description", "indicator_long_description", 
+                           "gender_questions", "unit_of_analysis", "measurement_type")
+             )
+           )
            
            paste0('
         <div class="indicator">
@@ -328,34 +408,16 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                 <span class="objective-badge">', htmlEscape(ind$main_objectives), '</span>
                 <span class="sector-badge" style="background-color: ', sector_color, ';">', 
                   htmlEscape(ind$main_sector), '</span>',
-                  if (ind$high_priority == "High priority") '<span class="priority-star">★</span> Priority' else '',
+                  if (ind$high_priority == "High priority") '<span class="priority-star">★ Priority</span>' else '',
                   '</div>
             
-            <div class="field">
-                <span class="field-label">Mandate:</span> ', htmlEscape(ind$main_mandate), '
-            </div>
+            ', detail_table_html, '
             
-            <div class="field">
-                <span class="field-label">Description:</span><br>
-                ', htmlEscape(ind$indicator_description), '
-            </div>
-            
-               <div class="field">
-                <span class="field-label">Long description:</span><br>
-                ', htmlEscape(ind$indicator_long_description), '
-            </div>
-            
-            <div class="field">
-                <span class="field-label">Gender Analysis Questions:</span><br>
-                ', htmlEscape(ind$gender_questions), '
-            </div>',
-                  
-                  if (comment != "") paste0('
+            ', if (comment != "") paste0('
             <div class="comment-box">
                 <span class="field-label">Comments/Observations:</span><br>
                 ', htmlEscape(comment), '
-            </div>') else '',
-                  '
+            </div>') else '', '
         </div>')
          }), collapse = "\n"),
          '
@@ -367,6 +429,4 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
     </div>
 </body>
 </html>')
-  
-}# R/modules/selectedIndicators.R - Module for selected indicators
-
+}

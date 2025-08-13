@@ -11,9 +11,9 @@ filterPanelUI <- function(id) {
     accordion(
       open = c("Mandates"),
       
-      # Mandates filter with toggle
+      # Mandates filter with toggle and tooltip
       accordion_panel(
-        "Mandates", 
+        HTML('Mandates <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter indicators by their primary regulatory mandate. Toggle to include secondary mandates in the search."></i>'), 
         icon = icon("scroll"),
         div(
           class = "modern-checkbox-group",
@@ -29,9 +29,9 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Objectives filter with toggle
+      # Objectives filter with toggle and tooltip
       accordion_panel(
-        "Objectives", 
+        HTML('Objectives <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by specific regulatory objectives within each mandate (e.g., Access, Usage, Consumer protection). Toggle to include secondary objectives."></i>'), 
         icon = icon("bullseye"),
         div(
           class = "modern-checkbox-group",
@@ -47,9 +47,9 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Use cases filter (no toggle)
+      # Use cases filter with tooltip (no toggle)
       accordion_panel(
-        "Use cases", 
+        HTML('Use cases <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by practical applications showing how these indicators can be used to address specific regulatory challenges and policy goals."></i>'), 
         icon = icon("sliders"),
         div(
           class = "modern-checkbox-group",
@@ -57,9 +57,9 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Sectors filter with toggle
+      # Sectors filter with toggle and tooltip
       accordion_panel(
-        "Sectors", 
+        HTML('Sectors <i class="fas fa-info-circle filter-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter by financial sector (Payments, Credit, Insurance, etc.). Toggle to include indicators that apply to multiple sectors."></i>'), 
         icon = icon("chart-pie"),
         div(
           class = "modern-checkbox-group sector-checkboxes",
@@ -78,10 +78,10 @@ filterPanelUI <- function(id) {
     
     # Priority filter switch (new addition)
     div(
-      style = "margin-top: 15px; padding: 15px; background-color: #fff; border-radius: 5px; border: 1px solid #ffeaa7;",
+      style = "margin-top: 15px; padding: 15px; background-color: #fff3cd; border-radius: 5px; border: 1px solid #ffeaa7;",
       div(
         style = "display: flex; align-items: center; gap: 10px;",
-        #tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
+        tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
         input_switch(
           ns("priority_only"), 
           label = "Show only high priority indicators",

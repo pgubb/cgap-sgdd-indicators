@@ -82,6 +82,10 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
     )
   )
 }
+
+
+# Original working indicatorCardJS function from R/modules/indicatorCard.R
+
 # Original working indicatorCardJS function from R/modules/indicatorCard.R
 
 indicatorCardJS <- function() {
@@ -147,7 +151,17 @@ indicatorCardJS <- function() {
             }, data.delay || 300);
         });
         
-        // Print report handler
+        // Open PDF in new tab handler
+        Shiny.addCustomMessageHandler('openPdfInNewTab', function(data) {
+            var newWindow = window.open('', '_blank');
+            newWindow.document.write(data.html);
+            newWindow.document.close();
+            
+            // Focus on the new window
+            newWindow.focus();
+        });
+        
+        // Print report handler (keep existing for compatibility)
         Shiny.addCustomMessageHandler('printReport', function(data) {
             var reportContent = document.getElementById(data.id);
             if (reportContent) {
@@ -189,6 +203,31 @@ indicatorCardJS <- function() {
         $(document).ready(function() {
             // Show initial loading spinner
             $('#loading_spinner').show();
+            
+            // Initialize Bootstrap tooltips for filter panel
+            function initializeTooltips() {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                    // Initialize Bootstrap 5 tooltips
+                    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle=\"tooltip\"]'));
+                    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl, {
+                            delay: { show: 300, hide: 100 },
+                            trigger: 'hover focus'
+                        });
+                    });
+                } else {
+                    // Fallback for older Bootstrap or if Bootstrap is not available
+                    console.log('Bootstrap tooltips not available, using title attribute fallback');
+                }
+            }
+            
+            // Initialize tooltips immediately
+            initializeTooltips();
+            
+            // Re-initialize tooltips after Shiny updates
+            $(document).on('shiny:idle', function() {
+                setTimeout(initializeTooltips, 100);
+            });
             
             function highlightActiveMandate() {
                 var scrollPos = $(window).scrollTop() + 100;
