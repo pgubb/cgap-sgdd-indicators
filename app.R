@@ -3,7 +3,6 @@ library(tidyverse)
 library(readxl)
 library(bslib)
 library(janitor)
-library(pagedown)
 
 # Load data
 load("data/indicators.RData")
