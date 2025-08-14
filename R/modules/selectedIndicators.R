@@ -88,6 +88,8 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
             span(
               span(ind$indicator_name, 
                    style = "background-color: white; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: bold; font-size: 14px"), 
+              span(ind$main_mandate, 
+                   style = "background-color: white; display: inline-block; padding:2px; border-radius: 4px; border: 1px solid black; color:black; font-weight: normal; font-size: 12px"), 
               span(ind$main_objectives, 
                    style = "background-color: #E5E7E6; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
               span(ind$main_sector, 
@@ -105,12 +107,9 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
               style = "display: flex; justify-content: space-around; align-items: flex-start; gap: 30px;",
               div(
                 style = "flex-grow: 1; padding: 10px;",
-                p(icon("scroll", lib = "font-awesome"), 
-                  strong("Primary mandate:"), ind$main_mandate), 
-                p(icon("person", lib = "font-awesome"), 
-                  icon("person-dress", lib = "font-awesome"), 
-                  strong("Example questions to get started on analysis of indicator by gender:"), 
-                  ind$gender_questions)
+                render_disagg_table_vertical(ind, 
+                                             columns = c("indicator_description", "indicator_long_description", "gender_questions"), 
+                                             pre_columns = c("formula1", "formula2", "formula3")),
               ),
               div(
                 style = "flex-grow: 1; padding: 10px;",
@@ -266,6 +265,14 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
             gap: 10px;
             margin-bottom: 15px;
         }
+         .mandate-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border-color: black;
+            font-size: 12px;
+            font-weight: normal;
+        }
         .sector-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -381,8 +388,9 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
     <div class="summary">
         <h2>Summary</h2>
         <p><strong>Total indicators selected:</strong> ', nrow(indicators), '</p>
-        <p><strong>Sectors covered:</strong> ', paste(unique(indicators$main_sector), collapse = ", "), '</p>
         <p><strong>Mandates covered:</strong> ', paste(unique(indicators$main_mandate), collapse = ", "), '</p>
+        <p><strong>Sectors covered:</strong> ', paste(unique(indicators$main_sector), collapse = ", "), '</p>
+    
     </div>
     
     <div class="indicators-list">
@@ -405,6 +413,7 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
         <div class="indicator">
             <h3>', htmlEscape(ind$indicator_name), '</h3>
             <div class="indicator-header">
+                <span class="mandate-badge">', htmlEscape(ind$main_mandates), '</span>
                 <span class="objective-badge">', htmlEscape(ind$main_objectives), '</span>
                 <span class="sector-badge" style="background-color: ', sector_color, ';">', 
                   htmlEscape(ind$main_sector), '</span>',

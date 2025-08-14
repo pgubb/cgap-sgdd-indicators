@@ -20,7 +20,7 @@ source("R/modules/selectedIndicators.R")
 ui <- page_navbar(
   
   title = span(
-    span(style = "font-size: 26px;", "RGDD explorer"), 
+    span(style = "font-size: 26px; font-weight: bold", "RGDD explorer"), 
     span(style = "font-size: 14px;", " by "), 
     tags$img(src = "cgap_logo.png", height = "26px")
   ),
