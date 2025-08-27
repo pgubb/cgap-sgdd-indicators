@@ -57,8 +57,8 @@ indicator_key <- function() {
          style = "background-color: #E5E7E6; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
     span("Main sector", 
          style = "background-color: #FFD700; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px"), 
-    span(tags$i(class = "fas fa-star", style = "color: gold; margin-left: 8px; font-size: 14px;"), 
-         " = Priority indicator", 
+    span(tags$i(class = "fas fa-file-lines", style = "color: black; margin-left: 8px; font-size: 14px;"), 
+         " = Featured in CGAP technical guide", 
          style = "font-size: 12px")
   )
 }
@@ -70,13 +70,13 @@ create_mandate_links <- function(indicators_data) {
     return(p("No indicators to display", style = "color: #666; font-style: italic;"))
   }
   
-  mandates <- unique(indicators_data$main_mandate)
+  mandates <- unique(indicators_data$main_mandate_umbrella)
   
   # Getting number of indicators per mandate 
   N_ind_bymandate <- indicators_data %>% 
-    group_by(main_mandate) %>% 
+    group_by(main_mandate_umbrella) %>% 
     count()
-  ref <- setNames(as.character(N_ind_bymandate$n), N_ind_bymandate$main_mandate)
+  ref <- setNames(as.character(N_ind_bymandate$n), N_ind_bymandate$main_mandate_umbrella)
   
   tagList(
     lapply(mandates, function(mandate) {

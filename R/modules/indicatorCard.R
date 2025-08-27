@@ -34,7 +34,7 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
         span(indicator$main_sector, 
              style = paste0("background-color: ", sector_color, "; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px")), 
         if (indicator$high_priority == "High priority") {
-          tags$i(class = "fas fa-star", style = "color: gold; margin-left: 8px; font-size: 14px;")
+          tags$i(class = "fas fa-file-lines", style = "color: black; margin-left: 8px; font-size: 14px;")
         }
       )
     ),
@@ -44,7 +44,7 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
       style = "font-size: 14px;",
       
       render_disagg_table_vertical(indicator, 
-                                   columns = c("main_mandate", "secondary_mandates", "main_objectives", "secondary_objectives", "main_sector", 
+                                   columns = c("main_mandate_objective", "secondary_mandate_objective", "main_sector", 
                                                "secondary_sectors", "indicator_description", "indicator_long_description", "gender_questions", 
                                                "unit_of_analysis", "measurement_type", "formula1", "formula2", "formula3"), 
                                    pre_columns = c("formula1", "formula2", "formula3")),

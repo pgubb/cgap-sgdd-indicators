@@ -285,10 +285,10 @@ breakdowns <- data %>%
 # 1.  map column names → human-readable labels ------------
 segment_map <- c(
   d1_customer_gender              = "Customer gender",
-  d2_provider_gender              = "Provider gender",
+  d2_provider_gender              = "Financial service provider (FSP) gender diversity",
   d3_customer_type                = "Type of customer",
   d4_customer_age                 = "Age of customer",
-  d5_fsp_type                     = "Financial service provider type",
+  d5_fsp_type                     = "Financial service provider (FSP) type",
   d6_product_type                 = "Product type",
   d7_channel_type                 = "Channel type",
   d8_transaction_type             = "Transaction type",
@@ -350,6 +350,51 @@ indicators <- core_columns %>%
                 left_join(references, by = "indicator_id") %>% 
                 left_join(breakdowns, by = "indicator_id") %>% 
                 left_join(sources)
+
+# Creating new 'umbrella' mandate for filtering and navigation 
+
+indicators <- indicators %>% 
+                mutate(
+                  main_mandate_umbrella = ifelse(main_mandate %in% c("Microprudential supervision", "Macroprudential supervision"), "Prudential supervision", main_mandate), 
+                  main_mandate_umbrella = ifelse(main_mandate %in% c("Capital markets development", "Competition"), "Market development", main_mandate_umbrella), 
+                  main_mandate_umbrella = ifelse(main_mandate %in% c("Financial safety net"), "Consumer protection", main_mandate_umbrella), 
+                  main_mandate_umbrella = ifelse(main_mandate %in% c("Microprudential supervision", "Macroprudential supervision"), "Prudential supervision", main_mandate), 
+                  main_mandate_umbrella = ifelse(main_mandate %in% c("Capital markets development", "Competition"), "Market development", main_mandate_umbrella), 
+                  main_mandate_umbrella = ifelse(main_mandate %in% c("Financial safety net"), "Consumer protection", main_mandate_umbrella), 
+                  main_mandate_objective = paste(main_mandate, " (", main_objectives, ")", sep = ""), 
+                  secondary_mandate_objective = paste(secondary_mandates, " (", secondary_objectives, ")", sep = "")
+                  )
+
+# Recoding the secondary mandates             
+# Define mapping
+recode_map <- c(
+  "Microprudential supervision" = "Prudential supervision",
+  "Macroprudential supervision" = "Prudential supervision",
+  "Capital markets development" = "Market development",
+  "Competition" = "Market development",
+  "Financial safety net" = "Consumer protection"
+)
+
+# Function to reclassify one cell
+reclassify_mandates <- function(x) {
+  x %>%
+    str_split(",\\s*") %>%           # split on commas
+    unlist() %>%
+    str_trim() %>%
+    map_chr(~ ifelse(.x %in% names(recode_map),
+                     recode_map[[.x]],  # replace if in map
+                     .x)) %>%
+    unique() %>%
+    paste(collapse = ", ")
+}
+
+# Apply to your column
+indicators <- indicators %>%
+  mutate(secondary_mandates_umbrella = map_chr(secondary_mandates, reclassify_mandates))
+
+# Check the unique values after cleaning
+unique(indicators$secondary_mandates_umbrella)
+  
   
 # Saving file 
 
@@ -367,6 +412,6 @@ save(indicators, file = "data/indicators.RData")
 
 # Save as excel
 
-write_xlsx(indicators, "NOT_PUBLIC/RGDD_indicators_08062025.xlsx")
+#write_xlsx(indicators, "NOT_PUBLIC/RGDD_indicators_08062025.xlsx")
 
   

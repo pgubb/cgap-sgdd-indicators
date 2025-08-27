@@ -13,7 +13,7 @@ filterPanelUI <- function(id) {
         style = "display: flex; align-items: center; gap: 2px;",
         input_switch(
           ns("priority_only"), 
-          label = "CGAP priority indicators",
+          label = "Featured in CGAP technical guide",
           value = FALSE
         ), 
         #tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
@@ -153,7 +153,7 @@ filterPanelServer <- function(id, indicators_data) {
       # Mandates
       updateCheckboxGroupInput(
         session, "mandates",
-        choices = sort(unique(indicators_data$main_mandate)),
+        choices = sort(unique(indicators_data$main_mandate_umbrella)),
         selected = character(0)  # Start with none selected
       )
       
@@ -246,7 +246,7 @@ filterPanelServer <- function(id, indicators_data) {
     filtered_indicators <- reactive({
       # If no filters are selected in a category, include all items for that category
       selected_mandates <- if (length(input$mandates) == 0) {
-        unique(indicators_data$main_mandate)
+        unique(indicators_data$main_mandate_umbrella)
       } else {
         input$mandates
       }
@@ -280,12 +280,12 @@ filterPanelServer <- function(id, indicators_data) {
           # Mandate filter with toggle
           if (input$include_secondary_mandates) {
             main_mandate %in% selected_mandates | 
-              (!is.na(secondary_mandates) & 
-                 sapply(secondary_mandates, function(x) {
+              (!is.na(secondary_mandates_umbrella) & 
+                 sapply(secondary_mandates_umbrella, function(x) {
                    any(trimws(unlist(strsplit(x, ";"))) %in% selected_mandates)
                  }))
           } else {
-            main_mandate %in% selected_mandates
+            main_mandate_umbrella %in% selected_mandates
           }
         }) %>%
         filter({
@@ -368,7 +368,7 @@ filterPanelServer <- function(id, indicators_data) {
       
       # Sort by mandate count, then by other fields
       filtered %>% 
-        group_by(main_mandate) %>% 
+        group_by(main_mandate_umbrella) %>% 
         add_count() %>% 
         ungroup() %>% 
         arrange(desc(n), main_objectives, main_sector, indicator_name)

@@ -19,9 +19,9 @@ source("R/modules/selectedIndicators.R")
 ui <- page_navbar(
   
   title = span(
-    span(style = "font-size: 26px; font-weight: bold", "RGDD explorer"), 
-    span(style = "font-size: 14px;", " by "), 
-    tags$img(src = "cgap_logo.png", height = "26px")
+    tags$img(src = "cgap_logo.png", height = "30px"),
+    span(style = "font-size: 26px; font-weight: bold", "LENS"), 
+    span(style = "font-size: 12px;", "Regulatory data indicators with a socio-demographic lens")
   ),
   
   header = tagList(
@@ -33,7 +33,7 @@ ui <- page_navbar(
   
   sidebar = sidebar(
     width = 400,
-    p("Gender disaggregated regulatory data (RGDD) explorer is a catalog of indicators developed by CGAP to support efforts by financial sector authorities and others to use regulatory data to better understand the role of gender in the financial system."),
+    p(style = "font-size: 14px;", "CGAP's LENS presents a curated catalog of indicators developed from regulatory data, enabling financial sector authorities and stakeholders to better understand financial behaviors, patterns, risks, and opportunities. The tool supports segmented analysis by key sociodemographic traits — with a particular focus on gender — helping uncover insights that can inform more inclusive, evidence-based financial policies and supervision."),
     
     filterPanelUI("filters")
   ),
@@ -113,7 +113,7 @@ server <- function(input, output, session) {
   filtered_indicators <- reactive({
     filter_values$filtered_indicators()
   }) %>% 
-    debounce(300)  # Wait 300ms after last change before updating
+    debounce(200)  # Wait 300ms after last change before updating
   
   # Track when we need to re-render indicators (only on filter changes)
   filter_trigger <- reactiveVal(0)
@@ -177,11 +177,11 @@ server <- function(input, output, session) {
     }
     
     # Group by mandate and render
-    mandates <- unique(indicators_data$main_mandate)
+    mandates <- unique(indicators_data$main_mandate_umbrella)
     
     for (mandate in mandates) {
       mandate_indicators <- indicators_data %>% 
-        filter(main_mandate == mandate)
+        filter(main_mandate_umbrella == mandate)
       
       # Create mandate section
       mandate_id <- paste0("mandate_", slugify(mandate))

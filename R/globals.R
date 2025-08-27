@@ -38,6 +38,8 @@ COLUMN_DESCRIPTIONS <- c(
   "secondary_mandates"  = "Other applicable mandates",      
   "main_objectives"  = "Main objectives",         
   "secondary_objectives"  = "Other applicable objectives",    
+  "main_mandate_objective" = "Main mandate (main objective)", 
+  "secondary_mandate_objective" = "Secondary mandate (secondary objectives)", 
   "main_sector" = "Main sector",               
   "secondary_sectors" = "Other applicable sectors",      
   "use_cases" = "Applicable use cases of indicator for FSAs",             
@@ -53,10 +55,10 @@ COLUMN_DESCRIPTIONS <- c(
 
 BREAKDOWNS <- list(
   "Customer gender" = c("Female", "Male", "Non-binary", "Transgender"), 
-  "Provider gender" = c("Female", "Male", "Non-binary", "Transgender"), 
+  "Financial service provider (FSP) gender diversity" = c("Here the intention is to use indicators of FSP gender diversity, for example at Board-level, C-level (CEO, CFO, COO), , Middle manager (Director of compliance, Director of risk management, Director of marketing, Director of strategy, Director of HR, Other) to examine whether differences in this indicator across institutions is related to the gender diversity of the institution."), 
   "Type of customer" = c("Individual", "MSMEs", "Other"), 
   "Age of customer" = c("< 30 years", "30-55 years", "55-65 years", "65+ years"), 
-  "Financial service provider type" = c("Commercial banks", "Credit unions and cooperatives", "Deposit taking MFI", "Other deposit taking institution (ODTI)", "Nonbank credit providers", "-Non-deposit taking MFI", "-Fintech credit providers", "Payment service providers (PSP)", "-E-money issuers (EMI)", "-Money transfer operatore (MTO)", "Mobile money providers", "Crowdfunding provider", "Payment initiation service provider (PISP)", "Account information service provider (AISP)", "Microinsureres-life", "Microinsurers-non life", "Insurers-life", "Insurers-non life", "Pension providers"), 
+  "Financial service provider (FSP) type" = c("Commercial banks", "Credit unions and cooperatives", "Deposit taking MFI", "Other deposit taking institution (ODTI)", "Nonbank credit providers", "-Non-deposit taking MFI", "-Fintech credit providers", "Payment service providers (PSP)", "-E-money issuers (EMI)", "-Money transfer operatore (MTO)", "Mobile money providers", "Crowdfunding provider", "Payment initiation service provider (PISP)", "Account information service provider (AISP)", "Microinsureres-life", "Microinsurers-non life", "Insurers-life", "Insurers-non life", "Pension providers"), 
   "Product type" = c("PAYMENT INSTRUMENTS", "-Debit card", "-Credit card", "-Prepaid card", "-E-money (includes mobile money)", "-Cash", "-EFT (Electronic funds transfer)", "-Fast payments", "-Cheque", "CREDIT", "-Loans-all retail", "-Loans-consumer", "-Loans-housing", "-Loans-mortgage", "-Credit card", "-Revolving credit", "-P2P loans", "-Line of credit (except credit cards)", "DEPOSITS", "-Checking accounts", "--Basic/no-frills accounts", "-Savings accounts", "-Time/term deposit accounts", "INSURANCE", "-Life insuarance", "-Non-life insurance", "-Microinsurance-life", "Microinsurance-non life", "Climate disaster risk insurance", "PENSIONS", "-Micro pensions", "-Other pensions", "-Other long term investments for old age", "INVESTMENT", "-Equity", "-Bonds", "-Crowdfunding-debt (P2P lending)", "-Crowdfunding-equity"),  
   "Channel type" = c("PHYSICAL", "-Branch", "-ATM", "-POS", "-Agents (banking agents)", "-Agents (mobile money agent)", "-Merchants (physical merchants) (POS/QR)", "-Insurance agents/intermediaries/brokers", "-Pension agents/brokers", "-Investment broker/intermediary"), 
   "Transaction type" = c("DIGITAL/CASHLESS TRANSACTIONS", "-Payments and transfers", "-Deposits (digital)", "-Remittances (in/out flows)", "-EFT transactions", "-Fast payments", "-E-money", "-Mobile money", "-Cards", "CASH", "-Withdrawals/cash-out", "-Deposits (cash-in)", "-Remittances (in/out flows)", "CHEQUES", "-Cheque transactions", "NON-FINANCIAL", "-Balance enquiry", "-Payment initiation request", "-Data sharing consent"), 
