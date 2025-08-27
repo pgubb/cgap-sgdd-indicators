@@ -34,7 +34,7 @@ indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = F
         span(indicator$main_sector, 
              style = paste0("background-color: ", sector_color, "; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px")), 
         if (indicator$high_priority == "High priority") {
-          tags$i(class = "fas fa-file-lines", style = "color: black; margin-left: 8px; font-size: 14px;")
+          tags$i(class = "fas fa-file-lines", style = "color: gold; margin-left: 8px; font-size: 14px;")
         }
       )
     ),

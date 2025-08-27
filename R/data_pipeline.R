@@ -361,8 +361,7 @@ indicators <- indicators %>%
                   main_mandate_umbrella = ifelse(main_mandate %in% c("Microprudential supervision", "Macroprudential supervision"), "Prudential supervision", main_mandate), 
                   main_mandate_umbrella = ifelse(main_mandate %in% c("Capital markets development", "Competition"), "Market development", main_mandate_umbrella), 
                   main_mandate_umbrella = ifelse(main_mandate %in% c("Financial safety net"), "Consumer protection", main_mandate_umbrella), 
-                  main_mandate_objective = paste(main_mandate, " (", main_objectives, ")", sep = ""), 
-                  secondary_mandate_objective = paste(secondary_mandates, " (", secondary_objectives, ")", sep = "")
+                  main_mandate_objective = paste(main_mandate, " (", main_objectives, ")", sep = "")
                   )
 
 # Recoding the secondary mandates             
@@ -395,7 +394,24 @@ indicators <- indicators %>%
 # Check the unique values after cleaning
 unique(indicators$secondary_mandates_umbrella)
   
+combine_cols <- function(mandates, objectives) {
+  # split both into vectors
+  m <- str_split(mandates, ",\\s*")[[1]]
+  o <- str_split(objectives, ",\\s*")[[1]]
   
+  # make lengths match (optional safeguard)
+  len <- min(length(m), length(o))
+  m <- m[1:len]
+  o <- o[1:len]
+  
+  # paste pairwise and collapse
+  paste0(m, " (", o, ")", collapse = ", ")
+}
+
+indicators <- indicators %>%
+  mutate(secondary_mandate_objective = map2_chr(secondary_mandates, secondary_objectives, combine_cols), 
+         secondary_mandate_objective = ifelse(secondary_mandate_objective == " ()", NA, secondary_mandate_objective))
+
 # Saving file 
 
 #filename <- "data/RGDD indicators_051225.xlsx"
