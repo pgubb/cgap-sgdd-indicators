@@ -19,9 +19,10 @@ source("R/modules/selectedIndicators.R")
 ui <- page_navbar(
   
   title = span(
-    tags$img(src = "cgap_logo.png", height = "30px"),
     span(style = "font-size: 26px; font-weight: bold", "LENS"), 
-    span(style = "font-size: 12px;", "Regulatory data indicators with a socio-demographic lens")
+    span(style = "font-size: 14px;", " by "),
+    tags$img(src = "cgap_logo.png", height = "30px"), br(),
+    span(style = "font-size: 14px;", "Regulatory data indicators with a socio-demographic lens")
   ),
   
   header = tagList(

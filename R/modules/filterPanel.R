@@ -136,8 +136,8 @@ filterPanelUI <- function(id) {
     ),
     
     div(
-      style = "display: flex; gap: 10px; margin-top: 10px;",
-      actionButton(ns("reset"), "Reset", 
+      style = "d-flex justify-content-center",
+      actionButton(ns("reset"), "Reset filters", 
                    icon = icon("undo"), 
                    class = "btn btn-sm btn-primary")
     )
