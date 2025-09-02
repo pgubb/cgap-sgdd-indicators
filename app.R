@@ -22,9 +22,9 @@ ui <- page_navbar(
     span(style = "font-size: 26px; font-weight: bold", "LENS"), 
     span(style = "font-size: 14px;", " by "),
     tags$img(src = "cgap_logo.png", height = "30px"), br(),
-    span(style = "font-size: 14px;", "Regulatory data indicators with a socio-demographic lens")
+    span(style = "font-size: 14px;", "Regulatory data indicators with a socio-demographic lens"), 
   ),
-  
+
   header = tagList(
     includeCSS("www/custom.css"),
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
@@ -35,7 +35,6 @@ ui <- page_navbar(
   sidebar = sidebar(
     width = 400,
     p(style = "font-size: 14px;", "CGAP's LENS presents a curated catalog of indicators developed from regulatory data, enabling financial sector authorities and stakeholders to better understand financial behaviors, patterns, risks, and opportunities. The tool supports segmented analysis by key sociodemographic traits — with a particular focus on gender — helping uncover insights that can inform more inclusive, evidence-based financial policies and supervision."),
-    
     filterPanelUI("filters")
   ),
   

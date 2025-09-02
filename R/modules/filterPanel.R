@@ -82,28 +82,6 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Use cases filter with CSS tooltip (no toggle)
-      accordion_panel(
-        value = "use_cases",
-        title = div(
-          style = "display: inline-flex; align-items: center; gap: 8px;",
-          "Use cases",
-          div(
-            class = "my-tooltip",
-            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
-            div(
-              class = "my-tooltiptext",
-              "Filter by practical applications showing how these indicators can be used to address specific regulatory challenges and policy goals."
-            )
-          )
-        ), 
-        icon = icon("sliders"),
-        div(
-          class = "modern-checkbox-group",
-          checkboxGroupInput(ns("use_cases"), "", choices = NULL)
-        )
-      ),
-      
       # Sectors filter with toggle and CSS tooltip
       accordion_panel(
         value = "sectors",
@@ -132,7 +110,30 @@ filterPanelUI <- function(id) {
             value = FALSE
           )
         )
+      ),
+      
+      # Use cases filter with CSS tooltip (no toggle)
+      accordion_panel(
+        value = "use_cases",
+        title = div(
+          style = "display: inline-flex; align-items: center; gap: 8px;",
+          "Use cases",
+          div(
+            class = "my-tooltip",
+            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
+            div(
+              class = "my-tooltiptext",
+              "Filter by practical applications showing how these indicators can be used to address specific regulatory challenges and policy goals."
+            )
+          )
+        ), 
+        icon = icon("sliders"),
+        div(
+          class = "modern-checkbox-group",
+          checkboxGroupInput(ns("use_cases"), "", choices = NULL)
+        )
       )
+      
     ),
     
     div(
@@ -153,7 +154,7 @@ filterPanelServer <- function(id, indicators_data) {
       # Mandates
       updateCheckboxGroupInput(
         session, "mandates",
-        choices = sort(unique(indicators_data$main_mandate_umbrella)),
+        choices = levels(indicators_data$main_mandate_umbrella),
         selected = character(0)  # Start with none selected
       )
       

@@ -361,7 +361,15 @@ indicators <- indicators %>%
                   main_mandate_umbrella = ifelse(main_mandate %in% c("Microprudential supervision", "Macroprudential supervision"), "Prudential supervision", main_mandate), 
                   main_mandate_umbrella = ifelse(main_mandate %in% c("Capital markets development", "Competition"), "Market development", main_mandate_umbrella), 
                   main_mandate_umbrella = ifelse(main_mandate %in% c("Financial safety net"), "Consumer protection", main_mandate_umbrella), 
-                  main_mandate_objective = paste(main_mandate, " (", main_objectives, ")", sep = "")
+                  main_mandate_objective = paste(main_mandate, " (", main_objectives, ")", sep = ""), 
+                  main_mandate_umbrella_order = case_when(
+                    main_mandate_umbrella == "Financial inclusion" ~ 1, 
+                    main_mandate_umbrella == "Consumer protection" ~ 2, 
+                    main_mandate_umbrella == "Market development" ~ 3, 
+                    main_mandate_umbrella == "Sustainability" ~ 4, 
+                    main_mandate_umbrella == "Prudential supervision" ~ 5
+                  ), 
+                  main_mandate_umbrella = fct_reorder(main_mandate_umbrella, main_mandate_umbrella_order)
                   )
 
 # Recoding the secondary mandates             
@@ -410,7 +418,10 @@ combine_cols <- function(mandates, objectives) {
 
 indicators <- indicators %>%
   mutate(secondary_mandate_objective = map2_chr(secondary_mandates, secondary_objectives, combine_cols), 
-         secondary_mandate_objective = ifelse(secondary_mandate_objective == " ()", NA, secondary_mandate_objective))
+         secondary_mandate_objective = ifelse(secondary_mandate_objective == " ()", NA, secondary_mandate_objective), 
+         formula1 = ifelse(formula1 == "Not applicable", NA, formula1), 
+         formula2 = ifelse(formula2 == "Not applicable", NA, formula2), 
+         secondary_mandate_objective = ifelse(indicator_name %in% c("Gender diversity at FSP (by reference workforce group)", "Gender diversity of customer base"), NA, secondary_mandate_objective))
 
 # Saving file 
 
