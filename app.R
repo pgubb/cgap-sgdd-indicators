@@ -19,10 +19,9 @@ source("R/modules/selectedIndicators.R")
 ui <- page_navbar(
   
   title = span(
-    span(style = "font-size: 26px; font-weight: bold", "LENS"), 
+    span(style = "font-size: 30px; font-weight: bold", "LENS"), 
     span(style = "font-size: 14px;", " by "),
-    tags$img(src = "cgap_logo.png", height = "30px"), br(),
-    span(style = "font-size: 14px;", "Regulatory data indicators with a socio-demographic lens"), 
+    tags$img(src = "cgap_logo.png", height = "30px")
   ),
 
   header = tagList(
@@ -125,23 +124,28 @@ server <- function(input, output, session) {
   # Navigation helper
   output$navigation_helper <- renderUI({
     indicators_data <- filtered_indicators()
-    n <- nrow(indicators_data)
-    N <- nrow(indicators)
-    
-    div(
-      style = "font-size: 15px;",
-      span(
-        icon("list", lib = "font-awesome"), 
-        strong(paste(n, " of ", N)), 
-        "indicators"
-      ),
-      span(
-        id = "inline_spinner",
-        class = "spinner-small",
-        style = "display: none;"
-      )
-    )
+    enhanced_navigation_helper(indicators_data, indicators)
   })
+  
+  # output$navigation_helper <- renderUI({
+  #   indicators_data <- filtered_indicators()
+  #   n <- nrow(indicators_data)
+  #   N <- nrow(indicators)
+  #   
+  #   div(
+  #     style = "font-size: 15px;",
+  #     span(
+  #       icon("list", lib = "font-awesome"), 
+  #       strong(paste(n, " of ", N)), 
+  #       "indicators"
+  #     ),
+  #     span(
+  #       id = "inline_spinner",
+  #       class = "spinner-small",
+  #       style = "display: none;"
+  #     )
+  #   )
+  # })
   
   # Key
   output$key <- renderUI({
@@ -183,20 +187,21 @@ server <- function(input, output, session) {
       mandate_indicators <- indicators_data %>% 
         filter(main_mandate_umbrella == mandate)
       
-      # Create mandate section
-      mandate_id <- paste0("mandate_", slugify(mandate))
+      # FIXED: Use consistent casing for both ID and header
+      title_case_mandate <- str_to_title(mandate)
+      mandate_id <- paste0("mandate_", slugify(title_case_mandate))
       
       insertUI(
         selector = "#indicator_container",
         ui = tags$div(
-          id = mandate_id,
-          h5(str_to_upper(mandate), 
-             style = "margin-top: 30px; margin-bottom: 20px; color: #7E868C;"),
+          id = mandate_id,  # This now matches the navigation links
+          # Use the title case version for display
+          enhanced_mandate_header(title_case_mandate, nrow(mandate_indicators)),
           accordion(
             id = paste0(mandate_id, "_accordion"),
             !!!lapply(seq_len(nrow(mandate_indicators)), function(i) {
               ind <- mandate_indicators[i, ]
-              indicatorCardAccordion(
+              indicatorCardModern(  
                 ind$indicator_id,
                 ind,
                 SECTOR_COLORS,
@@ -204,8 +209,7 @@ server <- function(input, output, session) {
               )
             }),
             open = FALSE
-          ),
-          hr()
+          )
         ),
         immediate = TRUE
       )

@@ -57,7 +57,7 @@ indicator_key <- function() {
          style = "background-color: #E5E7E6; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
     span("Main sector", 
          style = "background-color: #FFD700; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px"), 
-    span(tags$i(class = "fas fa-file-lines", style = "color: gold; margin-left: 8px; font-size: 14px;"), 
+    span(tags$i(class = "fas fa-star", style = "color: gold; margin-left: 8px; font-size: 14px;"), 
          " = Featured in CGAP technical guide", 
          style = "font-size: 12px")
   )
@@ -80,12 +80,15 @@ create_mandate_links <- function(indicators_data) {
   
   tagList(
     lapply(mandates, function(mandate) {
+      # FIXED: Use str_to_title to match the header generation
+      title_case_mandate <- str_to_title(mandate)
+      
       tags$a(
-        href = paste0("#mandate_", slugify(mandate)),
+        href = paste0("#mandate_", slugify(title_case_mandate)),  # Now matches header ID
         class = "mandate-link",
         div(
           style = "display: flex; justify-content: space-between; align-items: center;",
-          span(mandate, style = "flex-grow: 1;"),
+          span(mandate, style = "flex-grow: 1;"),  # Display original case
           span(
             ref[mandate],
             class = "badge",
@@ -96,6 +99,7 @@ create_mandate_links <- function(indicators_data) {
     })
   )
 }
+
 
 # Render disaggregation table with tooltips
 render_disagg_table <- function(essential, nonessential, descriptions = BREAKDOWNS) {
@@ -534,4 +538,232 @@ render_disagg_table_vertical <- function(indicator_row, columns,
   } else {
     return(NULL)
   }
+}
+
+
+
+enhanced_navigation_helper <- function(filtered_indicators, total_indicators) {
+  n <- nrow(filtered_indicators)
+  N <- nrow(total_indicators)
+  
+  # Calculate statistics
+  mandates_count <- length(unique(filtered_indicators$main_mandate_umbrella))
+  sectors_count <- length(unique(filtered_indicators$main_sector))
+  priority_count <- sum(filtered_indicators$high_priority == "High priority", na.rm = TRUE)
+  
+  div(
+    class = "navigation-header",
+    style = paste0(
+      "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ",
+      "color: white; ",
+      "padding: 24px; ",
+      "border-radius: 16px; ",
+      "margin-bottom: 32px; ",
+      "box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);"
+    ),
+    
+    # Main title and count
+    div(
+      style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;",
+      
+      div(
+        h2(
+          "Regulatory indicators with a sociodemographic lens",
+          style = "margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+        ),
+        p(
+          paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
+          style = "margin: 8px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 300;"
+        )
+      ),
+      
+      div(
+        style = "text-align: right;",
+        div(
+          style = paste0(
+            "background: rgba(255, 255, 255, 0.2); ",
+            "backdrop-filter: blur(10px); ",
+            "padding: 12px 20px; ",
+            "border-radius: 12px; ",
+            "border: 1px solid rgba(255, 255, 255, 0.3);"
+          ),
+          span(
+            n, 
+            style = "font-size: 32px; font-weight: 800; display: block; line-height: 1;"
+          ),
+          span(
+            paste("of", N, "indicators"),
+            style = "font-size: 14px; opacity: 0.8; font-weight: 400;"
+          )
+        )
+      )
+    ),
+    
+    # Statistics cards
+    div(
+      style = "display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;",
+      
+      # Mandates card
+      div(
+        class = "stat-card",
+        style = paste0(
+          "background: rgba(255, 255, 255, 0.15); ",
+          "backdrop-filter: blur(10px); ",
+          "padding: 16px; ",
+          "border-radius: 12px; ",
+          "border: 1px solid rgba(255, 255, 255, 0.2); ",
+          "text-align: center; ",
+          "transition: all 0.3s ease;"
+        ),
+        div(
+          icon("scroll", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
+        ),
+        div(
+          mandates_count,
+          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
+        ),
+        div(
+          "Mandates",
+          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
+        )
+      ),
+      
+      # Sectors card
+      div(
+        class = "stat-card",
+        style = paste0(
+          "background: rgba(255, 255, 255, 0.15); ",
+          "backdrop-filter: blur(10px); ",
+          "padding: 16px; ",
+          "border-radius: 12px; ",
+          "border: 1px solid rgba(255, 255, 255, 0.2); ",
+          "text-align: center; ",
+          "transition: all 0.3s ease;"
+        ),
+        div(
+          icon("chart-pie", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
+        ),
+        div(
+          sectors_count,
+          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
+        ),
+        div(
+          "Sectors",
+          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
+        )
+      ),
+      
+      # Priority indicators card
+      div(
+        class = "stat-card",
+        style = paste0(
+          "background: rgba(255, 215, 0, 0.2); ",
+          "backdrop-filter: blur(10px); ",
+          "padding: 16px; ",
+          "border-radius: 12px; ",
+          "border: 1px solid rgba(255, 215, 0, 0.3); ",
+          "text-align: center; ",
+          "transition: all 0.3s ease;"
+        ),
+        div(
+          icon("star", class = "fas", style = "font-size: 24px; margin-bottom: 8px; color: #ffd700;")
+        ),
+        div(
+          priority_count,
+          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
+        ),
+        div(
+          "Featured",
+          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
+        )
+      )
+    )
+  )
+}
+
+# Enhanced mandate section headers
+enhanced_mandate_header <- function(mandate, count) {
+  # Mandate descriptions for context
+  descriptions <- list(
+    "FINANCIAL INCLUSION" = "Indicators measuring access, usage, and quality of financial services",
+    "CONSUMER PROTECTION" = "Indicators for fair treatment, complaints handling, and consumer safety",
+    "PRUDENTIAL SUPERVISION" = "Risk management and stability indicators for financial institutions",
+    "MARKET DEVELOPMENT" = "Capital markets and competition indicators",
+    "SUSTAINABILITY" = "Climate, environmental, and gender equality indicators",
+    "STATISTICS & RESEARCH" = "Data collection and research indicators",
+    "CENTRAL BANKING" = "Currency management and central bank operations"
+  )
+  
+  div(
+    class = "mandate-section-header",
+    style = paste0(
+      "background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); ",
+      "border: 1px solid #e9ecef; ",
+      "border-radius: 12px; ",
+      "padding: 24px; ",
+      "margin: 32px 0 24px 0; ",
+      "box-shadow: 0 2px 12px rgba(0,0,0,0.04); ",
+      "position: relative; ",
+      "overflow: hidden;"
+    ),
+    
+    # Background pattern
+    div(
+      style = paste0(
+        "position: absolute; ",
+        "top: -50%; ",
+        "right: -10%; ",
+        "width: 200px; ",
+        "height: 200px; ",
+        "background: radial-gradient(circle, rgba(0,123,255,0.05) 0%, transparent 70%); ",
+        "border-radius: 50%;"
+      )
+    ),
+    
+    div(
+      style = "position: relative; z-index: 1;",
+      
+      # Header row
+      div(
+        style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;",
+        
+        h3(
+          mandate,
+          style = paste0(
+            "margin: 0; ",
+            "font-size: 24px; ",
+            "font-weight: 700; ",
+            "color: #1a1a1a; ",
+            "text-transform: capitalize;"
+          )
+        ),
+        
+        span(
+          paste(count, "indicators"),
+          style = paste0(
+            "background: #007bff; ",
+            "color: white; ",
+            "padding: 6px 16px; ",
+            "border-radius: 20px; ",
+            "font-size: 14px; ",
+            "font-weight: 600; ",
+            "box-shadow: 0 2px 8px rgba(0,123,255,0.3);"
+          )
+        )
+      ),
+      
+      # Description
+      if (!is.null(descriptions[[toupper(mandate)]])) {
+        p(
+          descriptions[[toupper(mandate)]],
+          style = paste0(
+            "margin: 0; ",
+            "color: #6c757d; ",
+            "font-size: 15px; ",
+            "line-height: 1.5;"
+          )
+        )
+      }
+    )
+  )
 }
