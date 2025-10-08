@@ -25,6 +25,17 @@ MND_OBJ <-
     "Financial safety net" = c("Depositor protection")
   )
 
+# NEED to figure out where to put central banking and statistics and research
+
+MND_OBJ_2 <- 
+  list(
+    "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
+    "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency", "Depositor protection"), 
+    "Market development" = c("Capital markets development", "Competition"), 
+    "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
+    "Prudential supervision" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT")
+  )
+
 
 USE_CASES <- c(
   "Access to financial services" = "Identify and assess disparities in terms of physical and digital access to financial services, in order to expand and improve points of service, including digital and physical infrastructure, and account ownership, ensuring that women and gender minorities have convenient and equitable access to financial service points, channels and owning an account, thus reducing barriers to entry into the financial system.", 
