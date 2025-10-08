@@ -33,7 +33,8 @@ MND_OBJ_2 <-
     "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency", "Depositor protection"), 
     "Market development" = c("Capital markets development", "Competition"), 
     "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
-    "Prudential supervision" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT")
+    "Prudential supervision" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
+    "Other" = c("Currency management & cash handling", "Statistics & research")
   )
 
 
