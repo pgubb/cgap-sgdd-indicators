@@ -10,6 +10,22 @@ SECTOR_COLORS <- list(
   "Savings" = "#B0C4DE"
 )
 
+# Globals
+MND_OBJ <- 
+  list(
+    "Central banking" = c("Currency management & cash handling"), 
+    "Statistics & research" = c("Statistics & research"), 
+    "Macroprudential supervision" = c("Stability"), 
+    "Microprudential supervision" = c("Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
+    "Competition" = c("Competition"), 
+    "Capital markets development" = c("Capital markets development"), 
+    "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
+    "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency"), 
+    "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
+    "Financial safety net" = c("Depositor protection")
+  )
+
+
 USE_CASES <- c(
   "Access to financial services" = "Identify and assess disparities in terms of physical and digital access to financial services, in order to expand and improve points of service, including digital and physical infrastructure, and account ownership, ensuring that women and gender minorities have convenient and equitable access to financial service points, channels and owning an account, thus reducing barriers to entry into the financial system.", 
   "Usage of financial services" = "Assess the usage of financial sevices by women and gender minorities - identify patterns, gaps and disparities, to inform the creation of tailored financial products that cater to their specific needs and usage patterns, encouraging higher and more effective use of financial services.", 
