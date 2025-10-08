@@ -423,6 +423,12 @@ indicators <- indicators %>%
          formula2 = ifelse(formula2 == "Not applicable", NA, formula2), 
          secondary_mandate_objective = ifelse(indicator_name %in% c("Gender diversity at FSP (by reference workforce group)", "Gender diversity of customer base"), NA, secondary_mandate_objective))
 
+# Incorporating flags to identify identicators for which custom statement on unit of analysis should be incorporated 
+UA_NOTE <- "For analyses with a primary focus on financial inclusion, for this indicator it is recommended that only retail customers (i.e., natural persons) and/or financial products held by retail customers are considered. Where data permits, this indicator can be examined separately for MSMEs."
+flags <- read_csv("data/flags.csv") %>% select(indicator_id, ua_flag) %>% mutate(indicator_id = as.character(indicator_id), ua_flag_bin = ifelse(!is.na(ua_flag), 1, 0)) %>% select(indicator_id, ua_flag_bin)
+
+indicators <- indicators %>% left_join(flags, by = "indicator_id") %>%  mutate(unit_of_analysis = ifelse(ua_flag_bin == 1, UA_NOTE, NA))
+
 # Saving file 
 
 #filename <- "data/RGDD indicators_051225.xlsx"
@@ -439,6 +445,10 @@ save(indicators, file = "data/indicators.RData")
 
 # Save as excel
 
-#write_xlsx(indicators, "NOT_PUBLIC/RGDD_indicators_08062025.xlsx")
+
+write_xlsx(
+  indicators %>% arrange(main_mandate_umbrella, main_objectives, indicator_name) %>% 
+    select(main_mandate_umbrella, main_objectives, main_sector, indicator_id, indicator_name, indicator_description, indicator_long_description, secondary_mandates, secondary_objectives), 
+  "NOT_PUBLIC/RGDD_indicators_102025.xlsx")
 
   

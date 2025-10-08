@@ -347,9 +347,8 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
   )
 }
 
-# Production-ready version - clean and optimized
-# Replace your indicatorCardJS function with this final version
-# Nuclear option: Force scroll with multiple persistence attempts
+
+# Bidirectional scroll fix that handles both up and down navigation
 # Replace your indicatorCardJS function with this version
 
 indicatorCardJS <- function() {
@@ -483,91 +482,141 @@ indicatorCardJS <- function() {
         $(this).removeClass('card-hover');
       });
       
-      // NUCLEAR OPTION: Force scroll with persistent attempts
+      // Helper function to extract target ID from potentially full URLs
+      function extractTargetId(href) {
+        if (!href) return null;
+        
+        var hashIndex = href.lastIndexOf('#');
+        if (hashIndex === -1) return null;
+        
+        var targetId = href.substring(hashIndex + 1);
+        
+        if (targetId.indexOf('mandate_') === 0) {
+          return targetId;
+        }
+        
+        return null;
+      }
+      
+      // Enhanced scroll navigation with better upward scrolling
       $(document).on('click', '.mandate-link', function(e) {
         e.preventDefault();
         e.stopPropagation();
         
         var targetHref = $(this).attr('href');
-        var targetId = targetHref.substring(1);
+        var targetId = extractTargetId(targetHref);
+        
+        if (!targetId) {
+          console.warn('Could not extract target ID from href:', targetHref);
+          return;
+        }
+        
         var target = $('#' + targetId);
         
-        console.log('🚀 NUCLEAR SCROLL ATTEMPT for:', targetId);
-        
         if (target.length > 0) {
-          // Close expanded cards
+          // Close expanded cards for cleaner scrolling
           $('.indicator-card-modern.expanded').each(function() {
             $(this).removeClass('expanded')
               .find('.card-content-modern').css('display', 'none').end()
               .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
           });
           
+          var currentPos = $(window).scrollTop();
           var targetTop = target.offset().top;
           var finalPosition = Math.max(0, targetTop - 100);
+          var scrollingUp = finalPosition < currentPos;
           
-          console.log('📍 Target position:', finalPosition);
+          // Temporarily disable scroll event handlers that might interfere
+          var originalScrollHandlers = [];
+          $(window).off('scroll.tempDisable');
           
-          // NUCLEAR APPROACH: Multiple persistent scroll attempts
-          function forceScroll(position, attempt) {
+          // Enhanced scroll function with direction awareness
+          function performBidirectionalScroll(position, attempt, isUpward) {
             attempt = attempt || 1;
-            console.log('💥 Scroll attempt', attempt, 'to position', position);
             
-            // Method 1: Direct DOM manipulation
-            document.documentElement.scrollTop = position;
-            document.body.scrollTop = position;
-            window.pageYOffset = position;
-            
-            // Method 2: Window scrollTo
-            try {
+            if (isUpward) {
+              // For upward scrolling, use more aggressive methods
+              
+              // Method 1: Direct DOM manipulation (most reliable for upward)
+              document.documentElement.scrollTop = position;
+              document.body.scrollTop = position;
+              
+              // Method 2: Multiple window.scrollTo calls with slight delays
               window.scrollTo(0, position);
-              window.scrollTo({top: position, behavior: 'auto'});
-            } catch(e) {
-              console.log('ScrollTo failed:', e);
+              setTimeout(function() {
+                window.scrollTo({top: position, behavior: 'auto'});
+                document.documentElement.scrollTop = position;
+              }, 5);
+              
+              // Method 3: jQuery with immediate application
+              $('html, body').scrollTop(position);
+              $(window).scrollTop(position);
+              
+              // Method 4: Force scroll with requestAnimationFrame
+              requestAnimationFrame(function() {
+                document.documentElement.scrollTop = position;
+                document.body.scrollTop = position;
+                $(window).scrollTop(position);
+              });
+              
+            } else {
+              // For downward scrolling, use standard methods
+              document.documentElement.scrollTop = position;
+              document.body.scrollTop = position;
+              
+              try {
+                window.scrollTo(0, position);
+                window.scrollTo({top: position, behavior: 'auto'});
+              } catch(e) {}
+              
+              $(window).scrollTop(position);
+              $('html, body').scrollTop(position);
             }
             
-            // Method 3: jQuery scrollTop
-            $(window).scrollTop(position);
-            $('html').scrollTop(position);
-            $('body').scrollTop(position);
-            
-            // Method 4: Element scrollIntoView as fallback
-            try {
-              target[0].scrollIntoView({block: 'start', behavior: 'auto'});
-            } catch(e) {
-              console.log('ScrollIntoView failed:', e);
-            }
-            
-            // Check if it worked after a delay
+            // Verification with direction-specific retry logic
             setTimeout(function() {
               var currentPos = $(window).scrollTop();
               var diff = Math.abs(currentPos - position);
-              console.log('🎯 Current position after attempt', attempt + ':', currentPos, '(diff: ' + diff + ')');
               
-              // If we're not close enough and haven't tried too many times
-              if (diff > 50 && attempt < 10) {
-                forceScroll(position, attempt + 1);
+              if (diff > 50 && attempt < 8) {
+                // More attempts for upward scrolling since it's more problematic
+                var maxAttempts = isUpward ? 8 : 5;
+                
+                if (attempt < maxAttempts) {
+                  // Try scrollIntoView as backup
+                  try {
+                    target[0].scrollIntoView({
+                      block: 'start', 
+                      behavior: 'auto',
+                      inline: 'nearest'
+                    });
+                  } catch(e) {}
+                  
+                  performBidirectionalScroll(position, attempt + 1, isUpward);
+                }
               } else if (diff <= 50) {
-                console.log('✅ Scroll SUCCESS after', attempt, 'attempts!');
-                // Add highlight effect
+                // Success - add highlight effect and re-enable scroll handlers
                 target.find('.mandate-section-header').addClass('highlight-flash');
                 setTimeout(function() {
                   target.find('.mandate-section-header').removeClass('highlight-flash');
+                  
+                  // Re-enable scroll handlers for active link highlighting
+                  setTimeout(function() {
+                    updateActiveMandateLink();
+                  }, 100);
                 }, 1500);
-              } else {
-                console.log('❌ Scroll FAILED after', attempt, 'attempts');
               }
-            }, 50);
+            }, isUpward ? 50 : 30); // Longer delay for upward scrolling
           }
           
-          // Start the persistent scroll attempts
-          forceScroll(finalPosition);
+          performBidirectionalScroll(finalPosition, 1, scrollingUp);
           
         } else {
-          console.log('❌ Target element not found:', targetId);
+          console.warn('Target element not found:', targetId);
         }
       });
       
-      // Highlight active mandate in navigation
+      // URL-safe active mandate highlighting
       function updateActiveMandateLink() {
         var scrollPos = $(window).scrollTop() + 200;
         var activeLink = null;
@@ -576,9 +625,10 @@ indicatorCardJS <- function() {
         $('.mandate-link').each(function() {
           var link = $(this);
           var targetHref = link.attr('href');
-          if (!targetHref) return;
+          var targetId = extractTargetId(targetHref);
           
-          var targetId = targetHref.substring(1);
+          if (!targetId) return;
+          
           var target = $('#' + targetId);
           
           if (target.length && target.offset()) {
