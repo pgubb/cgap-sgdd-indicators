@@ -348,9 +348,6 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
 }
 
 
-# Bidirectional scroll fix that handles both up and down navigation
-# Replace your indicatorCardJS function with this version
-
 indicatorCardJS <- function() {
   tags$script(HTML("
     $(document).ready(function() {
@@ -498,156 +495,158 @@ indicatorCardJS <- function() {
         return null;
       }
       
-// Enhanced scroll navigation - replace in your indicatorCardJS function
-
-// Helper function to extract target ID from potentially full URLs
-function extractTargetId(href) {
-  if (!href) return null;
-  
-  var hashIndex = href.lastIndexOf('#');
-  if (hashIndex === -1) return null;
-  
-  var targetId = href.substring(hashIndex + 1);
-  
-  if (targetId.indexOf('mandate_') === 0) {
-    return targetId;
-  }
-  
-  return null;
-}
-
-// Improved scroll navigation with reliable upward scrolling
-$(document).on('click', '.mandate-link', function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  var targetHref = $(this).attr('href');
-  var targetId = extractTargetId(targetHref);
-  
-  if (!targetId) {
-    console.warn('Could not extract target ID from href:', targetHref);
-    return;
-  }
-  
-  var target = $('#' + targetId);
-  
-  if (target.length > 0) {
-    // Close expanded cards for cleaner scrolling
-    $('.indicator-card-modern.expanded').each(function() {
-      $(this).removeClass('expanded')
-        .find('.card-content-modern').css('display', 'none').end()
-        .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-    });
-    
-    // Calculate target position with offset for header
-    var targetTop = target.offset().top;
-    var scrollOffset = 100; // Adjust this value based on your fixed header height
-    var finalPosition = Math.max(0, targetTop - scrollOffset);
-    
-    // Use a simple, reliable scroll method
-    // Disable smooth scrolling temporarily
-    $('html').css('scroll-behavior', 'auto');
-    
-    // Perform the scroll using multiple methods for maximum compatibility
-    window.scrollTo(0, finalPosition);
-    document.documentElement.scrollTop = finalPosition;
-    document.body.scrollTop = finalPosition;
-    
-    // Use requestAnimationFrame to ensure scroll completes
-    requestAnimationFrame(function() {
-      window.scrollTo(0, finalPosition);
-      document.documentElement.scrollTop = finalPosition;
-      
-      // Verify scroll position after a short delay
-      setTimeout(function() {
-        var currentPos = $(window).scrollTop();
+      // Enhanced scroll navigation with debugging
+      $(document).on('click', '.mandate-link', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         
-        // If we're not at the target position, try one more time
-        if (Math.abs(currentPos - finalPosition) > 10) {
-          window.scrollTo(0, finalPosition);
-          document.documentElement.scrollTop = finalPosition;
-          document.body.scrollTop = finalPosition;
-          
-          // Try scrollIntoView as fallback
-          target[0].scrollIntoView({ 
-            behavior: 'auto', 
-            block: 'start',
-            inline: 'nearest'
-          });
-          
-          // Adjust position after scrollIntoView
-          setTimeout(function() {
-            var adjustedTop = target.offset().top - scrollOffset;
-            window.scrollTo(0, adjustedTop);
-          }, 50);
+        var targetHref = $(this).attr('href');
+        var targetId = extractTargetId(targetHref);
+        
+        if (!targetId) {
+          console.warn('Could not extract target ID from href:', targetHref);
+          return;
         }
         
-        // Add highlight effect
-        target.find('.mandate-section-header').addClass('highlight-flash');
-        setTimeout(function() {
-          target.find('.mandate-section-header').removeClass('highlight-flash');
-        }, 1500);
+        var target = $('#' + targetId);
         
-        // Re-enable smooth scrolling
-        setTimeout(function() {
-          $('html').css('scroll-behavior', 'smooth');
-          updateActiveMandateLink();
-        }, 100);
+        if (target.length === 0) {
+          console.warn('Target element not found:', targetId);
+          return;
+        }
         
-      }, 100);
-    });
-    
-  } else {
-    console.warn('Target element not found:', targetId);
-  }
-});
-
-// URL-safe active mandate highlighting
-function updateActiveMandateLink() {
-  var scrollPos = $(window).scrollTop() + 200;
-  var activeLink = null;
-  var closestDistance = Infinity;
-  
-  $('.mandate-link').each(function() {
-    var link = $(this);
-    var targetHref = link.attr('href');
-    var targetId = extractTargetId(targetHref);
-    
-    if (!targetId) return;
-    
-    var target = $('#' + targetId);
-    
-    if (target.length && target.offset()) {
-      var targetTop = target.offset().top;
-      var targetBottom = targetTop + target.outerHeight();
-      var distance = Math.abs(scrollPos - targetTop);
+        // Close expanded cards
+        $('.indicator-card-modern.expanded').each(function() {
+          $(this).removeClass('expanded')
+            .find('.card-content-modern').css('display', 'none').end()
+            .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+        });
+        
+        // Force layout recalculation
+        target[0].offsetHeight;
+        
+        // Calculate the absolute position we want to scroll to
+        var headerOffset = 100;
+        var elementPosition = target[0].getBoundingClientRect().top;
+        var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+        // Store the target position for verification
+        var targetScrollPosition = offsetPosition;
+        
+        console.log('Scrolling to position:', targetScrollPosition);
+        console.log('Current position:', window.pageYOffset);
+        console.log('Element offset:', target.offset().top);
+        
+        // Method 1: Use the native smooth scroll with fallback
+        try {
+          window.scrollTo({
+            top: targetScrollPosition,
+            behavior: 'auto' // Changed to auto for immediate scroll
+          });
+        } catch (e) {
+          // Fallback for older browsers
+          window.scrollTo(0, targetScrollPosition);
+        }
+        
+        // Aggressive verification and correction
+        var scrollAttempts = 0;
+        var maxAttempts = 10;
+        
+        var verifyScroll = setInterval(function() {
+          scrollAttempts++;
+          var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+          var difference = Math.abs(currentScroll - targetScrollPosition);
+          
+          console.log('Attempt', scrollAttempts, '- Current:', currentScroll, 'Target:', targetScrollPosition, 'Diff:', difference);
+          
+          if (difference < 5) {
+            // Success!
+            clearInterval(verifyScroll);
+            console.log('Scroll successful!');
+            
+            // Add highlight effect
+            target.find('.mandate-section-header').addClass('highlight-flash');
+            setTimeout(function() {
+              target.find('.mandate-section-header').removeClass('highlight-flash');
+              updateActiveMandateLink();
+            }, 1500);
+            
+          } else if (scrollAttempts >= maxAttempts) {
+            // Give up after max attempts
+            clearInterval(verifyScroll);
+            console.log('Max attempts reached, final position:', currentScroll);
+            
+            // Still add highlight even if position isn't perfect
+            target.find('.mandate-section-header').addClass('highlight-flash');
+            setTimeout(function() {
+              target.find('.mandate-section-header').removeClass('highlight-flash');
+              updateActiveMandateLink();
+            }, 1500);
+            
+          } else {
+            // Try again with different methods
+            if (scrollAttempts % 3 === 1) {
+              window.scrollTo(0, targetScrollPosition);
+            } else if (scrollAttempts % 3 === 2) {
+              document.documentElement.scrollTop = targetScrollPosition;
+              document.body.scrollTop = targetScrollPosition;
+            } else {
+              // Try scrollIntoView
+              target[0].scrollIntoView({ behavior: 'auto', block: 'start' });
+              // Then adjust for header
+              setTimeout(function() {
+                var newPos = target[0].getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                window.scrollTo(0, newPos);
+              }, 10);
+            }
+          }
+        }, 50); // Check every 50ms
+      });
       
-      if ((scrollPos >= targetTop - 100 && scrollPos <= targetBottom) || 
-          (distance < closestDistance && scrollPos >= targetTop - 200)) {
-        activeLink = link;
-        closestDistance = distance;
+      // URL-safe active mandate highlighting
+      function updateActiveMandateLink() {
+        var scrollPos = $(window).scrollTop() + 200;
+        var activeLink = null;
+        var closestDistance = Infinity;
+        
+        $('.mandate-link').each(function() {
+          var link = $(this);
+          var targetHref = link.attr('href');
+          var targetId = extractTargetId(targetHref);
+          
+          if (!targetId) return;
+          
+          var target = $('#' + targetId);
+          
+          if (target.length && target.offset()) {
+            var targetTop = target.offset().top;
+            var targetBottom = targetTop + target.outerHeight();
+            var distance = Math.abs(scrollPos - targetTop);
+            
+            if ((scrollPos >= targetTop - 100 && scrollPos <= targetBottom) || 
+                (distance < closestDistance && scrollPos >= targetTop - 200)) {
+              activeLink = link;
+              closestDistance = distance;
+            }
+          }
+        });
+        
+        $('.mandate-link').removeClass('active');
+        if (activeLink) {
+          activeLink.addClass('active');
+        }
       }
-    }
-  });
-  
-  $('.mandate-link').removeClass('active');
-  if (activeLink) {
-    activeLink.addClass('active');
-  }
-}
-
-var scrollTimeout;
-$(window).on('scroll', function() {
-  if (scrollTimeout) {
-    clearTimeout(scrollTimeout);
-  }
-  scrollTimeout = setTimeout(updateActiveMandateLink, 100);
-});
-
-// Initialize on page load
-$(document).ready(function() {
-  updateActiveMandateLink();
-});
+      
+      var scrollTimeout;
+      $(window).on('scroll', function() {
+        if (scrollTimeout) {
+          clearTimeout(scrollTimeout);
+        }
+        scrollTimeout = setTimeout(updateActiveMandateLink, 100);
+      });
+      
+      updateActiveMandateLink();
+    });
     
     // Custom message handlers
     Shiny.addCustomMessageHandler('setupSelectButtons', function(data) {
@@ -710,3 +709,6 @@ $(document).ready(function() {
     });
   "))
 }
+
+      
+      

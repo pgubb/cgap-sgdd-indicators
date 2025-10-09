@@ -413,7 +413,7 @@ indicators <- indicators %>%
 UA_NOTE <- "For analyses with a primary focus on financial inclusion, for this indicator it is recommended that only retail customers (i.e., natural persons) and/or financial products held by retail customers are considered. Where data permits, this indicator can be examined separately for MSMEs."
 flags <- read_csv("data/flags.csv") %>% select(indicator_id, ua_flag) %>% mutate(indicator_id = as.character(indicator_id), ua_flag_bin = ifelse(!is.na(ua_flag), 1, 0)) %>% select(indicator_id, ua_flag_bin)
 
-indicators <- indicators %>% left_join(flags, by = "indicator_id") %>%  mutate(unit_of_analysis = ifelse(ua_flag_bin == 1, UA_NOTE, NA))
+indicators <- indicators %>% left_join(flags, by = "indicator_id") %>%  mutate(unit_of_analysis = ifelse(ua_flag_bin == 1 | indicator_id %in% c("385", "386"), UA_NOTE, NA)) 
 
 # Saving file 
 
