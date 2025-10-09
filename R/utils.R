@@ -919,7 +919,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
     
     # Statistics cards
     div(
-      style = "display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;",
+      style = "display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px;",
       
       # N Indicators cards
       div(
