@@ -1,130 +1,351 @@
-# Updated selectedIndicators module with direct PDF download
+# R/modules/selectedIndicators.R - Redesigned with card grid layout
 
-# UI function (replace the existing one)
+# UI function
 selectedIndicatorsUI <- function(id) {
   ns <- NS(id)
   
   tagList(
+    # Header section with count and actions
     div(
-      class = "d-flex justify-content-between align-items-center mb-3",
-      style = "width: 100%; min-height: 40px;",
-      
-      # Left side - count badge
-      div(
-        class = "d-flex align-items-center",
-        uiOutput(ns("count_badge"))
+      class = "selected-indicators-header",
+      style = paste0(
+        "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ",
+        "color: white; ",
+        "padding: 24px; ",
+        "border-radius: 16px; ",
+        "margin-bottom: 32px; ",
+        "box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);"
       ),
       
-      # Right side - buttons (rendered together)
       div(
-        class = "d-flex gap-2",
-        uiOutput(ns("action_buttons"))
+        style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;",
+        
+        # Left side - title and count
+        div(
+          uiOutput(ns("count_badge"))
+        ),
+        
+        # Right side - action buttons
+        div(
+          class = "d-flex gap-2",
+          uiOutput(ns("action_buttons"))
+        )
       )
     ),
     
-    uiOutput(ns("indicators"))
+    # Grid of selected indicators
+    uiOutput(ns("indicators_grid"))
   )
 }
 
-# Updated server function with direct PDF download
+# Server function
 selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    # Reactive to track expanded cards
+    expanded_cards <- reactiveVal(character(0))
     
     # Count badge
     output$count_badge <- renderUI({
       selected <- selected_indicators()
       
       if (is.null(selected) || nrow(selected) == 0) {
-        span(
-          icon("times-circle", class = "text-danger", lib = "font-awesome"),
-          "No indicators selected yet.",
-          style = "font-size: 16px;"
+        div(
+          h3(
+            icon("clipboard-list", class = "fas", style = "margin-right: 8px;"),
+            "Your Selected Indicators",
+            style = "margin: 0; font-size: 24px; font-weight: 700;"
+          ),
+          p(
+            "Start building your custom indicator set by clicking 'Add' on indicators in the Browse page",
+            style = "margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;"
+          )
         )
       } else {
-        span(
-          icon("check-circle", class = "text-success", lib = "font-awesome"),
-          paste("You have selected", nrow(selected), "indicator(s)"),
-          style = "font-size: 16px; font-weight: bold;"
+        div(
+          h3(
+            icon("clipboard-check", class = "fas", style = "margin-right: 8px;"),
+            "Your Selected Indicators",
+            style = "margin: 0; font-size: 24px; font-weight: 700;"
+          ),
+          p(
+            paste("You have selected", nrow(selected), "indicator(s) for your custom set"),
+            style = "margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;"
+          )
         )
       }
     })
     
-    # Combined action buttons with PDF in new tab
+    # Action buttons
     output$action_buttons <- renderUI({
       selected <- selected_indicators()
       
       if (!is.null(selected) && nrow(selected) > 0) {
         tagList(
           downloadButton(ns("download_csv"), 
-                         "Download CSV", 
-                         class = "btn btn-success btn-sm"),
+                         "CSV", 
+                         icon = icon("download"),
+                         class = "btn btn-light btn-sm",
+                         style = "font-weight: 500;"),
           actionButton(ns("open_pdf"), 
-                       "Open PDF Report", 
-                       icon = icon("external-link-alt"),
-                       class = "btn btn-info btn-sm")
+                       "PDF Report", 
+                       icon = icon("file-pdf"),
+                       class = "btn btn-light btn-sm",
+                       style = "font-weight: 500;")
         )
-      } else {
-        # Return NULL when no indicators
-        NULL
       }
     })
     
-    # Selected indicators display
-    output$indicators <- renderUI({
+    # Handle card expansion toggle
+    observeEvent(input$toggle_expand, {
+      indicator_id <- input$toggle_expand
+      current_expanded <- expanded_cards()
+      
+      if (indicator_id %in% current_expanded) {
+        expanded_cards(setdiff(current_expanded, indicator_id))
+      } else {
+        expanded_cards(c(current_expanded, indicator_id))
+      }
+    })
+    
+    # Selected indicators grid
+    output$indicators_grid <- renderUI({
       selected <- selected_indicators()
       
       if (is.null(selected) || nrow(selected) == 0) {
-        return(h4(""))
+        return(
+          div(
+            style = paste0(
+              "text-align: center; ",
+              "padding: 60px 20px; ",
+              "background: #f8f9fa; ",
+              "border-radius: 12px; ",
+              "border: 2px dashed #dee2e6;"
+            ),
+            icon("inbox", class = "fas", style = "font-size: 48px; color: #adb5bd; margin-bottom: 16px;"),
+            h4("No indicators selected yet", style = "color: #6c757d; margin-bottom: 8px;"),
+            p("Browse indicators and click 'Add' to build your custom set", 
+              style = "color: #adb5bd; margin: 0;")
+          )
+        )
       }
       
-      indicator_cards <- lapply(1:nrow(selected), function(i) {
-        ind <- selected[i, ]
-        sector_color <- sector_colors[[ind$main_sector]]
+      current_expanded <- expanded_cards()
+      
+      # Create grid of indicator cards
+      div(
+        style = "display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px;",
         
-        accordion_panel(
-          value = ind$indicator_name,
-          title = div(
-            span(
-              span(ind$indicator_name, 
-                   style = "background-color: white; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: bold; font-size: 14px"), 
-              span(ind$main_mandate, 
-                   style = "background-color: white; display: inline-block; padding:2px; border-radius: 4px; border: 1px solid black; color:black; font-weight: normal; font-size: 12px"), 
-              span(ind$main_objectives, 
-                   style = "background-color: #E5E7E6; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
-              span(ind$main_sector, 
-                   style = paste0("background-color: ", sector_color, "; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px")), 
-              if (!is.na(ind$high_priority) && ind$high_priority == "High priority") {
-                tags$i(class = "fas fa-star", 
-                       style = "color: gold; margin-left: 8px; font-size: 14px;")
-              }
-            )
-          ),
+        lapply(1:nrow(selected), function(i) {
+          ind <- selected[i, ]
+          sector_color <- sector_colors[[ind$main_sector]]
+          is_expanded <- ind$indicator_id %in% current_expanded
+          
           div(
-            class = "card-body",
-            style = "font-size: 13px; padding-top:10px;",
+            class = "selected-indicator-card",
+            style = paste0(
+              "background: white; ",
+              "border: 1px solid #e9ecef; ",
+              "border-radius: 12px; ",
+              "overflow: hidden; ",
+              "transition: all 0.3s ease; ",
+              "box-shadow: 0 2px 8px rgba(0,0,0,0.08); ",
+              "display: flex; ",
+              "flex-direction: column; ",
+              "height: 100%;"
+            ),
+            
+            # Color accent bar
             div(
-              style = "display: flex; justify-content: space-around; align-items: flex-start; gap: 30px;",
+              style = paste0(
+                "height: 6px; ",
+                "background: linear-gradient(90deg, ", sector_color, " 0%, ", 
+                adjustcolor(sector_color, alpha.f = 0.6), " 100%);"
+              )
+            ),
+            
+            # Card content
+            div(
+              style = "padding: 20px; flex: 1; display: flex; flex-direction: column;",
+              
+              # Header with badges
               div(
-                style = "flex-grow: 1; padding: 10px;",
-                render_disagg_table_vertical(ind, 
-                                             columns = c("indicator_description", "indicator_long_description", "gender_questions"), 
-                                             pre_columns = c("formula1", "formula2", "formula3")),
+                style = "margin-bottom: 16px;",
+                
+                # Indicator name
+                h4(
+                  ind$indicator_name,
+                  style = paste0(
+                    "font-size: 16px; ",
+                    "font-weight: 600; ",
+                    "color: #1a1a1a; ",
+                    "margin: 0 0 12px 0; ",
+                    "line-height: 1.4;"
+                  )
+                ),
+                
+                # Badges row
+                div(
+                  style = "display: flex; flex-wrap: wrap; gap: 6px;",
+                  
+                  # Mandate badge
+                  span(
+                    ind$main_mandate,
+                    style = paste0(
+                      "background-color: #e3f2fd; ",
+                      "color: #1565c0; ",
+                      "padding: 3px 8px; ",
+                      "border-radius: 12px; ",
+                      "font-size: 11px; ",
+                      "font-weight: 500; ",
+                      "border: 1px solid #bbdefb;"
+                    )
+                  ),
+                  
+                  # Objective badge
+                  span(
+                    ind$main_objectives,
+                    style = paste0(
+                      "background-color: #f3e5f5; ",
+                      "color: #7b1fa2; ",
+                      "padding: 3px 8px; ",
+                      "border-radius: 12px; ",
+                      "font-size: 11px; ",
+                      "font-weight: 500; ",
+                      "border: 1px solid #e1bee7;"
+                    )
+                  ),
+                  
+                  # Sector badge
+                  span(
+                    ind$main_sector,
+                    style = paste0(
+                      "background-color: ", sector_color, "; ",
+                      "color: #333; ",
+                      "padding: 3px 8px; ",
+                      "border-radius: 12px; ",
+                      "font-size: 11px; ",
+                      "font-weight: 500; ",
+                      "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"
+                    )
+                  ),
+                  
+                  # Priority badge
+                  if (!is.na(ind$high_priority) && ind$high_priority == "High priority") {
+                    span(
+                      style = paste0(
+                        "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+                        "color: #856404; ",
+                        "padding: 3px 8px; ",
+                        "border-radius: 12px; ",
+                        "font-size: 11px; ",
+                        "font-weight: 600; ",
+                        "display: flex; ",
+                        "align-items: center; ",
+                        "gap: 4px;"
+                      ),
+                      icon("star", class = "fas", style = "font-size: 9px;"),
+                      "Featured"
+                    )
+                  }
+                )
               ),
+              
+              # Description (always visible, but truncated)
+              p(
+                substr(ind$indicator_description, 1, 150),
+                if(nchar(ind$indicator_description) > 150) "...",
+                style = paste0(
+                  "font-size: 13px; ",
+                  "color: #5f6368; ",
+                  "line-height: 1.5; ",
+                  "margin: 0 0 16px 0; ",
+                  "flex: 1;"
+                )
+              ),
+              
+              # Expandable details section
+              if (is_expanded) {
+                div(
+                  style = paste0(
+                    "background: #f8f9fa; ",
+                    "padding: 12px; ",
+                    "border-radius: 8px; ",
+                    "margin-bottom: 16px; ",
+                    "font-size: 12px; ",
+                    "animation: fadeIn 0.3s ease;"
+                  ),
+                  
+                  # Long description
+                  if (!is.na(ind$indicator_long_description) && ind$indicator_long_description != "") {
+                    div(
+                      style = "margin-bottom: 12px;",
+                      strong("Detailed Description:", style = "color: #495057; display: block; margin-bottom: 4px;"),
+                      p(substr(ind$indicator_long_description, 1, 300),
+                        if(nchar(ind$indicator_long_description) > 300) "...",
+                        style = "margin: 0; color: #6c757d; line-height: 1.4;")
+                    )
+                  },
+                  
+                  # Gender questions
+                  if (!is.na(ind$gender_questions) && ind$gender_questions != "") {
+                    div(
+                      strong("Gender Analysis Questions:", style = "color: #495057; display: block; margin-bottom: 4px;"),
+                      p(substr(ind$gender_questions, 1, 200),
+                        if(nchar(ind$gender_questions) > 200) "...",
+                        style = "margin: 0; color: #6c757d; line-height: 1.4;")
+                    )
+                  }
+                )
+              },
+              
+              # Comments section
               div(
-                style = "flex-grow: 1; padding: 10px;",
+                style = "margin-top: auto;",
                 textAreaInput(
                   inputId = ns(paste0("comment_", ind$indicator_id)),
-                  label = "Add your observations/comments", 
-                  width = '600px'
+                  label = div(
+                    style = "display: flex; align-items: center; gap: 6px; margin-bottom: 8px;",
+                    icon("comment-dots", class = "fas", style = "font-size: 12px; color: #6c757d;"),
+                    span("Notes & Observations", style = "font-size: 13px; font-weight: 500; color: #495057;")
+                  ),
+                  placeholder = "Add your notes here...",
+                  width = "100%",
+                  rows = 3,
+                  resize = "vertical"
+                )
+              ),
+              
+              # Action buttons
+              div(
+                style = "display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e9ecef;",
+                
+                # Expand/collapse button
+                actionButton(
+                  ns(paste0("toggle_", ind$indicator_id)),
+                  label = if (is_expanded) "Show less" else "Show more",
+                  icon = icon(if (is_expanded) "chevron-up" else "chevron-down"),
+                  class = "btn btn-sm btn-outline-secondary",
+                  style = "font-size: 12px;",
+                  onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})", 
+                                    ns("toggle_expand"), ind$indicator_id)
+                ),
+                
+                # View full details button (links to browse page)
+                tags$a(
+                  href = "#",
+                  class = "btn btn-sm btn-link",
+                  style = "font-size: 12px; text-decoration: none;",
+                  onclick = "document.querySelector('[data-value=\"Browse indicators\"]').click(); return false;",
+                  icon("arrow-right", class = "fas", style = "margin-right: 4px;"),
+                  "View full details"
                 )
               )
             )
           )
-        )
-      })
-      
-      accordion(!!!indicator_cards, open = TRUE)
+        })
+      )
     })
     
     # Open PDF in new tab
@@ -145,34 +366,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
       }
     })
     
-    # Keep the direct download option as well (optional)
-    output$download_pdf <- downloadHandler(
-      filename = function() {
-        paste0("RGDD_indicators_report_", Sys.Date(), ".html")
-      },
-      content = function(file) {
-        selected <- selected_indicators()
-        
-        if (!is.null(selected) && nrow(selected) > 0) {
-          # Get comments from UI
-          comments <- sapply(selected$indicator_id, function(id) {
-            input[[paste0("comment_", id)]] %||% ""
-          })
-          
-          # Create HTML content for the report
-          report_html <- create_pdf_report(selected, comments, sector_colors)
-          
-          # Write to file
-          writeLines(report_html, file, useBytes = TRUE)
-        } else {
-          # Write empty report
-          writeLines("<html><body><h1>No indicators selected</h1></body></html>", file)
-        }
-      },
-      contentType = "text/html"
-    )
-    
-    # CSV download handler (renamed to avoid conflicts)
+    # CSV download handler
     output$download_csv <- downloadHandler(
       filename = function() {
         paste0("selected_indicators_", Sys.Date(), ".csv")
@@ -194,248 +388,4 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
       }
     )
   })
-}
-
-# Updated create_pdf_report function in R/modules/selectedIndicators.R
-
-# Helper function to convert Shiny tags to HTML string
-shiny_tags_to_html <- function(tags_object) {
-  if (is.null(tags_object)) {
-    return("")
-  }
-  
-  # Use as.character to convert Shiny tags to HTML
-  return(as.character(tags_object))
-}
-
-# Updated create_pdf_report function
-create_pdf_report <- function(indicators, comments, sector_colors) {
-  paste0('
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>RGDD Selected Indicators Report</title>
-    <style>
-        @page {
-            size: A4;
-            margin: 2cm;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #007bff;
-        }
-        .header h1 {
-            color: #007bff;
-            margin-bottom: 10px;
-        }
-        .header .date {
-            color: #666;
-            font-style: italic;
-        }
-        .summary {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-        }
-        .indicator {
-            page-break-inside: avoid;
-            margin-bottom: 30px;
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        .indicator h3 {
-            color: #333;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .indicator-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-         .mandate-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            border-color: black;
-            font-size: 12px;
-            font-weight: normal;
-        }
-        .sector-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: normal;
-        }
-        .objective-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            background-color: #E5E7E6;
-        }
-        .priority-star {
-            color: gold;
-            font-size: 16px;
-        }
-        .field {
-            margin-bottom: 12px;
-        }
-        .field-label {
-            font-weight: bold;
-            color: #555;
-        }
-        .comment-box {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 3px;
-            margin-top: 10px;
-            font-style: italic;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        /* Styles for the rendered tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-            font-size: 11pt;
-        }
-        td {
-            border: 1px solid #ccc;
-            padding: 6px;
-            vertical-align: top;
-        }
-        td:first-child {
-            background-color: #f2f2f2;
-            font-weight: bold;
-            width: 30%;
-        }
-        
-        /* Tooltip styling for print */
-        .my-tooltip {
-            position: relative;
-            display: inline;
-        }
-        .my-tooltip .my-tooltiptext {
-            display: none; /* Hide tooltips in print */
-        }
-        .my-tooltip .fa-info-circle {
-            display: none; /* Hide info icons in print */
-        }
-        
-        /* Link button styling for print */
-        a {
-            color: #007bff;
-            text-decoration: none;
-            border: 1px solid #007bff;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 10pt;
-        }
-        
-        pre {
-            white-space: pre-wrap;
-            word-break: break-word;
-            background-color: #f8f9fa;
-            padding: 8px;
-            border-radius: 4px;
-            margin: 0;
-            font-size: 10pt;
-        }
-        
-        ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-        
-        @media print {
-            body {
-                font-size: 10pt;
-            }
-            .indicator {
-                break-inside: avoid;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>RGDD Selected Indicators Report</h1>
-        <div class="date">Generated on: ', Sys.Date(), '</div>
-    </div>
-    
-    <div class="summary">
-        <h2>Summary</h2>
-        <p><strong>Total indicators selected:</strong> ', nrow(indicators), '</p>
-        <p><strong>Mandates covered:</strong> ', paste(unique(indicators$main_mandate), collapse = ", "), '</p>
-        <p><strong>Sectors covered:</strong> ', paste(unique(indicators$main_sector), collapse = ", "), '</p>
-    
-    </div>
-    
-    <div class="indicators-list">
-        <h2>Selected Indicators</h2>',
-         paste0(lapply(1:nrow(indicators), function(i) {
-           ind <- indicators[i, ]
-           comment <- comments[i]
-           sector_color <- sector_colors[[ind$main_sector]] %||% "#cccccc"
-           
-           # Generate the simplified table with only essential details
-           detail_table_html <- shiny_tags_to_html(
-             render_disagg_table_vertical(
-               ind, 
-               columns = c("indicator_description", "indicator_long_description", 
-                           "gender_questions", "unit_of_analysis", "measurement_type")
-             )
-           )
-           
-           paste0('
-        <div class="indicator">
-            <h3>', htmlEscape(ind$indicator_name), '</h3>
-            <div class="indicator-header">
-                <span class="mandate-badge">', htmlEscape(ind$main_mandates), '</span>
-                <span class="objective-badge">', htmlEscape(ind$main_objectives), '</span>
-                <span class="sector-badge" style="background-color: ', sector_color, ';">', 
-                  htmlEscape(ind$main_sector), '</span>',
-                  if (ind$high_priority == "High priority") '<span class="priority-star">★ Priority</span>' else '',
-                  '</div>
-            
-            ', detail_table_html, '
-            
-            ', if (comment != "") paste0('
-            <div class="comment-box">
-                <span class="field-label">Comments/Observations:</span><br>
-                ', htmlEscape(comment), '
-            </div>') else '', '
-        </div>')
-         }), collapse = "\n"),
-         '
-    </div>
-    
-    <div class="footer">
-        <p>This report was generated by the RGDD Explorer by CGAP</p>
-        <p>For more information, visit www.cgap.org</p>
-    </div>
-</body>
-</html>')
 }
