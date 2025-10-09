@@ -121,31 +121,23 @@ server <- function(input, output, session) {
     filter_trigger(filter_trigger() + 1)
   })
   
-  # Navigation helper
+  # Navigation helper with active filters
   output$navigation_helper <- renderUI({
     indicators_data <- filtered_indicators()
-    enhanced_navigation_helper(indicators_data, indicators)
+    
+    # Get active filters from the filter module
+    # These should come from the filter panel inputs
+    active_filters <- list(
+      mandates = input$`filters-mandates`,
+      objectives = filter_values$selected_objectives(),  # You'll need to expose this from the filter module
+      sectors = input$`filters-sectors`,
+      use_cases = input$`filters-use_cases`,
+      search = input$`filters-search`,
+      priority_only = input$`filters-priority_only`
+    )
+    
+    enhanced_navigation_helper(indicators_data, indicators, active_filters)
   })
-  
-  # output$navigation_helper <- renderUI({
-  #   indicators_data <- filtered_indicators()
-  #   n <- nrow(indicators_data)
-  #   N <- nrow(indicators)
-  #   
-  #   div(
-  #     style = "font-size: 15px;",
-  #     span(
-  #       icon("list", lib = "font-awesome"), 
-  #       strong(paste(n, " of ", N)), 
-  #       "indicators"
-  #     ),
-  #     span(
-  #       id = "inline_spinner",
-  #       class = "spinner-small",
-  #       style = "display: none;"
-  #     )
-  #   )
-  # })
   
   # Key
   output$key <- renderUI({
@@ -172,7 +164,11 @@ server <- function(input, output, session) {
     if (nrow(indicators_data) == 0) {
       insertUI(
         selector = "#indicator_container",
-        ui = h4("No indicators available."),
+        ui =  div(br(), span(
+          icon("times-circle", class = "text-danger", lib = "font-awesome"),
+          "No indicators match filter criteria",
+          style = "font-size: 16px;"
+        )),
         immediate = TRUE
       )
       # Hide loading spinner

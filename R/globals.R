@@ -77,7 +77,7 @@ COLUMN_DESCRIPTIONS <- c(
   "AFI" = "AFI", 
   "WEF" = "WE Finance Code",                  
   "references" = "References",               
-  "essential_disagg" = "Breakdowns recommended by CGAP",      
+  "essential_disagg" = "Suggested breakdowns for segmentation analysis",      
   "nonessential_disagg" = "Other breakdowns"
 )
 

@@ -434,7 +434,7 @@ save(indicators, file = "data/indicators.RData")
 
 write_xlsx(
   indicators %>% arrange(main_mandate_umbrella, main_objectives, indicator_name) %>% 
-    select(main_mandate_umbrella, main_objectives, main_sector, indicator_id, indicator_name, indicator_description, indicator_long_description, secondary_mandates, secondary_objectives), 
-  "NOT_PUBLIC/RGDD_indicators_102025.xlsx")
+    select(main_mandate_umbrella, main_objectives, main_sector, indicator_id, indicator_name, indicator_description, indicator_long_description, secondary_mandates, secondary_objectives, unit_of_analysis, gender_questions, essential_disagg, nonessential_disagg), 
+  "NOT_PUBLIC/LENS_indicators_100925.xlsx")
 
   

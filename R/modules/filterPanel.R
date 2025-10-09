@@ -373,10 +373,10 @@ filterPanelServer <- function(id, indicators_data) {
             str_detect(indicator_name, search_pattern) |
               str_detect(coalesce(indicator_description, ""), search_pattern) | 
               str_detect(coalesce(main_sector, ""), search_pattern) |
-              str_detect(coalesce(secondary_mandates, ""), search_pattern) |
               str_detect(coalesce(main_mandate, ""), search_pattern) |
               str_detect(coalesce(main_objectives, ""), search_pattern) | 
-              str_detect(coalesce(secondary_objectives, ""), search_pattern) 
+              str_detect(coalesce(secondary_objectives, ""), search_pattern) | 
+              str_detect(coalesce(secondary_mandates, ""), search_pattern) 
           )
       }
       
@@ -390,7 +390,9 @@ filterPanelServer <- function(id, indicators_data) {
     
     # Return the reactive
     return(list(
-      filtered_indicators = filtered_indicators
+      filtered_indicators = filtered_indicators,
+      selected_objectives = selected_objectives  # Add this line
     ))
+    
   })
 }

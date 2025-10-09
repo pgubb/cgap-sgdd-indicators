@@ -49,17 +49,181 @@ generate_sector_styles <- function(sector_colors) {
 }
 
 # Create indicator key legend
+
 indicator_key <- function() {
-  span(
-    span("Indicator name", 
-         style = "background-color: white; display: inline-block; padding:2px 5px; border-radius: 4px; color:black; font-weight: bold; font-size: 12px; margin-right: 5px; border: 1px solid #ccc;"), 
-    span("Main objective(s)", 
-         style = "background-color: #E5E7E6; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
-    span("Main sector", 
-         style = "background-color: #FFD700; display: inline-block; align-items: center; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px"), 
-    span(tags$i(class = "fas fa-star", style = "color: gold; margin-left: 8px; font-size: 14px;"), 
-         " = Featured in CGAP technical guide", 
-         style = "font-size: 12px")
+  # Create gradient from all sector colors
+  sector_colors <- c("#FFD700", "#FFA07A", "#98FB98", "#87CEFA", "#DDA0DD", "#FFC0CB", "#B0C4DE")
+  
+  # Calculate gradient stops
+  num_colors <- length(sector_colors)
+  gradient_stops <- paste(
+    sapply(seq_along(sector_colors), function(i) {
+      start_pct <- (i - 1) * (100 / num_colors)
+      end_pct <- i * (100 / num_colors)
+      paste0(sector_colors[i], " ", start_pct, "%, ", sector_colors[i], " ", end_pct, "%")
+    }),
+    collapse = ", "
+  )
+  
+  gradient_bg <- paste0("linear-gradient(90deg, ", gradient_stops, ")")
+  
+  div(
+    style = "display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 0; margin-bottom: 16px;",
+    
+    # Indicator name example
+    span(
+      "Indicator name", 
+      style = paste0(
+        "background-color: white; ",
+        "display: inline-block; ",
+        "padding: 4px 10px; ",
+        "border-radius: 4px; ",
+        "color: black; ",
+        "font-weight: bold; ",
+        "font-size: 14px; ",
+        "border: 1px solid #e9ecef;"
+      )
+    ),
+    
+    # Main objective example
+    span(
+      "Main objective(s)", 
+      style = paste0(
+        "background-color: #e3f2fd; ",
+        "color: #1565c0; ",
+        "display: inline-block; ",
+        "padding: 4px 10px; ",
+        "border-radius: 16px; ",
+        "font-size: 12px; ",
+        "font-weight: 500; ",
+        "border: 1px solid #bbdefb;"
+      )
+    ),
+    
+    # Main sector example with multicolor gradient
+    span(
+      "Main sector", 
+      style = paste0(
+        "background: ", gradient_bg, "; ",
+        "color: #333; ",
+        "display: inline-block; ",
+        "padding: 4px 10px; ",
+        "border-radius: 16px; ",
+        "font-size: 12px; ",
+        "font-weight: 500; ",
+        "border: 1px solid rgba(0,0,0,0.1); ",
+        "font-weight: 600; ",
+        "text-shadow: 0 0 2px rgba(255,255,255,0.8);"
+      )
+    ),
+    
+    # Priority indicator explanation
+    div(
+      style = "display: flex; align-items: center; gap: 6px;",
+      div(
+        style = paste0(
+          "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+          "color: #856404; ",
+          "padding: 4px 8px; ",
+          "border-radius: 12px; ",
+          "font-size: 11px; ",
+          "font-weight: 600; ",
+          "display: flex; ",
+          "align-items: center; ",
+          "gap: 4px; ",
+          "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
+        ),
+        tags$i(class = "fas fa-star", style = "font-size: 10px;"),
+        "Featured"
+      ),
+      span(
+        "= Featured in CGAP technical guide",
+        style = "font-size: 12px; color: #495057;"
+      )
+    )
+  )
+}
+# Updated indicator_key function for R/utils.R
+# Matches the CSS styling from indicatorCardModern
+
+
+indicator_key <- function() {
+  # Simpler, direct gradient creation using all sector colors
+  gradient_bg <- "linear-gradient(90deg, #FFD700 0%, #FFD700 14.28%, #FFA07A 14.28%, #FFA07A 28.56%, #98FB98 28.56%, #98FB98 42.84%, #87CEFA 42.84%, #87CEFA 57.12%, #DDA0DD 57.12%, #DDA0DD 71.4%, #FFC0CB 71.4%, #FFC0CB 85.68%, #B0C4DE 85.68%, #B0C4DE 100%)"
+  
+  div(
+    style = "display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 0; margin-bottom: 16px;",
+    
+    # Indicator name example
+    span(
+      "Indicator name", 
+      style = paste0(
+        "background-color: white; ",
+        "display: inline-block; ",
+        "padding: 4px 10px; ",
+        "border-radius: 4px; ",
+        "color: black; ",
+        "font-weight: bold; ",
+        "font-size: 14px; ",
+        "border: 1px solid #e9ecef;"
+      )
+    ),
+    
+    # Main objective example
+    span(
+      "Main objective(s)", 
+      style = paste0(
+        "background-color: #e3f2fd; ",
+        "color: #1565c0; ",
+        "display: inline-block; ",
+        "padding: 4px 10px; ",
+        "border-radius: 16px; ",
+        "font-size: 12px; ",
+        "font-weight: 500; ",
+        "border: 1px solid #bbdefb;"
+      )
+    ),
+    
+    # Main sector example with multicolor gradient
+    span(
+      "Main sector", 
+      style = paste0(
+        "background: ", gradient_bg, "; ",
+        "color: #333; ",
+        "display: inline-block; ",
+        "padding: 4px 10px; ",
+        "border-radius: 16px; ",
+        "font-size: 12px; ",
+        "font-weight: 600; ",
+        "border: 1px solid rgba(0,0,0,0.15); ",
+        "text-shadow: 0 0 3px rgba(255,255,255,0.9), 0 0 5px rgba(255,255,255,0.7);"
+      )
+    ),
+    
+    # Priority indicator explanation
+    div(
+      style = "display: flex; align-items: center; gap: 6px;",
+      div(
+        style = paste0(
+          "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+          "color: #856404; ",
+          "padding: 4px 8px; ",
+          "border-radius: 12px; ",
+          "font-size: 11px; ",
+          "font-weight: 600; ",
+          "display: flex; ",
+          "align-items: center; ",
+          "gap: 4px; ",
+          "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
+        ),
+        tags$i(class = "fas fa-star", style = "font-size: 10px;"),
+        "Featured"
+      ),
+      span(
+        "= Featured in CGAP technical guide",
+        style = "font-size: 12px; color: #495057;"
+      )
+    )
   )
 }
 
@@ -70,27 +234,47 @@ create_mandate_links <- function(indicators_data) {
     return(p("No indicators to display", style = "color: #666; font-style: italic;"))
   }
   
+  # Get unique mandates from the filtered data
   mandates <- unique(indicators_data$main_mandate_umbrella)
+  
+  # Remove NA values if any
+  mandates <- mandates[!is.na(mandates)]
   
   # Getting number of indicators per mandate 
   N_ind_bymandate <- indicators_data %>% 
+    filter(!is.na(main_mandate_umbrella)) %>%  # Filter out NA mandates
     group_by(main_mandate_umbrella) %>% 
-    count()
-  ref <- setNames(as.character(N_ind_bymandate$n), N_ind_bymandate$main_mandate_umbrella)
+    summarise(n = n(), .groups = "drop")
+  
+  # Create named vector for lookup
+  ref <- setNames(as.character(N_ind_bymandate$n), as.character(N_ind_bymandate$main_mandate_umbrella))
+  
+  # Debug: print the reference to console (remove in production)
+  # print("Mandate counts:")
+  # print(ref)
   
   tagList(
     lapply(mandates, function(mandate) {
-      # FIXED: Use str_to_title to match the header generation
-      title_case_mandate <- str_to_title(mandate)
+      # Convert mandate to character to ensure proper matching
+      mandate_char <- as.character(mandate)
+      
+      # Use str_to_title to match the header generation
+      title_case_mandate <- str_to_title(mandate_char)
+      
+      # Get count with fallback
+      count <- ref[mandate_char]
+      if (is.na(count) || is.null(count)) {
+        count <- "0"
+      }
       
       tags$a(
-        href = paste0("#mandate_", slugify(title_case_mandate)),  # Now matches header ID
+        href = paste0("#mandate_", slugify(title_case_mandate)),
         class = "mandate-link",
         div(
           style = "display: flex; justify-content: space-between; align-items: center;",
-          span(mandate, style = "flex-grow: 1;"),  # Display original case
+          span(mandate_char, style = "flex-grow: 1;"),
           span(
-            ref[mandate],
+            count,
             class = "badge",
             style = "background-color: #6c757d; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;"
           )
@@ -99,7 +283,6 @@ create_mandate_links <- function(indicators_data) {
     })
   )
 }
-
 
 # Render disaggregation table with tooltips
 render_disagg_table <- function(essential, nonessential, descriptions = BREAKDOWNS) {
@@ -542,7 +725,9 @@ render_disagg_table_vertical <- function(indicator_row, columns,
 
 
 
-enhanced_navigation_helper <- function(filtered_indicators, total_indicators) {
+# Enhanced navigation helper with active filters display for R/utils.R
+
+enhanced_navigation_helper <- function(filtered_indicators, total_indicators, active_filters = NULL) {
   n <- nrow(filtered_indicators)
   N <- nrow(total_indicators)
   
@@ -550,6 +735,16 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators) {
   mandates_count <- length(unique(filtered_indicators$main_mandate_umbrella))
   sectors_count <- length(unique(filtered_indicators$main_sector))
   priority_count <- sum(filtered_indicators$high_priority == "High priority", na.rm = TRUE)
+  
+  # Check if any filters are active
+  has_active_filters <- !is.null(active_filters) && (
+    length(active_filters$mandates) > 0 ||
+      length(active_filters$objectives) > 0 ||
+      length(active_filters$sectors) > 0 ||
+      length(active_filters$use_cases) > 0 ||
+      !is.null(active_filters$search) && active_filters$search != "" ||
+      active_filters$priority_only == TRUE
+  )
   
   div(
     class = "navigation-header",
@@ -575,33 +770,181 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators) {
           paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
           style = "margin: 8px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 300;"
         )
-      ),
-      
-      div(
-        style = "text-align: right;",
-        div(
-          style = paste0(
-            "background: rgba(255, 255, 255, 0.2); ",
-            "backdrop-filter: blur(10px); ",
-            "padding: 12px 20px; ",
-            "border-radius: 12px; ",
-            "border: 1px solid rgba(255, 255, 255, 0.3);"
-          ),
-          span(
-            n, 
-            style = "font-size: 32px; font-weight: 800; display: block; line-height: 1;"
-          ),
-          span(
-            paste("of", N, "indicators"),
-            style = "font-size: 14px; opacity: 0.8; font-weight: 400;"
-          )
-        )
       )
     ),
+    
+    # Active filters section (only show if filters are active)
+    if (has_active_filters) {
+      div(
+        style = paste0(
+          "background: rgba(255, 255, 255, 0.15); ",
+          "backdrop-filter: blur(10px); ",
+          "padding: 16px; ",
+          "border-radius: 12px; ",
+          "border: 1px solid rgba(255, 255, 255, 0.2); ",
+          "margin-bottom: 20px;"
+        ),
+        div(
+          style = "display: flex; align-items: center; gap: 8px; margin-bottom: 12px;",
+          icon("filter", class = "fas", style = "font-size: 16px;"),
+          span("Active Filters:", style = "font-weight: 600; font-size: 14px;")
+        ),
+        div(
+          style = "display: flex; flex-wrap: wrap; gap: 8px;",
+          
+          # Search filter
+          if (!is.null(active_filters$search) && active_filters$search != "") {
+            span(
+              style = paste0(
+                "background: rgba(255, 255, 255, 0.9); ",
+                "color: #667eea; ",
+                "padding: 4px 12px; ",
+                "border-radius: 16px; ",
+                "font-size: 12px; ",
+                "font-weight: 500; ",
+                "display: flex; ",
+                "align-items: center; ",
+                "gap: 6px;"
+              ),
+              icon("search", class = "fas", style = "font-size: 10px;"),
+              paste0('"', active_filters$search, '"')
+            )
+          },
+          
+          # Priority filter
+          if (!is.null(active_filters$priority_only) && active_filters$priority_only == TRUE) {
+            span(
+              style = paste0(
+                "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+                "color: #856404; ",
+                "padding: 4px 12px; ",
+                "border-radius: 16px; ",
+                "font-size: 12px; ",
+                "font-weight: 600; ",
+                "display: flex; ",
+                "align-items: center; ",
+                "gap: 6px;"
+              ),
+              icon("star", class = "fas", style = "font-size: 10px;"),
+              "Featured only"
+            )
+          },
+          
+          # Mandate filters
+          if (length(active_filters$mandates) > 0) {
+            lapply(active_filters$mandates, function(mandate) {
+              span(
+                style = paste0(
+                  "background: rgba(255, 255, 255, 0.9); ",
+                  "color: #667eea; ",
+                  "padding: 4px 12px; ",
+                  "border-radius: 16px; ",
+                  "font-size: 12px; ",
+                  "font-weight: 500; ",
+                  "display: flex; ",
+                  "align-items: center; ",
+                  "gap: 6px;"
+                ),
+                icon("scroll", class = "fas", style = "font-size: 10px;"),
+                mandate
+              )
+            })
+          },
+          
+          # Objective filters
+          if (length(active_filters$objectives) > 0) {
+            lapply(active_filters$objectives, function(objective) {
+              span(
+                style = paste0(
+                  "background: rgba(255, 255, 255, 0.9); ",
+                  "color: #667eea; ",
+                  "padding: 4px 12px; ",
+                  "border-radius: 16px; ",
+                  "font-size: 12px; ",
+                  "font-weight: 500; ",
+                  "display: flex; ",
+                  "align-items: center; ",
+                  "gap: 6px;"
+                ),
+                icon("bullseye", class = "fas", style = "font-size: 10px;"),
+                objective
+              )
+            })
+          },
+          
+          # Sector filters
+          if (length(active_filters$sectors) > 0) {
+            lapply(active_filters$sectors, function(sector) {
+              span(
+                style = paste0(
+                  "background: rgba(255, 255, 255, 0.9); ",
+                  "color: #667eea; ",
+                  "padding: 4px 12px; ",
+                  "border-radius: 16px; ",
+                  "font-size: 12px; ",
+                  "font-weight: 500; ",
+                  "display: flex; ",
+                  "align-items: center; ",
+                  "gap: 6px;"
+                ),
+                icon("chart-pie", class = "fas", style = "font-size: 10px;"),
+                sector
+              )
+            })
+          },
+          
+          # Use case filters
+          if (length(active_filters$use_cases) > 0) {
+            lapply(active_filters$use_cases, function(use_case) {
+              span(
+                style = paste0(
+                  "background: rgba(255, 255, 255, 0.9); ",
+                  "color: #667eea; ",
+                  "padding: 4px 12px; ",
+                  "border-radius: 16px; ",
+                  "font-size: 12px; ",
+                  "font-weight: 500; ",
+                  "display: flex; ",
+                  "align-items: center; ",
+                  "gap: 6px;"
+                ),
+                icon("sliders", class = "fas", style = "font-size: 10px;"),
+                use_case
+              )
+            })
+          }
+        )
+      )
+    },
     
     # Statistics cards
     div(
       style = "display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;",
+      
+      # N Indicators cards
+      div(
+        class = "stat-card",
+        style = paste0(
+          "background: rgba(255, 255, 255, 0.2); ",
+          "backdrop-filter: blur(10px); ",
+          "padding: 12px 20px; ",
+          "border-radius: 12px; ",
+          "border: 1px solid rgba(255, 255, 255, 0.3);",
+          "text-align: center; ",
+          "transition: all 0.3s ease;"
+        ),
+        div(
+          icon("chart-simple", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
+        ),
+        div(
+          n, 
+          style = "font-size: 32px; font-weight: 800; margin-bottom: 4px;"
+        ),
+        div(
+          paste("of", N, "indicators"),
+          style = "font-size: 14px; opacity: 0.8; font-weight: 400;"
+        )
+      ),
       
       # Mandates card
       div(
@@ -673,7 +1016,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators) {
           style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
         ),
         div(
-          "Featured",
+          "Featured indicators",
           style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
         )
       )
