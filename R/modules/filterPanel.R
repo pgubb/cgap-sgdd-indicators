@@ -1,4 +1,4 @@
-# R/modules/filterPanel.R - Module for filter panel with priority switch
+# R/modules/filterPanel.R - Module for filter panel with hierarchical objectives
 
 # UI function
 filterPanelUI <- function(id) {
@@ -8,16 +8,15 @@ filterPanelUI <- function(id) {
     textInput(ns("search"), "Search", 
               placeholder = "Search by indicator name, sector, use-case..."),
     
-    # Priority filter switch (new addition)
-      div(
-        style = "display: flex; align-items: center; gap: 2px;",
-        input_switch(
-          ns("priority_only"), 
-          label = "Featured in CGAP technical guide",
-          value = FALSE
-        ), 
-        #tags$i(class = "fas fa-star", style = "color: gold; font-size: 16px;"),
-      ),
+    # Priority filter switch
+    div(
+      style = "display: flex; align-items: center; gap: 2px;",
+      input_switch(
+        ns("priority_only"), 
+        label = "Featured in CGAP technical guide",
+        value = FALSE
+      )
+    ),
     
     accordion(
       open = c("mandates"),
@@ -52,7 +51,7 @@ filterPanelUI <- function(id) {
         )
       ),
       
-      # Objectives filter with toggle and CSS tooltip
+      # Objectives filter with hierarchical structure
       accordion_panel(
         value = "objectives",
         title = div(
@@ -68,10 +67,8 @@ filterPanelUI <- function(id) {
           )
         ), 
         icon = icon("bullseye"),
-        div(
-          class = "modern-checkbox-group",
-          checkboxGroupInput(ns("objectives"), "", choices = NULL),
-        ), 
+        # Hierarchical objectives display
+        uiOutput(ns("objectives_ui")),
         div(
           style = "margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
           input_switch(
@@ -111,30 +108,8 @@ filterPanelUI <- function(id) {
           )
         )
       ),
-      
-      # Use cases filter with CSS tooltip (no toggle)
-      accordion_panel(
-        value = "use_cases",
-        title = div(
-          style = "display: inline-flex; align-items: center; gap: 8px;",
-          "Use cases",
-          div(
-            class = "my-tooltip",
-            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
-            div(
-              class = "my-tooltiptext",
-              "Filter by practical applications showing how these indicators can be used to address specific regulatory challenges and policy goals."
-            )
-          )
-        ), 
-        icon = icon("sliders"),
-        div(
-          class = "modern-checkbox-group",
-          checkboxGroupInput(ns("use_cases"), "", choices = NULL)
-        )
-      )
-      
-    ),
+    
+    br(), 
     
     div(
       style = "d-flex justify-content-center",
@@ -142,6 +117,8 @@ filterPanelUI <- function(id) {
                    icon = icon("undo"), 
                    class = "btn btn-sm btn-primary")
     )
+    
+  )
   )
 }
 
@@ -149,39 +126,16 @@ filterPanelUI <- function(id) {
 filterPanelServer <- function(id, indicators_data) {
   moduleServer(id, function(input, output, session) {
     
-    # Initialize filters with no selections (but will show all indicators)
+    # Reactive to store selected objectives
+    selected_objectives <- reactiveVal(character(0))
+    
+    # Initialize filters with no selections
     observe({
       # Mandates
       updateCheckboxGroupInput(
         session, "mandates",
         choices = levels(indicators_data$main_mandate_umbrella),
-        selected = character(0)  # Start with none selected
-      )
-      
-      # Objectives - extract unique values from both columns
-      all_objectives <- c(
-        # Main objectives
-        unlist(strsplit(indicators_data$main_objectives[!is.na(indicators_data$main_objectives)], ",")),
-        # Secondary objectives
-        unlist(strsplit(indicators_data$secondary_objectives[!is.na(indicators_data$secondary_objectives)], ","))
-      )
-      
-      # Clean and get unique objectives
-      unique_objectives <- unique(trimws(all_objectives))
-      unique_objectives <- unique_objectives[unique_objectives != ""]
-      unique_objectives <- sort(unique_objectives)
-      
-      updateCheckboxGroupInput(
-        session, "objectives",
-        choices = unique_objectives,
-        selected = character(0)  # Start with none selected
-      )
-      
-      # Use cases
-      updateCheckboxGroupInput(
-        session, "use_cases",
-        choices = names(USE_CASES),
-        selected = character(0)  # Start with none selected
+        selected = character(0)
       )
       
       # Sectors
@@ -189,7 +143,7 @@ filterPanelServer <- function(id, indicators_data) {
       updateCheckboxGroupInput(
         session, "sectors",
         choices = sectors,
-        selected = character(0)  # Start with none selected
+        selected = character(0)
       )
       
       # Add custom CSS for sector colors
@@ -217,6 +171,80 @@ filterPanelServer <- function(id, indicators_data) {
       )
     })
     
+    # Render hierarchical objectives UI
+    output$objectives_ui <- renderUI({
+      ns <- session$ns
+      current_selected <- selected_objectives()
+      
+      # Create hierarchical structure from MND_OBJ_2
+      objective_groups <- lapply(names(MND_OBJ_2), function(mandate_name) {
+        objectives <- MND_OBJ_2[[mandate_name]]
+        
+        # Create checkboxes for each objective under this mandate
+        checkbox_items <- lapply(objectives, function(obj) {
+          input_id <- paste0("obj_", gsub("[^a-zA-Z0-9]", "_", obj))
+          
+          div(
+            class = "objective-item",
+            style = "margin-left: 15px; margin-bottom: 5px;",
+            tags$input(
+              type = "checkbox",
+              id = ns(input_id),
+              value = obj,
+              checked = if (obj %in% current_selected) "checked" else NULL,
+              onclick = sprintf(
+                "Shiny.setInputValue('%s', {objective: '%s', checked: this.checked}, {priority: 'event'})",
+                ns("objective_clicked"),
+                obj
+              )
+            ),
+            tags$label(
+              `for` = ns(input_id),
+              style = "cursor: pointer; user-select: none; margin-left: 5px; font-size: 13px;",
+              obj
+            )
+          )
+        })
+        
+        # Create the mandate header with its objectives
+        div(
+          class = "objective-group",
+          style = "margin-bottom: 15px;",
+          div(
+            class = "objective-header",
+            style = "font-weight: 600; color: #495057; margin-bottom: 8px; font-size: 13px; padding: 5px 0; border-bottom: 1px solid #e9ecef;",
+            mandate_name
+          ),
+          div(
+            class = "modern-checkbox-group",
+            checkbox_items
+          )
+        )
+      })
+      
+      tagList(objective_groups)
+    })
+    
+    # Handle objective checkbox clicks
+    observeEvent(input$objective_clicked, {
+      req(input$objective_clicked)
+      
+      obj <- input$objective_clicked$objective
+      is_checked <- input$objective_clicked$checked
+      
+      current <- selected_objectives()
+      
+      if (is_checked) {
+        # Add objective if not already selected
+        if (!(obj %in% current)) {
+          selected_objectives(c(current, obj))
+        }
+      } else {
+        # Remove objective
+        selected_objectives(setdiff(current, obj))
+      }
+    })
+    
     updateInputSwitch <- function(session, inputId, value = NULL, label = NULL) {
       if (!is.null(value)) {
         session$sendInputMessage(inputId, list(value = value))
@@ -229,9 +257,8 @@ filterPanelServer <- function(id, indicators_data) {
     # Reset filters (clear all selections)
     observeEvent(input$reset, {
       updateCheckboxGroupInput(session, "mandates", selected = character(0))
-      updateCheckboxGroupInput(session, "objectives", selected = character(0))
+      selected_objectives(character(0))  # Reset objectives
       updateCheckboxGroupInput(session, "sectors", selected = character(0))
-      updateCheckboxGroupInput(session, "use_cases", selected = character(0))
       updateTextInput(session, "search", value = "")
       
       # Reset toggles
@@ -252,7 +279,8 @@ filterPanelServer <- function(id, indicators_data) {
         input$mandates
       }
       
-      selected_objectives <- if (length(input$objectives) == 0) {
+      # Get selected objectives from reactive value
+      objectives_filter <- if (length(selected_objectives()) == 0) {
         # Get all unique objectives
         all_obj <- c(
           unlist(strsplit(indicators_data$main_objectives[!is.na(indicators_data$main_objectives)], ",")),
@@ -260,19 +288,13 @@ filterPanelServer <- function(id, indicators_data) {
         )
         unique(trimws(all_obj[all_obj != ""]))
       } else {
-        input$objectives
+        selected_objectives()
       }
       
       selected_sectors <- if (length(input$sectors) == 0) {
         unique(indicators_data$main_sector)
       } else {
         input$sectors
-      }
-      
-      selected_use_cases <- if (length(input$use_cases) == 0) {
-        names(USE_CASES)
-      } else {
-        input$use_cases
       }
       
       # Apply filters
@@ -299,14 +321,14 @@ filterPanelServer <- function(id, indicators_data) {
               
               # Check main objectives
               main_match <- if (!is.na(main_obj)) {
-                any(trimws(unlist(strsplit(main_obj, ","))) %in% selected_objectives)
+                any(trimws(unlist(strsplit(main_obj, ","))) %in% objectives_filter)
               } else {
                 FALSE
               }
               
               # Check secondary objectives
               sec_match <- if (!is.na(sec_obj)) {
-                any(trimws(unlist(strsplit(sec_obj, ","))) %in% selected_objectives)
+                any(trimws(unlist(strsplit(sec_obj, ","))) %in% objectives_filter)
               } else {
                 FALSE
               }
@@ -317,7 +339,7 @@ filterPanelServer <- function(id, indicators_data) {
             # Only check main objectives
             sapply(main_objectives, function(obj) {
               if (!is.na(obj)) {
-                any(trimws(unlist(strsplit(obj, ","))) %in% selected_objectives)
+                any(trimws(unlist(strsplit(obj, ","))) %in% objectives_filter)
               } else {
                 FALSE
               }
@@ -337,15 +359,7 @@ filterPanelServer <- function(id, indicators_data) {
           }
         })
       
-      # Use cases filter
-      pattern <- paste(selected_use_cases, collapse = "|")
-      filtered <- filtered %>%
-        filter(
-          !is.na(use_cases) & 
-            str_detect(use_cases, regex(pattern, ignore_case = TRUE))
-        )
-      
-      # Priority filter (new addition)
+      # Priority filter
       if (input$priority_only) {
         filtered <- filtered %>%
           filter(high_priority == "High priority")
@@ -358,7 +372,6 @@ filterPanelServer <- function(id, indicators_data) {
           filter(
             str_detect(indicator_name, search_pattern) |
               str_detect(coalesce(indicator_description, ""), search_pattern) | 
-              str_detect(coalesce(gender_questions, ""), search_pattern) | 
               str_detect(coalesce(main_sector, ""), search_pattern) |
               str_detect(coalesce(secondary_mandates, ""), search_pattern) |
               str_detect(coalesce(main_mandate, ""), search_pattern) |
@@ -372,7 +385,7 @@ filterPanelServer <- function(id, indicators_data) {
         group_by(main_mandate_umbrella) %>% 
         add_count() %>% 
         ungroup() %>% 
-        arrange(desc(n), main_objectives, main_sector, indicator_name)
+        arrange(desc(n), main_objectives, indicator_name)
     })
     
     # Return the reactive
