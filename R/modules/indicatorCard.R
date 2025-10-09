@@ -498,168 +498,156 @@ indicatorCardJS <- function() {
         return null;
       }
       
-      // Enhanced scroll navigation with better upward scrolling
-      $(document).on('click', '.mandate-link', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+// Enhanced scroll navigation - replace in your indicatorCardJS function
+
+// Helper function to extract target ID from potentially full URLs
+function extractTargetId(href) {
+  if (!href) return null;
+  
+  var hashIndex = href.lastIndexOf('#');
+  if (hashIndex === -1) return null;
+  
+  var targetId = href.substring(hashIndex + 1);
+  
+  if (targetId.indexOf('mandate_') === 0) {
+    return targetId;
+  }
+  
+  return null;
+}
+
+// Improved scroll navigation with reliable upward scrolling
+$(document).on('click', '.mandate-link', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  var targetHref = $(this).attr('href');
+  var targetId = extractTargetId(targetHref);
+  
+  if (!targetId) {
+    console.warn('Could not extract target ID from href:', targetHref);
+    return;
+  }
+  
+  var target = $('#' + targetId);
+  
+  if (target.length > 0) {
+    // Close expanded cards for cleaner scrolling
+    $('.indicator-card-modern.expanded').each(function() {
+      $(this).removeClass('expanded')
+        .find('.card-content-modern').css('display', 'none').end()
+        .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+    });
+    
+    // Calculate target position with offset for header
+    var targetTop = target.offset().top;
+    var scrollOffset = 100; // Adjust this value based on your fixed header height
+    var finalPosition = Math.max(0, targetTop - scrollOffset);
+    
+    // Use a simple, reliable scroll method
+    // Disable smooth scrolling temporarily
+    $('html').css('scroll-behavior', 'auto');
+    
+    // Perform the scroll using multiple methods for maximum compatibility
+    window.scrollTo(0, finalPosition);
+    document.documentElement.scrollTop = finalPosition;
+    document.body.scrollTop = finalPosition;
+    
+    // Use requestAnimationFrame to ensure scroll completes
+    requestAnimationFrame(function() {
+      window.scrollTo(0, finalPosition);
+      document.documentElement.scrollTop = finalPosition;
+      
+      // Verify scroll position after a short delay
+      setTimeout(function() {
+        var currentPos = $(window).scrollTop();
         
-        var targetHref = $(this).attr('href');
-        var targetId = extractTargetId(targetHref);
-        
-        if (!targetId) {
-          console.warn('Could not extract target ID from href:', targetHref);
-          return;
-        }
-        
-        var target = $('#' + targetId);
-        
-        if (target.length > 0) {
-          // Close expanded cards for cleaner scrolling
-          $('.indicator-card-modern.expanded').each(function() {
-            $(this).removeClass('expanded')
-              .find('.card-content-modern').css('display', 'none').end()
-              .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+        // If we're not at the target position, try one more time
+        if (Math.abs(currentPos - finalPosition) > 10) {
+          window.scrollTo(0, finalPosition);
+          document.documentElement.scrollTop = finalPosition;
+          document.body.scrollTop = finalPosition;
+          
+          // Try scrollIntoView as fallback
+          target[0].scrollIntoView({ 
+            behavior: 'auto', 
+            block: 'start',
+            inline: 'nearest'
           });
           
-          var currentPos = $(window).scrollTop();
-          var targetTop = target.offset().top;
-          var finalPosition = Math.max(0, targetTop - 100);
-          var scrollingUp = finalPosition < currentPos;
-          
-          // Temporarily disable scroll event handlers that might interfere
-          var originalScrollHandlers = [];
-          $(window).off('scroll.tempDisable');
-          
-          // Enhanced scroll function with direction awareness
-          function performBidirectionalScroll(position, attempt, isUpward) {
-            attempt = attempt || 1;
-            
-            if (isUpward) {
-              // For upward scrolling, use more aggressive methods
-              
-              // Method 1: Direct DOM manipulation (most reliable for upward)
-              document.documentElement.scrollTop = position;
-              document.body.scrollTop = position;
-              
-              // Method 2: Multiple window.scrollTo calls with slight delays
-              window.scrollTo(0, position);
-              setTimeout(function() {
-                window.scrollTo({top: position, behavior: 'auto'});
-                document.documentElement.scrollTop = position;
-              }, 5);
-              
-              // Method 3: jQuery with immediate application
-              $('html, body').scrollTop(position);
-              $(window).scrollTop(position);
-              
-              // Method 4: Force scroll with requestAnimationFrame
-              requestAnimationFrame(function() {
-                document.documentElement.scrollTop = position;
-                document.body.scrollTop = position;
-                $(window).scrollTop(position);
-              });
-              
-            } else {
-              // For downward scrolling, use standard methods
-              document.documentElement.scrollTop = position;
-              document.body.scrollTop = position;
-              
-              try {
-                window.scrollTo(0, position);
-                window.scrollTo({top: position, behavior: 'auto'});
-              } catch(e) {}
-              
-              $(window).scrollTop(position);
-              $('html, body').scrollTop(position);
-            }
-            
-            // Verification with direction-specific retry logic
-            setTimeout(function() {
-              var currentPos = $(window).scrollTop();
-              var diff = Math.abs(currentPos - position);
-              
-              if (diff > 50 && attempt < 8) {
-                // More attempts for upward scrolling since it's more problematic
-                var maxAttempts = isUpward ? 8 : 5;
-                
-                if (attempt < maxAttempts) {
-                  // Try scrollIntoView as backup
-                  try {
-                    target[0].scrollIntoView({
-                      block: 'start', 
-                      behavior: 'auto',
-                      inline: 'nearest'
-                    });
-                  } catch(e) {}
-                  
-                  performBidirectionalScroll(position, attempt + 1, isUpward);
-                }
-              } else if (diff <= 50) {
-                // Success - add highlight effect and re-enable scroll handlers
-                target.find('.mandate-section-header').addClass('highlight-flash');
-                setTimeout(function() {
-                  target.find('.mandate-section-header').removeClass('highlight-flash');
-                  
-                  // Re-enable scroll handlers for active link highlighting
-                  setTimeout(function() {
-                    updateActiveMandateLink();
-                  }, 100);
-                }, 1500);
-              }
-            }, isUpward ? 50 : 30); // Longer delay for upward scrolling
-          }
-          
-          performBidirectionalScroll(finalPosition, 1, scrollingUp);
-          
-        } else {
-          console.warn('Target element not found:', targetId);
+          // Adjust position after scrollIntoView
+          setTimeout(function() {
+            var adjustedTop = target.offset().top - scrollOffset;
+            window.scrollTo(0, adjustedTop);
+          }, 50);
         }
-      });
-      
-      // URL-safe active mandate highlighting
-      function updateActiveMandateLink() {
-        var scrollPos = $(window).scrollTop() + 200;
-        var activeLink = null;
-        var closestDistance = Infinity;
         
-        $('.mandate-link').each(function() {
-          var link = $(this);
-          var targetHref = link.attr('href');
-          var targetId = extractTargetId(targetHref);
-          
-          if (!targetId) return;
-          
-          var target = $('#' + targetId);
-          
-          if (target.length && target.offset()) {
-            var targetTop = target.offset().top;
-            var targetBottom = targetTop + target.outerHeight();
-            var distance = Math.abs(scrollPos - targetTop);
-            
-            if ((scrollPos >= targetTop - 100 && scrollPos <= targetBottom) || 
-                (distance < closestDistance && scrollPos >= targetTop - 200)) {
-              activeLink = link;
-              closestDistance = distance;
-            }
-          }
-        });
+        // Add highlight effect
+        target.find('.mandate-section-header').addClass('highlight-flash');
+        setTimeout(function() {
+          target.find('.mandate-section-header').removeClass('highlight-flash');
+        }, 1500);
         
-        $('.mandate-link').removeClass('active');
-        if (activeLink) {
-          activeLink.addClass('active');
-        }
-      }
-      
-      var scrollTimeout;
-      $(window).on('scroll', function() {
-        if (scrollTimeout) {
-          clearTimeout(scrollTimeout);
-        }
-        scrollTimeout = setTimeout(updateActiveMandateLink, 100);
-      });
-      
-      updateActiveMandateLink();
+        // Re-enable smooth scrolling
+        setTimeout(function() {
+          $('html').css('scroll-behavior', 'smooth');
+          updateActiveMandateLink();
+        }, 100);
+        
+      }, 100);
     });
+    
+  } else {
+    console.warn('Target element not found:', targetId);
+  }
+});
+
+// URL-safe active mandate highlighting
+function updateActiveMandateLink() {
+  var scrollPos = $(window).scrollTop() + 200;
+  var activeLink = null;
+  var closestDistance = Infinity;
+  
+  $('.mandate-link').each(function() {
+    var link = $(this);
+    var targetHref = link.attr('href');
+    var targetId = extractTargetId(targetHref);
+    
+    if (!targetId) return;
+    
+    var target = $('#' + targetId);
+    
+    if (target.length && target.offset()) {
+      var targetTop = target.offset().top;
+      var targetBottom = targetTop + target.outerHeight();
+      var distance = Math.abs(scrollPos - targetTop);
+      
+      if ((scrollPos >= targetTop - 100 && scrollPos <= targetBottom) || 
+          (distance < closestDistance && scrollPos >= targetTop - 200)) {
+        activeLink = link;
+        closestDistance = distance;
+      }
+    }
+  });
+  
+  $('.mandate-link').removeClass('active');
+  if (activeLink) {
+    activeLink.addClass('active');
+  }
+}
+
+var scrollTimeout;
+$(window).on('scroll', function() {
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout);
+  }
+  scrollTimeout = setTimeout(updateActiveMandateLink, 100);
+});
+
+// Initialize on page load
+$(document).ready(function() {
+  updateActiveMandateLink();
+});
     
     // Custom message handlers
     Shiny.addCustomMessageHandler('setupSelectButtons', function(data) {
