@@ -78,10 +78,19 @@ ui <- page_navbar(
     selectedIndicatorsUI("selected")
   ),
   
-  nav_panel(
-    "About",
-    includeHTML("www/about.html")
+  nav_item(
+    actionButton(
+      "show_about",
+      "About",
+      class = "btn-link",
+      style = "color: inherit; text-decoration: none; border: none; background: transparent; font-size: 15px;"
+    )
   )
+  
+  # nav_panel(
+  #   "About",
+  #   includeHTML("www/about.html")
+  # )
 )
 
 # SERVER ----------
@@ -266,6 +275,177 @@ server <- function(input, output, session) {
       )
     }
   })
+  
+  
+  # Add this observer in your server function:
+  observeEvent(input$show_about, {
+    showModal(
+      modalDialog(
+        title = NULL,
+        size = "xl",
+        easyClose = TRUE,
+        footer = modalButton("Close"),
+        
+        # Modal content
+        div(
+          # Header section
+          div(
+            style = paste0(
+              "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ",
+              "color: white; ",
+              "padding: 30px; ",
+              "margin: -15px -15px 30px -15px; ",
+              "border-radius: 8px 8px 0 0;"
+            ),
+            h2(
+              icon("book", class = "fas", style = "margin-right: 10px;"),
+              "About CGAP LENS",
+              style = "margin: 0; font-size: 28px; font-weight: 700;"
+            ),
+            p(
+              "Regulatory Indicators with a Sociodemographic Lens",
+              style = "margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;"
+            )
+          ),
+          
+          # Content sections
+          div(
+            style = "padding: 0 20px;",
+            
+            # Context & Additional Resources
+            div(
+              class = "about-section",
+              style = "margin-bottom: 30px;",
+              h3(
+                icon("graduation-cap", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+                "Context & Additional Resources",
+                style = "color: #333; margin-bottom: 15px; font-size: 20px;"
+              ),
+              p(
+                "The RGDD explorer is one component of CGAP's project to support the mainstreaming of gender-disaggregated regulatory data in the financial sector and should be consulted jointly with 'Using Gender-Disaggregated Regulatory Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities'.",
+                style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
+              ),
+              p(
+                "This technical guide describes use cases for Regulatory gender-disaggregated data (RGDD), provides recommendations for Financial Sector Authorities on how to leverage regulatory reporting regimes to maximize the use of gender-disaggregated data for multiple FSA mandates and to support the goals of other actors (policymakers, FSPs, funders and investors), and provide recommendations for FSAs to collect, use and disseminate gender equality data about their own organizations.",
+                style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
+              ),
+              div(
+                style = "display: flex; gap: 10px; flex-wrap: wrap;",
+                tags$a(
+                  href = "https://www.cgap.org",
+                  target = "_blank",
+                  class = "btn btn-outline-primary btn-sm",
+                  icon("book", class = "fas", style = "margin-right: 6px;"),
+                  "Technical Guide"
+                ),
+                tags$a(
+                  href = "https://www.worldbank.org",
+                  target = "_blank",
+                  class = "btn btn-outline-primary btn-sm",
+                  icon("file-alt", class = "fas", style = "margin-right: 6px;"),
+                  "Companion Notes"
+                )
+              )
+            ),
+            
+            # Objectives & Approach
+            div(
+              class = "about-section",
+              style = "margin-bottom: 30px;",
+              h3(
+                icon("bullseye", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+                "Objectives & Approach",
+                style = "color: #333; margin-bottom: 15px; font-size: 20px;"
+              ),
+              p(
+                "The RGDD explorer provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, safety, stability and competition. The selection of indicators is informed both by their general relevance to these different dimensions of the financial system as well as their potential relevance for understanding the role of gender within those dimensions.",
+                style = "line-height: 1.6; color: #555;"
+              )
+            ),
+            
+            # Sources
+            div(
+              class = "about-section",
+              style = "margin-bottom: 30px;",
+              h3(
+                icon("database", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+                "Sources",
+                style = "color: #333; margin-bottom: 15px; font-size: 20px;"
+              ),
+              p(
+                "To build the indicators catalog, the CGAP team examined a variety of sources, including work from prior CGAP projects and existing indicators from international organizations focused on financial inclusion and regulation.",
+                style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
+              ),
+              div(
+                style = "display: flex; gap: 10px; flex-wrap: wrap;",
+                tags$a(
+                  href = "https://data.imf.org/en/datasets/IMF.STA:FAS",
+                  target = "_blank",
+                  class = "btn btn-outline-secondary btn-sm",
+                  "IMF FAS"
+                ),
+                tags$a(
+                  href = "https://www.gpfi.org",
+                  target = "_blank",
+                  class = "btn btn-outline-secondary btn-sm",
+                  "GPFI"
+                ),
+                tags$a(
+                  href = "https://www.afi-global.org",
+                  target = "_blank",
+                  class = "btn btn-outline-secondary btn-sm",
+                  "AFI"
+                ),
+                tags$a(
+                  href = "https://www.we-fi.org/we-finance-code/#home",
+                  target = "_blank",
+                  class = "btn btn-outline-secondary btn-sm",
+                  "WE Finance Code"
+                )
+              )
+            ),
+            
+            # Team & Contact
+            div(
+              class = "about-section",
+              style = paste0(
+                "background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); ",
+                "padding: 20px; ",
+                "border-radius: 12px; ",
+                "margin-bottom: 20px;"
+              ),
+              h3(
+                icon("users", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+                "About CGAP",
+                style = "color: #333; margin-bottom: 15px; font-size: 20px;"
+              ),
+              p(
+                "CGAP is a global partnership of more than 30 organizations that works to advance the lives of poor people, particularly women, through financial inclusion. We provide market intelligence, convene diverse partners, support financial services innovations, and advise governments and policymakers on financial inclusion.",
+                style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
+              ),
+              div(
+                style = "display: flex; gap: 15px; align-items: center; flex-wrap: wrap;",
+                tags$a(
+                  href = "https://www.cgap.org",
+                  target = "_blank",
+                  class = "btn btn-primary btn-sm",
+                  icon("globe", class = "fas", style = "margin-right: 6px;"),
+                  "Visit CGAP.org"
+                ),
+                tags$a(
+                  href = "mailto:cgap@worldbank.org",
+                  class = "btn btn-outline-primary btn-sm",
+                  icon("envelope", class = "fas", style = "margin-right: 6px;"),
+                  "Contact Us"
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  })
+  
 }
 
 # Run the app

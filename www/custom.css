@@ -880,3 +880,51 @@ html, body {
     transform: scale(1.1);
 }
 
+/* ABOUT MODAL*/ 
+
+.modal-xl {
+  max-width: 1140px;
+}
+
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  border-bottom: none;
+  padding: 0;
+}
+
+.modal-body {
+  padding: 15px;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 15px;
+}
+
+.about-section {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.about-section h3 {
+  animation-delay: 0.1s;
+}
+
+.about-section p {
+  animation-delay: 0.2s;
+}
