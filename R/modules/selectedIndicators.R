@@ -89,7 +89,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                          class = "btn btn-light btn-sm",
                          style = "font-weight: 500;"),
           actionButton(ns("open_pdf"), 
-                       "PDF Report", 
+                       "Print Report", 
                        icon = icon("file-pdf"),
                        class = "btn btn-light btn-sm",
                        style = "font-weight: 500;")
@@ -389,3 +389,4 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
     )
   })
 }
+

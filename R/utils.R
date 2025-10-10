@@ -51,103 +51,6 @@ generate_sector_styles <- function(sector_colors) {
 # Create indicator key legend
 
 indicator_key <- function() {
-  # Create gradient from all sector colors
-  sector_colors <- c("#FFD700", "#FFA07A", "#98FB98", "#87CEFA", "#DDA0DD", "#FFC0CB", "#B0C4DE")
-  
-  # Calculate gradient stops
-  num_colors <- length(sector_colors)
-  gradient_stops <- paste(
-    sapply(seq_along(sector_colors), function(i) {
-      start_pct <- (i - 1) * (100 / num_colors)
-      end_pct <- i * (100 / num_colors)
-      paste0(sector_colors[i], " ", start_pct, "%, ", sector_colors[i], " ", end_pct, "%")
-    }),
-    collapse = ", "
-  )
-  
-  gradient_bg <- paste0("linear-gradient(90deg, ", gradient_stops, ")")
-  
-  div(
-    style = "display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 0; margin-bottom: 16px;",
-    
-    # Indicator name example
-    span(
-      "Indicator name", 
-      style = paste0(
-        "background-color: white; ",
-        "display: inline-block; ",
-        "padding: 4px 10px; ",
-        "border-radius: 4px; ",
-        "color: black; ",
-        "font-weight: bold; ",
-        "font-size: 14px; ",
-        "border: 1px solid #e9ecef;"
-      )
-    ),
-    
-    # Main objective example
-    span(
-      "Main objective(s)", 
-      style = paste0(
-        "background-color: #e3f2fd; ",
-        "color: #1565c0; ",
-        "display: inline-block; ",
-        "padding: 4px 10px; ",
-        "border-radius: 16px; ",
-        "font-size: 12px; ",
-        "font-weight: 500; ",
-        "border: 1px solid #bbdefb;"
-      )
-    ),
-    
-    # Main sector example with multicolor gradient
-    span(
-      "Main sector", 
-      style = paste0(
-        "background: ", gradient_bg, "; ",
-        "color: #333; ",
-        "display: inline-block; ",
-        "padding: 4px 10px; ",
-        "border-radius: 16px; ",
-        "font-size: 12px; ",
-        "font-weight: 500; ",
-        "border: 1px solid rgba(0,0,0,0.1); ",
-        "font-weight: 600; ",
-        "text-shadow: 0 0 2px rgba(255,255,255,0.8);"
-      )
-    ),
-    
-    # Priority indicator explanation
-    div(
-      style = "display: flex; align-items: center; gap: 6px;",
-      div(
-        style = paste0(
-          "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-          "color: #856404; ",
-          "padding: 4px 8px; ",
-          "border-radius: 12px; ",
-          "font-size: 11px; ",
-          "font-weight: 600; ",
-          "display: flex; ",
-          "align-items: center; ",
-          "gap: 4px; ",
-          "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
-        ),
-        tags$i(class = "fas fa-star", style = "font-size: 10px;"),
-        "Featured"
-      ),
-      span(
-        "= Featured in CGAP technical guide",
-        style = "font-size: 12px; color: #495057;"
-      )
-    )
-  )
-}
-# Updated indicator_key function for R/utils.R
-# Matches the CSS styling from indicatorCardModern
-
-
-indicator_key <- function() {
   # Simpler, direct gradient creation using all sector colors
   gradient_bg <- "linear-gradient(90deg, #FFD700 0%, #FFD700 14.28%, #FFA07A 14.28%, #FFA07A 28.56%, #98FB98 28.56%, #98FB98 42.84%, #87CEFA 42.84%, #87CEFA 57.12%, #DDA0DD 57.12%, #DDA0DD 71.4%, #FFC0CB 71.4%, #FFC0CB 85.68%, #B0C4DE 85.68%, #B0C4DE 100%)"
   
@@ -1110,3 +1013,519 @@ enhanced_mandate_header <- function(mandate, count) {
     )
   )
 }
+
+# Enhanced create_pdf_report function for R/utils.R
+# Creates a modern, printer-friendly HTML report matching app styling
+
+# Enhanced create_pdf_report function for R/utils.R
+# Creates a modern, printer-friendly HTML report matching app styling
+
+create_pdf_report <- function(indicators, comments, sector_colors) {
+  paste0('
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selected Indicators Report - CGAP LENS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        /* Header Section */
+        .report-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .report-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .report-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .report-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .report-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .meta-label {
+            font-size: 11px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .meta-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        /* Summary Section */
+        .summary-section {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .summary-card i {
+            font-size: 28px;
+            color: #667eea;
+            margin-bottom: 12px;
+        }
+        
+        .summary-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .summary-card-label {
+            font-size: 13px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Indicators Section */
+        .indicators-section {
+            padding: 40px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .indicator-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            page-break-inside: avoid;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .indicator-accent {
+            height: 6px;
+            background: linear-gradient(90deg, var(--sector-color) 0%, var(--sector-color-light) 100%);
+        }
+        
+        .indicator-content {
+            padding: 24px;
+        }
+        
+        .indicator-header {
+            margin-bottom: 16px;
+        }
+        
+        .indicator-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .badge-mandate {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
+        }
+        
+        .badge-objective {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #e1bee7;
+        }
+        
+        .badge-sector {
+            background-color: var(--sector-color);
+            color: #333;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .badge-priority {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #856404;
+            font-weight: 600;
+        }
+        
+        .indicator-description {
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .details-section {
+            margin-top: 20px;
+        }
+        
+        .detail-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .detail-value {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+        
+        .comment-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, #fff7e6 0%, #fffbf0 100%);
+            border-radius: 8px;
+            border: 1px solid #ffe4b3;
+        }
+        
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .comment-header i {
+            color: #ff9800;
+        }
+        
+        .comment-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e65100;
+        }
+        
+        .comment-text {
+            font-size: 13px;
+            color: #5d4037;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        /* Footer */
+        .report-footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .footer-logo {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #adb5bd;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .report-header {
+                background: #667eea;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .indicator-card {
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+            
+            .badge, .comment-section {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="report-header">
+            <h1><i class="fas fa-clipboard-check"></i> Selected Indicators Report</h1>
+            <div class="report-subtitle">CGAP LENS - Regulatory Indicators with a Sociodemographic Lens</div>
+            <div class="report-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Generated</div>
+                    <div class="meta-value">', format(Sys.Date(), "%B %d, %Y"), '</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Total Indicators</div>
+                    <div class="meta-value">', nrow(indicators), '</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <h2 class="section-title">Summary Overview</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <i class="fas fa-scroll"></i>
+                    <div class="summary-card-value">', length(unique(indicators$main_mandate)), '</div>
+                    <div class="summary-card-label">Mandates</div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-chart-pie"></i>
+                    <div class="summary-card-value">', length(unique(indicators$main_sector)), '</div>
+                    <div class="summary-card-label">Sectors</div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-star"></i>
+                    <div class="summary-card-value">', sum(indicators$high_priority == "High priority", na.rm = TRUE), '</div>
+                    <div class="summary-card-label">Featured</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Indicators Section -->
+        <div class="indicators-section">
+            <h2 class="section-title">Selected Indicators</h2>
+            ',
+         paste0(lapply(1:nrow(indicators), function(i) {
+           ind <- indicators[i, ]
+           comment <- comments[i]
+           sector_color <- sector_colors[[ind$main_sector]] %||% "#cccccc"
+           sector_color_light <- adjustcolor(sector_color, alpha.f = 0.6)
+           
+           paste0('
+            <div class="indicator-card" style="--sector-color: ', sector_color, '; --sector-color-light: ', sector_color_light, ';">
+                <div class="indicator-accent"></div>
+                <div class="indicator-content">
+                    <div class="indicator-header">
+                        <h3 class="indicator-title">', htmlEscape(ind$indicator_name), '</h3>
+                        <div class="badge-group">
+                            <span class="badge badge-mandate">
+                                <i class="fas fa-scroll"></i>
+                                ', htmlEscape(ind$main_mandate), '
+                            </span>
+                            <span class="badge badge-objective">
+                                <i class="fas fa-bullseye"></i>
+                                ', htmlEscape(ind$main_objectives), '
+                            </span>
+                            <span class="badge badge-sector">
+                                <i class="fas fa-chart-pie"></i>
+                                ', htmlEscape(ind$main_sector), '
+                            </span>',
+                  if (!is.null(ind$high_priority) && !is.na(ind$high_priority) && ind$high_priority == "High priority") {
+                    '<span class="badge badge-priority"><i class="fas fa-star"></i> Featured</span>'
+                  } else {
+                    ''
+                  }, '
+                        </div>
+                    </div>
+                    
+                    <div class="indicator-description">
+                        ', htmlEscape(ind$indicator_description), '
+                    </div>
+                    
+                    <div class="details-section">',
+                  if (!is.null(ind$indicator_long_description) && !is.na(ind$indicator_long_description) && ind$indicator_long_description != "") {
+                    paste0('
+                        <div class="detail-item">
+                            <div class="detail-label">Detailed Description</div>
+                            <div class="detail-value">', substr(htmlEscape(ind$indicator_long_description), 1, 500), 
+                           if(nchar(ind$indicator_long_description) > 500) '...' else '', '</div>
+                        </div>')
+                  } else {
+                    ''
+                  },
+                  
+                  if (!is.null(ind$gender_questions) && !is.na(ind$gender_questions) && ind$gender_questions != "") {
+                    paste0('
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-question-circle"></i> Gender Analysis Questions</div>
+                            <div class="detail-value">', substr(htmlEscape(ind$gender_questions), 1, 400),
+                           if(nchar(ind$gender_questions) > 400) '...' else '', '</div>
+                        </div>')
+                  } else {
+                    ''
+                  },
+                  
+                  if (!is.null(ind$unit_of_analysis) && !is.na(ind$unit_of_analysis) && ind$unit_of_analysis != "") {
+                    paste0('
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-cube"></i> Unit of Analysis</div>
+                            <div class="detail-value">', htmlEscape(ind$unit_of_analysis), '</div>
+                        </div>')
+                  } else {
+                    ''
+                  },
+                  
+                  if (!is.null(ind$measurement_type) && !is.na(ind$measurement_type) && ind$measurement_type != "") {
+                    paste0('
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-ruler"></i> Measurement Type</div>
+                            <div class="detail-value">', htmlEscape(ind$measurement_type), '</div>
+                        </div>')
+                  } else {
+                    ''
+                  }, '
+                    </div>',
+                  
+                  if (comment != "") paste0('
+                    <div class="comment-section">
+                        <div class="comment-header">
+                            <i class="fas fa-comment-dots"></i>
+                            <span class="comment-label">Notes & Observations</span>
+                        </div>
+                        <div class="comment-text">', htmlEscape(comment), '</div>
+                    </div>') else '', '
+                </div>
+            </div>')
+         }), collapse = "\n"), '
+        </div>
+        
+        <!-- Footer -->
+        <div class="report-footer">
+            <div class="footer-logo">
+                <strong>CGAP LENS</strong> - Regulatory Indicators with a Sociodemographic Lens
+            </div>
+            <div class="footer-text">
+                This report was generated by the CGAP LENS platform<br>
+                For more information, visit <a href="https://www.cgap.org" style="color: #667eea;">www.cgap.org</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>')
+}
+
