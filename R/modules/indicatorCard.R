@@ -76,7 +76,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
             
             
             # Priority star
-            if (indicator$preset_foundation == 1) {
+            if (!is.na(indicator$preset_foundation) && indicator$preset_foundation == 1) {
               div(
                 class = "priority-badge",
                 style = paste0(

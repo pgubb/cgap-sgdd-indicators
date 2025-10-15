@@ -377,7 +377,7 @@ filterPanelServer <- function(id, indicators_data) {
           }
         })
       
-      # Priority filter
+      # Presets filter
       if (input$presets_foundation) {
         filtered <- filtered %>%
           filter(preset_foundation == 1)
