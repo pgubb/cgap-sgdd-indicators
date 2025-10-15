@@ -91,8 +91,8 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
                   "gap: 4px; ",
                   "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
                 ),
-                icon("star", class = "fas", style = "font-size: 10px;"),
-                "Featured"
+                icon("building-columns", class = "fas", style = "font-size: 10px;"),
+                "Foundational"
               )
             }
           ),

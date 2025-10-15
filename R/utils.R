@@ -101,28 +101,8 @@ indicator_key <- function() {
         "border: 1px solid rgba(0,0,0,0.15); ",
         "text-shadow: 0 0 3px rgba(255,255,255,0.9), 0 0 5px rgba(255,255,255,0.7);"
       )
-    ),
-    
-    # Foundational preset
-    div(
-      style = "display: flex; align-items: center; gap: 6px;",
-      div(
-        style = paste0(
-          "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-          "color: #856404; ",
-          "padding: 4px 8px; ",
-          "border-radius: 12px; ",
-          "font-size: 11px; ",
-          "font-weight: 600; ",
-          "display: flex; ",
-          "align-items: center; ",
-          "gap: 4px; ",
-          "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
-        ),
-        tags$i(class = "fas fa-star", style = "font-size: 10px;"),
-        "Foundational"
-      )
     )
+    
   )
 }
 
@@ -724,7 +704,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
                 "align-items: center; ",
                 "gap: 6px;"
               ),
-              icon("star", class = "fas", style = "font-size: 10px;"),
+              icon("building-columns", class = "fas", style = "font-size: 10px;"),
               "Foundational"
             )
           },
@@ -1422,8 +1402,8 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                                 <i class="fas fa-chart-pie"></i>
                                 ', htmlEscape(ind$main_sector), '
                             </span>',
-                  if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == "High priority") {
-                    '<span class="badge badge-priority"><i class="fas fa-star"></i> Featured</span>'
+                  if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
+                    '<span class="badge badge-priority"><i class="fas fa-"building-columns"></i> Foundational</span>'
                   } else {
                     ''
                   }, '

@@ -114,7 +114,7 @@ filterPanelUI <- function(id) {
             )
           )
         ), 
-        icon = icon("chart-pie"),
+        icon = icon("sliders"),
         # Basic preset
         div(
           style = "display: flex; align-items: center; gap: 2px;",
