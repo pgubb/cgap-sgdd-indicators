@@ -413,28 +413,15 @@ indicators <- indicators %>%
 UA_NOTE <- "For analyses with a primary focus on financial inclusion, for this indicator it is recommended that only retail customers (i.e., natural persons) and/or financial products held by retail customers are considered. Where data permits, this indicator can be examined separately for MSMEs."
 flags <- read_csv("data/flags.csv") %>% select(indicator_id, ua_flag) %>% mutate(indicator_id = as.character(indicator_id), ua_flag_bin = ifelse(!is.na(ua_flag), 1, 0)) %>% select(indicator_id, ua_flag_bin)
 
-indicators <- indicators %>% left_join(flags, by = "indicator_id") %>%  mutate(unit_of_analysis = ifelse(ua_flag_bin == 1 | indicator_id %in% c("385", "386"), UA_NOTE, NA)) 
+indicators_base <- indicators %>% left_join(flags, by = "indicator_id") %>%  mutate(unit_of_analysis = ifelse(ua_flag_bin == 1 | indicator_id %in% c("385", "386"), UA_NOTE, NA)) 
 
-# Saving file 
-
-#filename <- "data/RGDD indicators_051225.xlsx"
-
-#usecases <-  read_excel(filename, sheet = "Use cases", skip = 1) %>% 
-#  clean_names() %>% 
-#  fill(overarching_vision_for_the_fs, gender_related_challenge_opportunity, how_sgdd_can_help_market_actors_tackle_challenge_opportunity)
-
-#names(usecases) <- c("vision", "opportunity", "rgdd_role", "use_case", "indicators_explanation", "type_of_analysis", "indicator_mandates")
-
-# Saving file 
-
-save(indicators, file = "data/indicators.RData")
 
 # Save as excel
 
 
-write_xlsx(
-  indicators %>% arrange(main_mandate_umbrella, main_objectives, indicator_name) %>% 
-    select(main_mandate_umbrella, main_objectives, main_sector, indicator_id, indicator_name, indicator_description, indicator_long_description, secondary_mandates, secondary_objectives, unit_of_analysis, gender_questions, essential_disagg, nonessential_disagg), 
-  "NOT_PUBLIC/LENS_indicators_100925.xlsx")
+#write_xlsx(
+#  indicators %>% arrange(main_mandate_umbrella, main_objectives, indicator_name) %>% 
+#    select(main_mandate_umbrella, main_objectives, main_sector, indicator_id, indicator_name, indicator_description, indicator_long_description, secondary_mandates, secondary_objectives, unit_of_analysis, gender_questions, essential_disagg, nonessential_disagg), 
+#  "NOT_PUBLIC/LENS_indicators_100925.xlsx")
 
   

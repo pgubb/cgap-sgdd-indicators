@@ -86,11 +86,7 @@ ui <- page_navbar(
       style = "color: inherit; text-decoration: none; border: none; background: transparent; font-size: 15px;"
     )
   )
-  
-  # nav_panel(
-  #   "About",
-  #   includeHTML("www/about.html")
-  # )
+
 )
 
 # SERVER ----------
@@ -106,7 +102,7 @@ server <- function(input, output, session) {
       main_mandate = character(),
       main_objectives = character(),
       main_sector = character(),
-      high_priority = character(),
+      presets_foundation = character(),
       indicator_long_description = character(), 
       gender_questions = character(), 
       comment = character(),
@@ -142,7 +138,7 @@ server <- function(input, output, session) {
       sectors = input$`filters-sectors`,
       use_cases = input$`filters-use_cases`,
       search = input$`filters-search`,
-      priority_only = input$`filters-priority_only`
+      presets_foundation = input$`filters-presets_foundation`
     )
     
     enhanced_navigation_helper(indicators_data, indicators, active_filters)
@@ -186,11 +182,11 @@ server <- function(input, output, session) {
     }
     
     # Group by mandate and render
-    mandates <- unique(indicators_data$main_mandate_umbrella)
+    mandates <- unique(indicators_data$main_mandate)
     
     for (mandate in mandates) {
       mandate_indicators <- indicators_data %>% 
-        filter(main_mandate_umbrella == mandate)
+        filter(main_mandate == mandate)
       
       # FIXED: Use consistent casing for both ID and header
       title_case_mandate <- str_to_title(mandate)
@@ -246,7 +242,7 @@ server <- function(input, output, session) {
         filter(indicator_id %in% values$selected_codes) %>%
         select(indicator_id, indicator_name, indicator_description, indicator_long_description, 
                main_mandate, main_objectives, main_sector, 
-               high_priority, gender_questions)
+               preset_foundation, gender_questions)
     })
   }, ignoreNULL = TRUE, ignoreInit = TRUE)
   

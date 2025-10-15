@@ -1,90 +1,5 @@
 # R/modules/indicatorCard.R - Module for individual indicator cards
 
-# Create an accordion panel for an indicator
-indicatorCardAccordion <- function(id, indicator, sector_colors, is_selected = FALSE) {
-  ns <- NS(id)
-  
-  sector_color <- sector_colors[[indicator$main_sector]]
-  
-  # Create organization logos
-  img_tags <- div(
-    style = "display: flex; justify-content: flex-start; gap: 10px; align-items: center; margin-top: 10px;",
-    if (!is.na(indicator$IMF)) tags$img(src = "imf_logo.png", height = "44px"),
-    if (!is.na(indicator$GPFI)) tags$img(src = "gpfi_logo.png", height = "44px"),
-    if (!is.na(indicator$AFI)) tags$img(src = "afi_logo.png", height = "44px"), 
-    if (!is.na(indicator$WEF)) tags$img(src = "wef_logo.png", height = "44px")
-  )
-  
-  # Check if sources_any field exists and has content
-  show_sources <- if ("sources_any" %in% names(indicator)) {
-    !is.na(indicator$sources_any) && !is.null(indicator$sources_any) && indicator$sources_any != ""
-  } else {
-    # Fallback: check if any of the individual source indicators are 1
-    (indicator$IMF == 1) || (indicator$GPFI == 1) || (indicator$AFI == 1) || (indicator$WEF == 1)
-  }
-  
-  accordion_panel(
-    value = indicator$indicator_id,
-    title = div(
-      span(
-        span(indicator$indicator_name, 
-             style = "background-color: white; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: bold; font-size: 14px"), 
-        span(indicator$main_objectives, 
-             style = "background-color: #E5E7E6; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px;"), 
-        span(indicator$main_sector, 
-             style = paste0("background-color: ", sector_color, "; display: inline-block; padding:2px; border-radius: 4px; color:black; font-weight: normal; font-size: 12px")), 
-        if (indicator$high_priority == "High priority") {
-          tags$i(class = "fas fa-file-lines", style = "color: gold; margin-left: 8px; font-size: 14px;")
-        }
-      )
-    ),
-    
-    div(
-      class = "card-body",
-      style = "font-size: 14px;",
-      
-      render_disagg_table_vertical(indicator, 
-                                   columns = c("main_mandate_objective", "secondary_mandate_objective", "main_sector", 
-                                               "secondary_sectors", "indicator_description", "indicator_long_description", "gender_questions", 
-                                               "unit_of_analysis", "measurement_type", "formula1", "formula2", "formula3"), 
-                                   pre_columns = c("formula1", "formula2", "formula3")),
-
-      render_disagg_table_generalized(indicator, c("essential_disagg", "nonessential_disagg")),
-      
-      render_disagg_table_generalized(indicator, c("use_cases"), delimiter = ",", mapping = USE_CASES),
-      
-      # Conditional rendering of sources section
-      if (show_sources) {
-        tagList(
-          br(),
-          p(strong("Equivalent or related indicators can also be found from the following sources:"), img_tags)
-        )
-      },
-      
-      render_disagg_table_vertical(indicator, columns = c("GPFI", "IMF",  "AFI", "WEF"), delimiter = ";"),
-      
-      
-      # Action button
-      div(
-        style = "display: flex; justify-content: flex-end; margin-top: 10px;",
-        tags$button(
-          id = paste0("select_", indicator$indicator_id),
-          class = paste("btn", 
-                        if (is_selected) "btn-sm btn-success select-indicator-btn" 
-                        else "btn-sm btn-outline-primary select-indicator-btn"),
-          `data-indicator-id` = indicator$indicator_id,
-          `data-selected` = tolower(as.character(is_selected)),
-          icon(if (is_selected) "check-circle" else "plus-circle", lib = "font-awesome"),
-          span(class = "btn-text", 
-               if (is_selected) " Remove from list" else " Add to list")
-        )
-      )
-    )
-  )
-}
-
-
-
 # Enhanced indicator card with modern design
 indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALSE) {
   ns <- NS(id)
@@ -159,8 +74,9 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
               )
             ),
             
+            
             # Priority star
-            if (indicator$high_priority == "High priority") {
+            if (indicator$preset_foundation == 1) {
               div(
                 class = "priority-badge",
                 style = paste0(
@@ -314,15 +230,14 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
           render_disagg_table_vertical(
             indicator, 
             columns = c("indicator_description", "indicator_long_description", "gender_questions","unit_of_analysis", "measurement_type", "main_mandate_objective", "secondary_mandate_objective", "main_sector", 
-                        "secondary_sectors"), 
-            pre_columns = c("formula1", "formula2", "formula3")
+                        "secondary_sectors")
           )
         ),
         
         # Breakdowns section
         div(
           style = "margin-bottom: 24px;",
-          render_disagg_table_generalized(indicator, c("essential_disagg", "nonessential_disagg"))
+          render_disagg_table_generalized(indicator, c("disaggregation_vars"))
         ),
         
         # Sources section (if applicable)

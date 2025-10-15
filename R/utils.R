@@ -138,19 +138,19 @@ create_mandate_links <- function(indicators_data) {
   }
   
   # Get unique mandates from the filtered data
-  mandates <- unique(indicators_data$main_mandate_umbrella)
+  mandates <- unique(indicators_data$main_mandate)
   
   # Remove NA values if any
   mandates <- mandates[!is.na(mandates)]
   
   # Getting number of indicators per mandate 
   N_ind_bymandate <- indicators_data %>% 
-    filter(!is.na(main_mandate_umbrella)) %>%  # Filter out NA mandates
-    group_by(main_mandate_umbrella) %>% 
+    filter(!is.na(main_mandate)) %>%  # Filter out NA mandates
+    group_by(main_mandate) %>% 
     summarise(n = n(), .groups = "drop")
   
   # Create named vector for lookup
-  ref <- setNames(as.character(N_ind_bymandate$n), as.character(N_ind_bymandate$main_mandate_umbrella))
+  ref <- setNames(as.character(N_ind_bymandate$n), as.character(N_ind_bymandate$main_mandate))
   
   # Debug: print the reference to console (remove in production)
   # print("Mandate counts:")
@@ -635,9 +635,9 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   N <- nrow(total_indicators)
   
   # Calculate statistics
-  mandates_count <- length(unique(filtered_indicators$main_mandate_umbrella))
+  mandates_count <- length(unique(filtered_indicators$main_mandate))
   sectors_count <- length(unique(filtered_indicators$main_sector))
-  priority_count <- sum(filtered_indicators$high_priority == "High priority", na.rm = TRUE)
+  priority_count <- sum(filtered_indicators$preset_foundation == "High priority", na.rm = TRUE)
   
   # Check if any filters are active
   has_active_filters <- !is.null(active_filters) && (
@@ -646,7 +646,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       length(active_filters$sectors) > 0 ||
       length(active_filters$use_cases) > 0 ||
       !is.null(active_filters$search) && active_filters$search != "" ||
-      active_filters$priority_only == TRUE
+      active_filters$presets_foundation == TRUE
   )
   
   div(
@@ -715,7 +715,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           },
           
           # Priority filter
-          if (!is.null(active_filters$priority_only) && active_filters$priority_only == TRUE) {
+          if (!is.null(active_filters$presets_foundation) && active_filters$presets_foundation == TRUE) {
             span(
               style = paste0(
                 "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
@@ -1410,7 +1410,7 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                 </div>
                 <div class="summary-card">
                     <i class="fas fa-star"></i>
-                    <div class="summary-card-value">', sum(indicators$high_priority == "High priority", na.rm = TRUE), '</div>
+                    <div class="summary-card-value">', sum(indicators$preset_foundation == "High priority", na.rm = TRUE), '</div>
                     <div class="summary-card-label">Featured</div>
                 </div>
             </div>
@@ -1445,7 +1445,7 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                                 <i class="fas fa-chart-pie"></i>
                                 ', htmlEscape(ind$main_sector), '
                             </span>',
-                  if (!is.null(ind$high_priority) && !is.na(ind$high_priority) && ind$high_priority == "High priority") {
+                  if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == "High priority") {
                     '<span class="badge badge-priority"><i class="fas fa-star"></i> Featured</span>'
                   } else {
                     ''

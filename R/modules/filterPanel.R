@@ -8,16 +8,6 @@ filterPanelUI <- function(id) {
     textInput(ns("search"), "Search", 
               placeholder = "Search by indicator name, sector, use-case..."),
     
-    # Priority filter switch
-    div(
-      style = "display: flex; align-items: center; gap: 2px;",
-      input_switch(
-        ns("priority_only"), 
-        label = "Featured in CGAP technical guide",
-        value = FALSE
-      )
-    ),
-    
     accordion(
       open = c("mandates"),
       
@@ -109,6 +99,34 @@ filterPanelUI <- function(id) {
         )
       ),
     
+      # Presets filter with toggle and CSS tooltip
+      accordion_panel(
+        value = "presets",
+        title = div(
+          style = "display: inline-flex; align-items: center; gap: 8px;",
+          "Presets",
+          div(
+            class = "my-tooltip",
+            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
+            div(
+              class = "my-tooltiptext",
+              "Toggle filters by presets that align with cross-cutting themes"
+            )
+          )
+        ), 
+        icon = icon("chart-pie"),
+        # Basic preset
+        div(
+          style = "display: flex; align-items: center; gap: 2px;",
+          input_switch(
+            ns("presets_foundation"), 
+            label = "Foundational indicators",
+            value = FALSE
+          )
+        ),
+      ),
+      
+      
     br(), 
     
     div(
@@ -134,7 +152,7 @@ filterPanelServer <- function(id, indicators_data) {
       # Mandates
       updateCheckboxGroupInput(
         session, "mandates",
-        choices = levels(indicators_data$main_mandate_umbrella),
+        choices = levels(indicators_data$main_mandate),
         selected = character(0)
       )
       
@@ -266,15 +284,15 @@ filterPanelServer <- function(id, indicators_data) {
       updateInputSwitch(session, "include_secondary_objectives", value = FALSE)
       updateInputSwitch(session, "include_secondary_sectors", value = FALSE)
       
-      # Reset priority filter
-      updateInputSwitch(session, "priority_only", value = FALSE)
+      # Reset presets filters
+      updateInputSwitch(session, "presets_foundation", value = FALSE)
     })
     
     # Return reactive with filtered data
     filtered_indicators <- reactive({
       # If no filters are selected in a category, include all items for that category
       selected_mandates <- if (length(input$mandates) == 0) {
-        unique(indicators_data$main_mandate_umbrella)
+        unique(indicators_data$main_mandate)
       } else {
         input$mandates
       }
@@ -308,7 +326,7 @@ filterPanelServer <- function(id, indicators_data) {
                    any(trimws(unlist(strsplit(x, ";"))) %in% selected_mandates)
                  }))
           } else {
-            main_mandate_umbrella %in% selected_mandates
+            main_mandate %in% selected_mandates
           }
         }) %>%
         filter({
@@ -360,9 +378,9 @@ filterPanelServer <- function(id, indicators_data) {
         })
       
       # Priority filter
-      if (input$priority_only) {
+      if (input$presets_foundation) {
         filtered <- filtered %>%
-          filter(high_priority == "High priority")
+          filter(preset_foundation == 1)
       }
       
       # Apply search filter if not empty
@@ -382,10 +400,10 @@ filterPanelServer <- function(id, indicators_data) {
       
       # Sort by mandate count, then by other fields
       filtered %>% 
-        group_by(main_mandate_umbrella) %>% 
+        group_by(main_mandate) %>% 
         add_count() %>% 
         ungroup() %>% 
-        arrange(desc(n), main_objectives, indicator_name)
+        arrange(desc(n), main_objectives, indicator_order)
     })
     
     # Return the reactive

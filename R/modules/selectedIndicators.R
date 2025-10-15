@@ -232,7 +232,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                   ),
                   
                   # Priority badge
-                  if (!is.na(ind$high_priority) && ind$high_priority == "High priority") {
+                  if (!is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
                     span(
                       style = paste0(
                         "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
