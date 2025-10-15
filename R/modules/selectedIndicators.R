@@ -245,8 +245,8 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                         "align-items: center; ",
                         "gap: 4px;"
                       ),
-                      icon("star", class = "fas", style = "font-size: 9px;"),
-                      "Featured"
+                      icon("building-columns", class = "fas", style = "font-size: 9px;"),
+                      "Foundational"
                     )
                   }
                 )

@@ -928,3 +928,22 @@ html, body {
 .about-section p {
   animation-delay: 0.2s;
 }
+
+
+* Reset button enhancements */
+.reset-filters-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+.reset-filters-btn:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+    animation: resetPulse 0.3s ease;
+}
+
+@keyframes resetPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+}
+
