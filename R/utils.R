@@ -103,7 +103,7 @@ indicator_key <- function() {
       )
     ),
     
-    # Priority indicator explanation
+    # Foundational preset
     div(
       style = "display: flex; align-items: center; gap: 6px;",
       div(
@@ -120,11 +120,7 @@ indicator_key <- function() {
           "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
         ),
         tags$i(class = "fas fa-star", style = "font-size: 10px;"),
-        "Featured"
-      ),
-      span(
-        "= Featured in CGAP technical guide",
-        style = "font-size: 12px; color: #495057;"
+        "Foundational"
       )
     )
   )
@@ -637,7 +633,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   # Calculate statistics
   mandates_count <- length(unique(filtered_indicators$main_mandate))
   sectors_count <- length(unique(filtered_indicators$main_sector))
-  priority_count <- sum(filtered_indicators$preset_foundation == "High priority", na.rm = TRUE)
+  objectives_count <- length(unique(filtered_indicators$main_objectives))
   
   # Check if any filters are active
   has_active_filters <- !is.null(active_filters) && (
@@ -729,7 +725,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
                 "gap: 6px;"
               ),
               icon("star", class = "fas", style = "font-size: 10px;"),
-              "Featured only"
+              "Foundational"
             )
           },
           
@@ -796,26 +792,6 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
             })
           },
           
-          # Use case filters
-          if (length(active_filters$use_cases) > 0) {
-            lapply(active_filters$use_cases, function(use_case) {
-              span(
-                style = paste0(
-                  "background: rgba(255, 255, 255, 0.9); ",
-                  "color: #667eea; ",
-                  "padding: 4px 12px; ",
-                  "border-radius: 16px; ",
-                  "font-size: 12px; ",
-                  "font-weight: 500; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 6px;"
-                ),
-                icon("sliders", class = "fas", style = "font-size: 10px;"),
-                use_case
-              )
-            })
-          }
         )
       )
     },
@@ -874,6 +850,31 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
         )
       ),
       
+      # Objectives
+      div(
+        class = "stat-card",
+        style = paste0(
+          "background: rgba(255, 215, 0, 0.2); ",
+          "backdrop-filter: blur(10px); ",
+          "padding: 16px; ",
+          "border-radius: 12px; ",
+          "border: 1px solid rgba(255, 215, 0, 0.3); ",
+          "text-align: center; ",
+          "transition: all 0.3s ease;"
+        ),
+        div(
+          icon("bullseye", class = "fas", style = "font-size: 24px; margin-bottom: 8px; color: #ffd700;")
+        ),
+        div(
+          objectives_count,
+          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
+        ),
+        div(
+          "Objectives",
+          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
+        )
+      ), 
+      
       # Sectors card
       div(
         class = "stat-card",
@@ -897,32 +898,8 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           "Sectors",
           style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
         )
-      ),
-      
-      # Priority indicators card
-      div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 215, 0, 0.2); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 215, 0, 0.3); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("star", class = "fas", style = "font-size: 24px; margin-bottom: 8px; color: #ffd700;")
-        ),
-        div(
-          priority_count,
-          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
-        ),
-        div(
-          "Featured indicators",
-          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
-        )
       )
+      
     )
   )
 }

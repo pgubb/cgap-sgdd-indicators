@@ -321,8 +321,8 @@ filterPanelServer <- function(id, indicators_data) {
           # Mandate filter with toggle
           if (input$include_secondary_mandates) {
             main_mandate %in% selected_mandates | 
-              (!is.na(secondary_mandates_umbrella) & 
-                 sapply(secondary_mandates_umbrella, function(x) {
+              (!is.na(secondary_mandates) & 
+                 sapply(secondary_mandates, function(x) {
                    any(trimws(unlist(strsplit(x, ";"))) %in% selected_mandates)
                  }))
           } else {
