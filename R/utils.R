@@ -784,16 +784,16 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       div(
         class = "stat-card",
         style = paste0(
-          "background: rgba(255, 255, 255, 0.2); ",
+          "background: rgba(255, 215, 0, 0.2); ",
           "backdrop-filter: blur(10px); ",
-          "padding: 12px 20px; ",
+          "padding: 16px; ",
           "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.3);",
+          "border: 1px solid rgba(255, 215, 0, 0.3); ",
           "text-align: center; ",
           "transition: all 0.3s ease;"
         ),
         div(
-          icon("chart-simple", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
+          icon("chart-simple", class = "fas", style = "font-size: 24px; margin-bottom: 8px; color: #ffd700;")
         ),
         div(
           n, 
@@ -834,16 +834,16 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       div(
         class = "stat-card",
         style = paste0(
-          "background: rgba(255, 215, 0, 0.2); ",
+          "background: rgba(255, 255, 255, 0.15); ",
           "backdrop-filter: blur(10px); ",
           "padding: 16px; ",
           "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 215, 0, 0.3); ",
+          "border: 1px solid rgba(255, 255, 255, 0.2); ",
           "text-align: center; ",
           "transition: all 0.3s ease;"
         ),
         div(
-          icon("bullseye", class = "fas", style = "font-size: 24px; margin-bottom: 8px; color: #ffd700;")
+          icon("bullseye", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
         ),
         div(
           objectives_count,
