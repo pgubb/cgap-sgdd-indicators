@@ -998,7 +998,6 @@ html, body {
   animation-delay: 0.2s;
 }
 
-
 /* Reset button enhancements */
 
 .reset-filters-btn,
@@ -1086,4 +1085,51 @@ html, body {
 /* Buttons in navbar */
 .navbar .btn {
   color: #1A5A80 !important;
+}
+
+
+
+/* Force all navbar items to align vertically */
+.navbar .nav-item *,
+.navbar #show_about {
+  vertical-align: middle !important;
+  line-height: 1.5 !important;
+}
+
+/* Remove any default margins/padding causing misalignment */
+#show_about {
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+}
+
+/* Match the nav-link height */
+.nav-link,
+#show_about {
+  min-height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Add hover effect to About button (optional) */
+#show_about:hover {
+  border-bottom-color: #1A5A80 !important;
+  background-color: transparent !important;
+}
+
+/* Ensure all nav items have consistent spacing */
+.nav-link {
+  padding: 0.5rem 1rem !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+.nav-link.active,
+.nav-link:hover {
+  border-bottom-color: #1A5A80 !important;
+}
+
+/* Navbar badge - keep white text on green background */
+.navbar .badge,
+.navbar span[style*="background-color: #198754"] {
+  color: white !important;
+  background-color: #198754 !important;
 }

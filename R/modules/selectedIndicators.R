@@ -54,7 +54,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
         div(
           h3(
             icon("clipboard-list", class = "fas", style = "margin-right: 8px;"),
-            "YOUR INDICATOR SET",
+            "Your indicator set",
             style = "margin: 0; font-size: 24px; font-weight: 700;"
           ),
           p(
@@ -66,7 +66,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
         div(
           h3(
             icon("clipboard-check", class = "fas", style = "margin-right: 8px;"),
-            "YOUR INDICATOR SET",
+            "Your indicator set",
             style = "margin: 0; font-size: 24px; font-weight: 700;"
           ),
           p(

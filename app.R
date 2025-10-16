@@ -112,7 +112,7 @@ ui <- page_navbar(
       "show_about",
       "ABOUT",
       class = "btn-link",
-      style = "color: inherit; text-decoration: none; border: none; background: transparent; font-size: 15px;"
+      style = "color: inherit; text-decoration: none; border: none; background: transparent; font-size: 14px;"
     )
   )
 
