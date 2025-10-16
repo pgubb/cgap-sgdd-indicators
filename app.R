@@ -20,7 +20,7 @@ ui <- page_navbar(
   
   title = span(
     tags$img(src = "cgap_logo.png", height = "40px"),
-    span(style = "font-size: 30px; font-weight: bold", "LENS"), 
+    span(style = "font-size: 30px; font-weight: bold; font-color: #0D4463;", "LENS"), 
   ),
 
   header = tagList(
@@ -32,7 +32,7 @@ ui <- page_navbar(
   
   sidebar = sidebar(
     width = 400,
-    p(style = "font-size: 14px;", "CGAP's LENS presents a curated catalog of indicators developed from regulatory data, enabling financial sector authorities and stakeholders to better understand financial behaviors, patterns, risks, and opportunities. The tool supports segmented analysis by key sociodemographic traits — with a particular focus on gender — helping uncover insights that can inform more inclusive, evidence-based financial policies and supervision."),
+    p(style = "font-size: 14px;", "CGAP's LENS presents a curated catalog of indicators for use with regulatory data, enabling financial sector authorities and stakeholders to better understand financial behaviors, patterns, risks, and opportunities. The tool supports segmented analysis by key sociodemographic traits — with a particular focus on gender — helping uncover insights that can inform more inclusive, evidence-based financial policies and supervision."),
     filterPanelUI("filters")
   ),
   

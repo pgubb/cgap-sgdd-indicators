@@ -75,7 +75,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
             ),
             
             
-            # Priority star
+            # Foundational preset
             if (!is.na(indicator$preset_foundation) && indicator$preset_foundation == 1) {
               div(
                 class = "priority-badge",
@@ -91,10 +91,31 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
                   "gap: 4px; ",
                   "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
                 ),
-                icon("building-columns", class = "fas", style = "font-size: 10px;"),
-                "Foundational"
+                icon("building-columns", class = "fas", style = "font-size: 10px;")
+              )
+            },
+            
+            # Digital ecosystem preset
+            if (!is.na(indicator$preset_digital) && indicator$preset_digital == 1) {
+              div(
+                class = "priority-badge",
+                style = paste0(
+                  "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+                  "color: #856404; ",
+                  "padding: 4px 8px; ",
+                  "border-radius: 12px; ",
+                  "font-size: 11px; ",
+                  "font-weight: 600; ",
+                  "display: flex; ",
+                  "align-items: center; ",
+                  "gap: 4px; ",
+                  "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
+                ),
+                icon("mobile-screen", class = "fas", style = "font-size: 10px;")
               )
             }
+            
+            
           ),
           
           # Tags row

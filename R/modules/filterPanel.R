@@ -115,7 +115,8 @@ filterPanelUI <- function(id) {
           )
         ), 
         icon = icon("sliders"),
-        # Basic preset
+        
+        # Foundational indicators preset
         div(
           style = "display: flex; align-items: center; gap: 2px;",
           input_switch(
@@ -124,6 +125,17 @@ filterPanelUI <- function(id) {
             value = FALSE
           )
         ),
+        
+        # Basic preset
+        div(
+          style = "display: flex; align-items: center; gap: 2px;",
+          input_switch(
+            ns("presets_digital"), 
+            label = "Digital finance ecosystem indicators",
+            value = FALSE
+          )
+        ),
+        
       ),
       
       # Reset button
@@ -300,6 +312,8 @@ filterPanelServer <- function(id, indicators_data) {
       
       # Reset presets filters
       updateInputSwitch(session, "presets_foundation", value = FALSE)
+      updateInputSwitch(session, "presets_digital", value = FALSE)
+      
     })
     
     # Return reactive with filtered data
@@ -395,6 +409,12 @@ filterPanelServer <- function(id, indicators_data) {
       if (input$presets_foundation) {
         filtered <- filtered %>%
           filter(preset_foundation == 1)
+      }
+      
+      # Presets filter
+      if (input$presets_digital) {
+        filtered <- filtered %>%
+          filter(preset_digital == 1)
       }
       
       # Apply search filter if not empty
