@@ -140,25 +140,12 @@ filterPanelUI <- function(id) {
       
       # Reset button
       div(
-        style = "padding: 20px 0 10px 0; border-top: 1px solid #e9ecef; margin-top: 15px;",
+        style = "padding: 20px 0 10px 0; margin-top: 5px;",
         actionButton(
           ns("reset"), 
           "Reset filters", 
           icon = icon("rotate-left", class = "fas"),  # Modern icon
-          class = "btn btn-sm",
-          style = paste0(
-            "background: white; ",
-            "border: 2px solid #667eea; ",
-            "color: #667eea; ",
-            "font-weight: 500; ",
-            "padding: 8px 20px; ",
-            "border-radius: 20px; ",
-            "transition: all 0.3s ease; ",
-            "width: 100%; ",
-            "margin-top: 10px;"
-          ),
-          onmouseover = "this.style.background='#667eea'; this.style.color='white';",
-          onmouseout = "this.style.background='white'; this.style.color='#667eea';"
+          class = "btn btn-sm"
         )
       )
     
