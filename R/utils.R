@@ -1013,7 +1013,7 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
         
         /* Header Section */
         .report-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%);
             color: white;
             padding: 40px;
             text-align: center;

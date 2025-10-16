@@ -9,7 +9,7 @@ selectedIndicatorsUI <- function(id) {
     div(
       class = "selected-indicators-header",
       style = paste0(
-        "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ",
+        "background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%); ",
         "color: white; ",
         "padding: 24px; ",
         "border-radius: 16px; ",
@@ -54,7 +54,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
         div(
           h3(
             icon("clipboard-list", class = "fas", style = "margin-right: 8px;"),
-            "Your Selected Indicators",
+            "YOUR INDICATOR SET",
             style = "margin: 0; font-size: 24px; font-weight: 700;"
           ),
           p(
@@ -66,7 +66,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
         div(
           h3(
             icon("clipboard-check", class = "fas", style = "margin-right: 8px;"),
-            "Your Selected Indicators",
+            "YOUR INDICATOR SET",
             style = "margin: 0; font-size: 24px; font-weight: 700;"
           ),
           p(

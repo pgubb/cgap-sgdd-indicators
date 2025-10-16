@@ -999,16 +999,30 @@ html, body {
 }
 
 
-* Reset button enhancements */
-.reset-filters-btn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
+/* Reset button enhancements */
+
+.reset-filters-btn,
+#filters-reset {
+  background: rgba(26, 90, 128, 0.05) !important;
+  border: 1px solid #1A5A80 !important;
+  color: #1A5A80 !important;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  width: 50% !important;
+  margin: 0 auto; 
+  display: block;
+  font-size: 13px;
 }
 
-.reset-filters-btn:active {
-    transform: translateY(0) !important;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
-    animation: resetPulse 0.3s ease;
+.reset-filters-btn:hover,
+#filters-reset:hover {
+  background: #1A5A80 !important;
+  color: white !important;
+  border-color: #1A5A80 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 90, 128, 0.3) !important;
 }
 
 @keyframes resetPulse {
@@ -1016,3 +1030,60 @@ html, body {
     50% { transform: scale(0.95); }
 }
 
+/* Navbar height and padding optimization */
+.navbar {
+  color:#1A5A80;
+  padding: 8px 1rem !important;
+  min-height: 56px !important;
+}
+
+.navbar-brand {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Remove extra spacing from bslib navbar */
+.navbar > .container-fluid {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+
+/* All navbar text */
+.navbar,
+.navbar *,
+.navbar a,
+.navbar span,
+.navbar div {
+  color: #1A5A80 !important;
+}
+
+/* Navigation links */
+.nav-link,
+.nav-item a {f
+  color: #1A5A80 !important;
+}
+
+/* Active/selected tabs */
+.nav-link.active,
+.nav-item.active a {
+  color: #1A5A80 !important;
+}
+
+/* Navbar brand/title */
+.navbar-brand,
+.navbar-brand * {
+  color: #1A5A80 !important;
+}
+
+/* Dropdown menus in navbar */
+.navbar .dropdown-menu a {
+  color: #1A5A80 !important;
+}
+
+/* Buttons in navbar */
+.navbar .btn {
+  color: #1A5A80 !important;
+}

@@ -18,9 +18,39 @@ source("R/modules/selectedIndicators.R")
 # UI ----------
 ui <- page_navbar(
   
-  title = span(
-    tags$img(src = "cgap_logo.png", height = "40px"),
-    span(style = "font-size: 30px; font-weight: bold; font-color: #0D4463;", "LENS"), 
+  title = div(
+    style = paste0(
+      "display: flex; ",
+      "align-items: center; ",
+      "gap: 15px; ",
+      "padding: 0; ",           # Remove padding
+      "margin: 0; ",            # Remove margin
+      "height: 40px;"           # Fixed height
+    ),
+    tags$img(
+      src = "cgap_logo.png", 
+      height = "40px",
+      style = "display: block; vertical-align: middle;"
+    ),
+    div(
+      style = paste0(
+        "height: 40px; ",
+        "width: 1px; ",
+        "background-color: #d1d5db;"
+      )
+    ),
+    span(
+      style = paste0(
+        "font-size: 40px; ",
+        "font-weight: 700; ",
+        "color: #1A5A80; ",
+        "line-height: 40px; ",     # Match container height
+        "font-family: 'Figtree', sans-serif; ",
+        "display: inline-block; ",
+        "vertical-align: middle;"
+      ), 
+      "LENS"
+    )
   ),
 
   header = tagList(
@@ -39,7 +69,7 @@ ui <- page_navbar(
   nav_spacer(),
   
   nav_panel(
-    title = "Browse indicators",
+    title = "BROWSE",
     
     layout_sidebar(
       sidebar = sidebar(
@@ -80,7 +110,7 @@ ui <- page_navbar(
   nav_item(
     actionButton(
       "show_about",
-      "About",
+      "ABOUT",
       class = "btn-link",
       style = "color: inherit; text-decoration: none; border: none; background: transparent; font-size: 15px;"
     )
@@ -257,12 +287,12 @@ server <- function(input, output, session) {
     if (nrow(selected) == 0) {
       span(
         icon("clipboard-list", lib = "font-awesome"),
-        " Your Selected Indicators"
+        " YOUR INDICATOR SET"
       )
     } else {
       span(
         icon("clipboard-check", lib = "font-awesome"),
-        " Your Selected Indicators ",
+        " YOUR INDICATOR SET",
         span(
           paste0(nrow(selected)),
           style = "background-color: #198754; color: white; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin-left: 5px;"
@@ -272,6 +302,7 @@ server <- function(input, output, session) {
   })
   
   
+  # About modal ------
   # Add this observer in your server function:
   observeEvent(input$show_about, {
     showModal(
@@ -286,7 +317,7 @@ server <- function(input, output, session) {
           # Header section
           div(
             style = paste0(
-              "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ",
+              "background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%); ",
               "color: white; ",
               "padding: 30px; ",
               "margin: -15px -15px 30px -15px; ",
@@ -317,7 +348,7 @@ server <- function(input, output, session) {
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
               p(
-                "The RGDD explorer is one component of CGAP's project to support the mainstreaming of gender-disaggregated regulatory data in the financial sector and should be consulted jointly with 'Using Gender-Disaggregated Regulatory Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities'.",
+                "LENS is one component of CGAP's project to support the mainstreaming of gender-disaggregated regulatory data in the financial sector and should be consulted jointly with 'Using Gender-Disaggregated Regulatory Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities'.",
                 style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
               ),
               p(
