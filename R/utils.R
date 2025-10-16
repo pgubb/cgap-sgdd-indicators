@@ -628,7 +628,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   div(
     class = "navigation-header",
     style = paste0(
-      "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ",
+      "background: linear-gradient(135deg, #9C71DB 0%, #6F5B9D 100%); ",
       "color: white; ",
       "padding: 24px; ",
       "border-radius: 16px; ",
