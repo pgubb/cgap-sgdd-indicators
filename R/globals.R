@@ -1,13 +1,13 @@
 # R/globals.R - Global variables and constants
 
 SECTOR_COLORS <- list(
-  "Payments" = "#FFD700",
-  "Credit" = "#FFA07A",
-  "Insurance" = "#98FB98",
-  "Investments" = "#87CEFA",
-  "Pensions" = "#DDA0DD",
-  "Several/other" = "#FFC0CB",
-  "Savings" = "#B0C4DE"
+  "Payments" = "#FFB718",
+  "Credit" = "#ED7700",
+  "Insurance" = "#17A627",
+  "Investments" = "#38A5D6",
+  "Pensions" = "#C64689",
+  "Several/other" = "#EAE9E6",
+  "Savings" = "#1A5A80"
 )
 
 # Globals

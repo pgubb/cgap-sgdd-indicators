@@ -384,7 +384,7 @@ server <- function(input, output, session) {
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
               p(
-                "The RGDD explorer provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, safety, stability and competition. The selection of indicators is informed both by their general relevance to these different dimensions of the financial system as well as their potential relevance for understanding the role of gender within those dimensions.",
+                "LENS provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, safety, stability and competition. The selection of indicators is informed both by their general relevance to these different dimensions of the financial system as well as their potential relevance for understanding the role of gender within those dimensions. The indicators in LENS, including their definitions and classifications to mandates,  do not reflect a global consensus but rather constitute an attempt at providing working definitions and classification options that each user should adapt to their specific country context and institutional goals.",
                 style = "line-height: 1.6; color: #555;"
               )
             ),
@@ -399,7 +399,7 @@ server <- function(input, output, session) {
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
               p(
-                "To build the indicators catalog, the CGAP team examined a variety of sources, including work from prior CGAP projects and existing indicators from international organizations focused on financial inclusion and regulation.",
+                "To build LENS, the CGAP team examined a variety of sources, including work from prior CGAP projects and existing indicators from international organizations focused on financial inclusion and regulation.",
                 style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
               ),
               div(
@@ -446,7 +446,7 @@ server <- function(input, output, session) {
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
               p(
-                "CGAP is a global partnership of more than 30 organizations that works to advance the lives of poor people, particularly women, through financial inclusion. We provide market intelligence, convene diverse partners, support financial services innovations, and advise governments and policymakers on financial inclusion.",
+                "CGAP is a global partnership of more than 40 leading development organizations that works to advance the lives of people living in poverty, especially women, through financial inclusion. CGAP works at the frontier of inclusive finance to test solutions, spark innovation, generate evidence, and share insights. Our knowledge enables public and private stakeholders to scale solutions that make financial ecosystems meet the needs of poor, vulnerable, and underserved people and of micro and small enterprises (MSEs), including through advancing women’s economic empowerment.",
                 style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
               ),
               div(
@@ -457,12 +457,6 @@ server <- function(input, output, session) {
                   class = "btn btn-primary btn-sm",
                   icon("globe", class = "fas", style = "margin-right: 6px;"),
                   "Visit CGAP.org"
-                ),
-                tags$a(
-                  href = "mailto:cgap@worldbank.org",
-                  class = "btn btn-outline-primary btn-sm",
-                  icon("envelope", class = "fas", style = "margin-right: 6px;"),
-                  "Contact Us"
                 )
               )
             )
