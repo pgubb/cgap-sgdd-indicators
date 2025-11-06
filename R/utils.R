@@ -993,6 +993,43 @@ enhanced_mandate_header <- function(mandate, count) {
 # Enhanced create_pdf_report function for R/utils.R
 # Creates a modern, printer-friendly HTML report matching app styling
 
+# Format text for PDF reports - removes delimiters and bolds specific headers
+format_text_for_pdf <- function(text) {
+  if (is.na(text) || is.null(text) || text == "") {
+    return("")
+  }
+  
+  # Define target strings that should be bolded
+  bold_targets <- c(
+    "Definitions and concepts:",
+    "Data requirements:",
+    "Limitations and considerations:",
+    "Derivable indicators:"
+  )
+  
+  # Remove the delimiter
+  text <- gsub("!-", "", text, fixed = TRUE)
+  
+  # Escape HTML characters
+  text <- htmlEscape(text)
+  
+  # Apply bold formatting to target strings
+  for (target in bold_targets) {
+    escaped_target <- htmlEscape(target)
+    text <- gsub(
+      escaped_target,
+      paste0("<strong>", escaped_target, "</strong>"),
+      text,
+      fixed = TRUE
+    )
+  }
+  
+  # Convert line breaks to <br> tags for HTML display
+  text <- gsub("\n", "<br>", text, fixed = TRUE)
+  
+  return(text)
+}
+
 create_pdf_report <- function(indicators, comments, sector_colors) {
   paste0('
 <!DOCTYPE html>
@@ -1434,15 +1471,16 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                     
                     <div class="details-section">',
                   if (!is.null(ind$indicator_long_description) && !is.na(ind$indicator_long_description) && ind$indicator_long_description != "") {
+                    formatted_description <- format_text_for_pdf(ind$indicator_long_description)
+                    
                     paste0('
-                        <div class="detail-item">
-                            <div class="detail-label">Detailed Description</div>
-                            <div class="detail-value">', substr(htmlEscape(ind$indicator_long_description), 1, 5000), 
-                           if(nchar(ind$indicator_long_description) > 5000) '...' else '', '</div>
-                        </div>')
+      <div class="detail-item">
+          <div class="detail-label">Detailed Description</div>
+          <div class="detail-value">', formatted_description, '</div>
+      </div>')
                   } else {
                     ''
-                  },
+                  }, 
                   
                   if (!is.null(ind$gender_questions) && !is.na(ind$gender_questions) && ind$gender_questions != "") {
                     paste0('
