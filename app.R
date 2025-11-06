@@ -131,7 +131,8 @@ server <- function(input, output, session) {
       main_mandate = character(),
       main_objectives = character(),
       main_sector = character(),
-      presets_foundation = character(),
+      preset_foundation = numeric(),
+      preset_digital = numeric(),
       indicator_long_description = character(), 
       gender_questions = character(), 
       comment = character(),
@@ -271,7 +272,7 @@ server <- function(input, output, session) {
         filter(indicator_id %in% values$selected_codes) %>%
         select(indicator_id, indicator_name, indicator_description, indicator_long_description, 
                main_mandate, main_objectives, main_sector, 
-               preset_foundation, gender_questions)
+               preset_foundation, preset_digital, gender_questions)
     })
   }, ignoreNULL = TRUE, ignoreInit = TRUE)
   

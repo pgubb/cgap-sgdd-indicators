@@ -131,7 +131,7 @@ filterPanelUI <- function(id) {
           style = "display: flex; align-items: center; gap: 2px;",
           input_switch(
             ns("presets_digital"), 
-            label = "Digital finance ecosystem indicators",
+            label = "Digital finance ecosystem",
             value = FALSE
           )
         ),

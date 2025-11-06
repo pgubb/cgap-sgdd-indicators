@@ -231,7 +231,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                     )
                   ),
                   
-                  # Priority badge
+                  # Presets: Foundational
                   if (!is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
                     span(
                       style = paste0(
@@ -245,10 +245,28 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                         "align-items: center; ",
                         "gap: 4px;"
                       ),
-                      icon("building-columns", class = "fas", style = "font-size: 9px;"),
-                      "Foundational"
+                      icon("building-columns", class = "fas", style = "font-size: 9px;")
+                    )
+                  }, 
+                  
+                  # Presets: Digital
+                  if (!is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
+                    span(
+                      style = paste0(
+                        "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+                        "color: #856404; ",
+                        "padding: 3px 8px; ",
+                        "border-radius: 12px; ",
+                        "font-size: 11px; ",
+                        "font-weight: 600; ",
+                        "display: flex; ",
+                        "align-items: center; ",
+                        "gap: 4px;"
+                      ),
+                      icon("mobile-screen", class = "fas", style = "font-size: 9px;")
                     )
                   }
+                  
                 )
               ),
               

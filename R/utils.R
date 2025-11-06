@@ -690,7 +690,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
             )
           },
           
-          # Priority filter
+          # Presets foundation filter
           if (!is.null(active_filters$presets_foundation) && active_filters$presets_foundation == TRUE) {
             span(
               style = paste0(
@@ -706,6 +706,25 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
               ),
               icon("building-columns", class = "fas", style = "font-size: 10px;"),
               "Foundational"
+            )
+          },
+          
+          # Presets digital filter
+          if (!is.null(active_filters$presets_digital) && active_filters$presets_digital == TRUE) {
+            span(
+              style = paste0(
+                "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+                "color: #856404; ",
+                "padding: 4px 12px; ",
+                "border-radius: 16px; ",
+                "font-size: 12px; ",
+                "font-weight: 600; ",
+                "display: flex; ",
+                "align-items: center; ",
+                "gap: 6px;"
+              ),
+              icon("mobile-screen", class = "fas", style = "font-size: 10px;"),
+              "Digital"
             )
           },
           
@@ -970,9 +989,6 @@ enhanced_mandate_header <- function(mandate, count) {
     )
   )
 }
-
-# Enhanced create_pdf_report function for R/utils.R
-# Creates a modern, printer-friendly HTML report matching app styling
 
 # Enhanced create_pdf_report function for R/utils.R
 # Creates a modern, printer-friendly HTML report matching app styling
@@ -1366,9 +1382,9 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                     <div class="summary-card-label">Sectors</div>
                 </div>
                 <div class="summary-card">
-                    <i class="fas fa-star"></i>
-                    <div class="summary-card-value">', sum(indicators$preset_foundation == "High priority", na.rm = TRUE), '</div>
-                    <div class="summary-card-label">Featured</div>
+                    <i class="fas fa-bullseye"></i>
+                    <div class="summary-card-value">', length(unique(indicators$main_objectives)), '</div>
+                    <div class="summary-card-label">Objectives</div>
                 </div>
             </div>
         </div>
@@ -1403,7 +1419,9 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                                 ', htmlEscape(ind$main_sector), '
                             </span>',
                   if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
-                    '<span class="badge badge-priority"><i class="fas fa-"building-columns"></i> Foundational</span>'
+                    '<span class="badge badge-priority"><i class="fas fa-building-columns"></i> Foundational</span>'
+                  } else if (!is.null(ind$preset_digital) && !is.na(ind$preset_digital) && ind$preset_digital == 1) {
+                    '<span class="badge badge-priority"><i class="fas fa-mobile-screen"></i> Digital finance ecosystem </span>'
                   } else {
                     ''
                   }, '
@@ -1419,8 +1437,8 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                     paste0('
                         <div class="detail-item">
                             <div class="detail-label">Detailed Description</div>
-                            <div class="detail-value">', substr(htmlEscape(ind$indicator_long_description), 1, 500), 
-                           if(nchar(ind$indicator_long_description) > 500) '...' else '', '</div>
+                            <div class="detail-value">', substr(htmlEscape(ind$indicator_long_description), 1, 5000), 
+                           if(nchar(ind$indicator_long_description) > 5000) '...' else '', '</div>
                         </div>')
                   } else {
                     ''
@@ -1430,32 +1448,12 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
                     paste0('
                         <div class="detail-item">
                             <div class="detail-label"><i class="fas fa-question-circle"></i> Gender Analysis Questions</div>
-                            <div class="detail-value">', substr(htmlEscape(ind$gender_questions), 1, 400),
-                           if(nchar(ind$gender_questions) > 400) '...' else '', '</div>
+                            <div class="detail-value">', substr(htmlEscape(ind$gender_questions), 1, 1000),
+                           if(nchar(ind$gender_questions) > 1000) '...' else '', '</div>
                         </div>')
                   } else {
                     ''
-                  },
-                  
-                  if (!is.null(ind$unit_of_analysis) && !is.na(ind$unit_of_analysis) && ind$unit_of_analysis != "") {
-                    paste0('
-                        <div class="detail-item">
-                            <div class="detail-label"><i class="fas fa-cube"></i> Unit of Analysis</div>
-                            <div class="detail-value">', htmlEscape(ind$unit_of_analysis), '</div>
-                        </div>')
-                  } else {
-                    ''
-                  },
-                  
-                  if (!is.null(ind$measurement_type) && !is.na(ind$measurement_type) && ind$measurement_type != "") {
-                    paste0('
-                        <div class="detail-item">
-                            <div class="detail-label"><i class="fas fa-ruler"></i> Measurement Type</div>
-                            <div class="detail-value">', htmlEscape(ind$measurement_type), '</div>
-                        </div>')
-                  } else {
-                    ''
-                  }, '
+                  },'
                     </div>',
                   
                   if (comment != "") paste0('
