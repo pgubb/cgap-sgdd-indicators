@@ -52,7 +52,7 @@ generate_sector_styles <- function(sector_colors) {
 
 indicator_key <- function() {
   # Simpler, direct gradient creation using all sector colors
-  gradient_bg <- "linear-gradient(90deg, #FFD700 0%, #FFD700 14.28%, #FFA07A 14.28%, #FFA07A 28.56%, #98FB98 28.56%, #98FB98 42.84%, #87CEFA 42.84%, #87CEFA 57.12%, #DDA0DD 57.12%, #DDA0DD 71.4%, #FFC0CB 71.4%, #FFC0CB 85.68%, #B0C4DE 85.68%, #B0C4DE 100%)"
+  gradient_bg <- "linear-gradient(90deg, #FFB718 0%, #FFB718 14.28%, #ED7700 14.28%, #ED7700 28.56%, #17A627 28.56%, #17A627 42.84%, #38A5D6 42.84%, #38A5D6 57.12%, #C64689 57.12%, #C64689 71.4%, #EAE9E6 71.4%, #EAE9E6 85.68%, #0080B2 85.68%, #0080B2 100%)"
   
   div(
     style = "display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 0; margin-bottom: 16px;",
