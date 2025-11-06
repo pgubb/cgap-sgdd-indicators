@@ -1133,3 +1133,14 @@ html, body {
   color: white !important;
   background-color: #198754 !important;
 }
+
+.catalog-download-link:hover {
+    color: #1A5A80 !important;
+    background-color: #f8f9fa;
+    text-decoration: none;
+}
+
+.catalog-download-link:hover i {
+    transform: translateY(2px);
+    transition: transform 0.2s ease;
+}

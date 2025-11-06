@@ -55,54 +55,78 @@ indicator_key <- function() {
   gradient_bg <- "linear-gradient(90deg, #FFB718 0%, #FFB718 14.28%, #ED7700 14.28%, #ED7700 28.56%, #17A627 28.56%, #17A627 42.84%, #38A5D6 42.84%, #38A5D6 57.12%, #C64689 57.12%, #C64689 71.4%, #EAE9E6 71.4%, #EAE9E6 85.68%, #0080B2 85.68%, #0080B2 100%)"
   
   div(
-    style = "display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 0; margin-bottom: 16px;",
+    style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 0; margin-bottom: 16px;",
     
-    # Indicator name example
-    span(
-      "Indicator name", 
-      style = paste0(
-        "background-color: white; ",
-        "display: inline-block; ",
-        "padding: 4px 10px; ",
-        "border-radius: 4px; ",
-        "color: black; ",
-        "font-weight: bold; ",
-        "font-size: 14px; ",
-        "border: 1px solid #e9ecef;"
+    # Left side - indicator key examples
+    div(
+      style = "display: flex; align-items: center; gap: 12px; flex-wrap: wrap;",
+      
+      # Indicator name example
+      span(
+        "Indicator name", 
+        style = paste0(
+          "background-color: white; ",
+          "display: inline-block; ",
+          "padding: 4px 10px; ",
+          "border-radius: 4px; ",
+          "color: black; ",
+          "font-weight: bold; ",
+          "font-size: 14px; ",
+          "border: 1px solid #e9ecef;"
+        )
+      ),
+      
+      # Main objective example
+      span(
+        "Main objective(s)", 
+        style = paste0(
+          "background-color: #e3f2fd; ",
+          "color: #1565c0; ",
+          "display: inline-block; ",
+          "padding: 4px 10px; ",
+          "border-radius: 16px; ",
+          "font-size: 12px; ",
+          "font-weight: 500; ",
+          "border: 1px solid #bbdefb;"
+        )
+      ),
+      
+      # Main sector example with multicolor gradient
+      span(
+        "Main sector", 
+        style = paste0(
+          "background: ", gradient_bg, "; ",
+          "color: #333; ",
+          "display: inline-block; ",
+          "padding: 4px 10px; ",
+          "border-radius: 16px; ",
+          "font-size: 12px; ",
+          "font-weight: 600; ",
+          "border: 1px solid rgba(0,0,0,0.15); ",
+          "text-shadow: 0 0 3px rgba(255,255,255,0.9), 0 0 5px rgba(255,255,255,0.7);"
+        )
       )
     ),
     
-    # Main objective example
-    span(
-      "Main objective(s)", 
+    # Right side - download link
+    tags$a(
+      href = "PUBLIC/LENS_INDICATORS_DB_v11062025.xlsx",
+      download = "LENS_INDICATORS_DB_v11062025.xlsx",
       style = paste0(
-        "background-color: #e3f2fd; ",
-        "color: #1565c0; ",
-        "display: inline-block; ",
-        "padding: 4px 10px; ",
-        "border-radius: 16px; ",
-        "font-size: 12px; ",
-        "font-weight: 500; ",
-        "border: 1px solid #bbdefb;"
-      )
-    ),
-    
-    # Main sector example with multicolor gradient
-    span(
-      "Main sector", 
-      style = paste0(
-        "background: ", gradient_bg, "; ",
-        "color: #333; ",
-        "display: inline-block; ",
-        "padding: 4px 10px; ",
-        "border-radius: 16px; ",
-        "font-size: 12px; ",
-        "font-weight: 600; ",
-        "border: 1px solid rgba(0,0,0,0.15); ",
-        "text-shadow: 0 0 3px rgba(255,255,255,0.9), 0 0 5px rgba(255,255,255,0.7);"
-      )
+        "display: flex; ",
+        "align-items: center; ",
+        "gap: 6px; ",
+        "color: #6c757d; ",
+        "text-decoration: none; ",
+        "font-size: 13px; ",
+        "transition: all 0.2s ease; ",
+        "padding: 4px 8px; ",
+        "border-radius: 4px;"
+      ),
+      class = "catalog-download-link",
+      icon("download", class = "fas", style = "font-size: 12px;"),
+      "Download full catalog"
     )
-    
   )
 }
 
