@@ -266,14 +266,6 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
           div(
             style = "padding: 16px; background: white; border-radius: 8px; border: 1px solid #e9ecef;",
             p(strong("Related indicators from:"), style = "margin-bottom: 12px; color: #495057;"),
-            div(
-              style = "display: flex; justify-content: flex-start; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;",
-              if (!is.na(indicator$IMF)) tags$img(src = "imf_logo.png", height = "32px", style = "opacity: 0.8;"),
-              if (!is.na(indicator$GPFI)) tags$img(src = "gpfi_logo.png", height = "32px", style = "opacity: 0.8;"),
-              if (!is.na(indicator$AFI)) tags$img(src = "afi_logo.png", height = "32px", style = "opacity: 0.8;"), 
-              if (!is.na(indicator$WEF)) tags$img(src = "wef_logo.png", height = "32px", style = "opacity: 0.8;")
-            ), 
-            
             render_disagg_table_vertical(indicator, columns = c("GPFI", "IMF",  "AFI", "WEF"), delimiter = ";")
           )
         }

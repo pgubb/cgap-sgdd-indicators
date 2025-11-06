@@ -333,9 +333,8 @@ indicators <- core_columns %>%
                 left_join(sectors, by = "indicator_id") %>% 
                 left_join(use_cases, by = "indicator_id") %>% 
                 #left_join(gender_priority, by = "indicator_id") %>% 
-                left_join(references, by = "indicator_id") %>% 
-                left_join(breakdowns, by = "indicator_id") %>% 
-                left_join(sources)
+                #left_join(references, by = "indicator_id") %>% 
+                left_join(breakdowns, by = "indicator_id") 
 
 # Creating new 'umbrella' mandate for filtering and navigation 
 

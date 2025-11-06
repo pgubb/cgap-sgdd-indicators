@@ -7,7 +7,7 @@ SECTOR_COLORS <- list(
   "Investments" = "#38A5D6",
   "Pensions" = "#C64689",
   "Several/other" = "#EAE9E6",
-  "Savings" = "#1A5A80"
+  "Savings" = "#0080B2"
 )
 
 # Globals
