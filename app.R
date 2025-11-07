@@ -62,7 +62,7 @@ ui <- page_navbar(
   
   sidebar = sidebar(
     width = 400,
-    p(style = "font-size: 14px;", "CGAP's LENS presents a curated catalog of indicators for use with regulatory data, enabling financial sector authorities and stakeholders to better understand financial behaviors, patterns, risks, and opportunities. The tool supports segmented analysis by key sociodemographic traits — with a particular focus on gender — helping uncover insights that can inform more inclusive, evidence-based financial policies and supervision."),
+    p(style = "font-size: 14px;", "CGAP's LENS presents a curated catalog of indicators for use with regulatory data, enabling financial sector authorities and stakeholders to better understand financial behaviors, patterns, risks, and opportunities. The tool supports segmented analysis by key sociodemographic traits — with a particular focus on gender — helping uncover insights that can inform more inclusive, evidence-based financial policies and supervision, as well as financial service providers strategies."),
     filterPanelUI("filters")
   ),
   
