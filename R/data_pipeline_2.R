@@ -124,6 +124,16 @@ tomerge <- indicators_base %>% select(indicator_id, secondary_sectors)
 
 indicators_update %>% left_join(tomerge, by = "indicator_id") %>% left_join(sources, by = "indicator_id") -> indicators
 
+#Fixing main sector column
+indicators %>% 
+  mutate(
+    # Replacing "Main sector" if "Several/Other" with all applicable sectors 
+    main_sector = ifelse(main_sector == "Several/other", secondary_sectors, main_sector), 
+    main_sector = ifelse(indicator_name %in% c("Financial transactions by channel (volume)", "Financial transactions by channel (value)"), "Payments", main_sector), 
+    main_sector = str_replace(main_sector, ", Other", "")
+  ) %>% 
+  select(-secondary_sectors) -> indicators
+
 # Ordering the main_mandates column: 
 
 indicators <- indicators %>% 
@@ -148,7 +158,7 @@ save(indicators, file = "data/indicators.RData")
 write_xlsx(
   indicators %>% arrange(main_mandate, indicator_order) %>% 
     select(main_mandate, main_objectives, main_sector, indicator_id, indicator_name, indicator_description, indicator_long_description, gender_questions, unit_of_analysis, secondary_mandates, secondary_objectives, disaggregation_vars), 
-    "PUBLIC/LENS_INDICATORS_DB_v11062025.xlsx"
+    "www/LENS_INDICATORS_DB_v11062025.xlsx"
   )
 
 

@@ -139,7 +139,13 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
         
         lapply(1:nrow(selected), function(i) {
           ind <- selected[i, ]
+    
+          # Safely get sector color with fallback
           sector_color <- sector_colors[[ind$main_sector]]
+          if (is.null(sector_color) || !is.character(sector_color) || sector_color == "") {
+            sector_color <- "#EAE9E6"  # Default gray color
+          }
+          
           is_expanded <- ind$indicator_id %in% current_expanded
           
           div(

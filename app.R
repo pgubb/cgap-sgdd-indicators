@@ -3,6 +3,8 @@ library(tidyverse)
 library(readxl)
 library(bslib)
 library(janitor)
+library(stringr)
+library(SnowballC)
 
 # Load data
 load("data/indicators.RData")

@@ -36,7 +36,7 @@ filterPanelUI <- function(id) {
           bslib::input_switch(
             ns("include_secondary_mandates"), 
             label = "Include secondary mandates",
-            value = FALSE
+            value = TRUE
           )
         )
       ),
@@ -64,7 +64,7 @@ filterPanelUI <- function(id) {
           input_switch(
             ns("include_secondary_objectives"), 
             label = "Include secondary objectives",
-            value = FALSE
+            value = TRUE
           )
         )
       ),
@@ -80,7 +80,7 @@ filterPanelUI <- function(id) {
             tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
             div(
               class = "my-tooltiptext",
-              "Filter by financial sector (Payments, Credit, Insurance, etc.). Toggle below to include indicators that apply to multiple sectors."
+              "Filter by financial sector (Payments, Credit, Insurance, etc.)"
             )
           )
         ), 
@@ -88,14 +88,6 @@ filterPanelUI <- function(id) {
         div(
           class = "modern-checkbox-group sector-checkboxes",
           checkboxGroupInput(ns("sectors"), "", choices = NULL)
-        ), 
-        div(
-          style = "margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
-          input_switch(
-            ns("include_secondary_sectors"), 
-            label = "Include secondary sectors",
-            value = FALSE
-          )
         )
       ),
     
@@ -169,8 +161,16 @@ filterPanelServer <- function(id, indicators_data) {
         selected = character(0)
       )
       
+      unique_sectors <- indicators_data %>% filter(!is.na(main_sector)) %>% 
+        pull(main_sector) %>% 
+        str_split(",") %>% 
+        unlist() %>% 
+        str_trim() %>% 
+        unique() %>% 
+        sort()
+        
       # Sectors
-      sectors <- sort(unique(indicators_data$main_sector))
+      sectors <- unique_sectors
       updateCheckboxGroupInput(
         session, "sectors",
         choices = sectors,
@@ -295,7 +295,6 @@ filterPanelServer <- function(id, indicators_data) {
       # Reset toggles
       updateInputSwitch(session, "include_secondary_mandates", value = FALSE)
       updateInputSwitch(session, "include_secondary_objectives", value = FALSE)
-      updateInputSwitch(session, "include_secondary_sectors", value = FALSE)
       
       # Reset presets filters
       updateInputSwitch(session, "presets_foundation", value = FALSE)
@@ -338,7 +337,7 @@ filterPanelServer <- function(id, indicators_data) {
             main_mandate %in% selected_mandates | 
               (!is.na(secondary_mandates) & 
                  sapply(secondary_mandates, function(x) {
-                   any(trimws(unlist(strsplit(x, ";"))) %in% selected_mandates)
+                   any(trimws(unlist(strsplit(x, ","))) %in% selected_mandates)
                  }))
           } else {
             main_mandate %in% selected_mandates
@@ -380,16 +379,16 @@ filterPanelServer <- function(id, indicators_data) {
           }
         }) %>%
         filter({
-          # Sector filter with toggle
-          if (input$include_secondary_sectors) {
-            main_sector %in% selected_sectors | 
-              (!is.na(secondary_sectors) & 
-                 sapply(secondary_sectors, function(x) {
-                   any(trimws(unlist(strsplit(x, ";"))) %in% selected_sectors)
-                 }))
-          } else {
-            main_sector %in% selected_sectors
-          }
+          
+          # Only check main sectors
+          sapply(main_sector, function(sec) {
+            if (!is.na(sec)) {
+              any(trimws(unlist(strsplit(sec, ","))) %in% selected_sectors)
+            } else {
+              FALSE
+            }
+          })
+            
         })
       
       # Presets filter
@@ -406,17 +405,31 @@ filterPanelServer <- function(id, indicators_data) {
       
       # Apply search filter if not empty
       if (!is.null(input$search) && input$search != "") {
-        search_pattern <- regex(input$search, ignore_case = TRUE)
-        filtered <- filtered %>%
-          filter(
-            str_detect(indicator_name, search_pattern) |
-              str_detect(coalesce(indicator_description, ""), search_pattern) | 
-              str_detect(coalesce(main_sector, ""), search_pattern) |
-              str_detect(coalesce(main_mandate, ""), search_pattern) |
-              str_detect(coalesce(main_objectives, ""), search_pattern) | 
-              str_detect(coalesce(secondary_objectives, ""), search_pattern) | 
-              str_detect(coalesce(secondary_mandates, ""), search_pattern) 
-          )
+        
+        # 1. Split the search string into individual words by space
+        #    simplify = TRUE returns a vector instead of a list
+        words <- str_split(input$search, " ", simplify = TRUE)[1, ]
+        # 2. Remove empty strings (caused by double spaces) and duplicates
+        words <- unique(words[words != ""])
+        # 3. Stem the words (e.g., "cards" -> "card")
+        stemmed_words <- wordStem(words, language = "english")
+        
+        # 4. Iteratively filter the data for EACH word
+        #    This ensures "AND" logic: The row must contain Word A AND Word B
+        for (word in stemmed_words) {
+          
+          search_pattern <- regex(word, ignore_case = TRUE)
+          
+          filtered <- filtered %>%
+            filter(
+              if_any(
+                .cols = c(indicator_name, indicator_description, main_sector, 
+                          main_mandate, main_objectives, secondary_objectives, 
+                          secondary_mandates, GPFI, IMF, AFI, WEF),
+                .fns = ~ str_detect(coalesce(., ""), search_pattern)
+              )
+            )
+        }
       }
       
       # Sort by mandate count, then by other fields

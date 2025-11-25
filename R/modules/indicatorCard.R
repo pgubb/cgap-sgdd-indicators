@@ -4,7 +4,11 @@
 indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALSE) {
   ns <- NS(id)
   
+  # Safely get sector color with fallback
   sector_color <- sector_colors[[indicator$main_sector]]
+  if (is.null(sector_color) || !is.character(sector_color) || sector_color == "") {
+    sector_color <- "#EAE9E6"  # Default gray color
+  }
   
   # Create organization logos (if sources exist)
   show_sources <- if ("sources_any" %in% names(indicator)) {
@@ -250,8 +254,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
           style = "margin-bottom: 24px;",
           render_disagg_table_vertical(
             indicator, 
-            columns = c("indicator_description", "indicator_long_description", "gender_questions","unit_of_analysis", "main_mandate_objective", "secondary_mandate_objective", "main_sector", 
-                        "secondary_sectors")
+            columns = c("indicator_description", "indicator_long_description", "gender_questions","unit_of_analysis", "main_mandate_objective", "secondary_mandate_objective", "main_sector")
           )
         ),
         

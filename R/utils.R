@@ -1457,7 +1457,12 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
          paste0(lapply(1:nrow(indicators), function(i) {
            ind <- indicators[i, ]
            comment <- comments[i]
-           sector_color <- sector_colors[[ind$main_sector]] %||% "#cccccc"
+           
+           # Safely get sector color with fallback
+           sector_color <- sector_colors[[ind$main_sector]]
+           if (is.null(sector_color) || !is.character(sector_color) || sector_color == "") {
+             sector_color <- "#EAE9E6"
+           }
            sector_color_light <- adjustcolor(sector_color, alpha.f = 0.6)
            
            paste0('
