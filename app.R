@@ -14,7 +14,8 @@ source("R/globals.R")
 source("R/utils.R")
 source("R/modules/indicatorCard.R")
 source("R/modules/filterPanel.R")
-source("R/modules/selectedIndicators.R")
+source("R/modules/setManager.R")                    
+source("R/modules/selectedIndicatorsMulti.R") 
 
 
 # UI ----------
@@ -106,7 +107,7 @@ ui <- page_navbar(
   
   nav_panel(
     title = uiOutput("selected_tab_title"),
-    selectedIndicatorsUI("selected")
+    selectedIndicatorsMultiUI("selected")    # NEW
   ),
   
   nav_item(
@@ -123,23 +124,11 @@ ui <- page_navbar(
 # SERVER ----------
 server <- function(input, output, session) {
   
-  # Initialize reactive values
-  values <- reactiveValues(
-    selected_codes = character(),
-    selected_indicators = data.frame(
-      indicator_id = character(), 
-      indicator_name = character(),
-      indicator_description = character(),
-      main_mandate = character(),
-      main_objectives = character(),
-      main_sector = character(),
-      preset_foundation = numeric(),
-      preset_digital = numeric(),
-      indicator_long_description = character(), 
-      gender_questions = character(), 
-      comment = character(),
-      stringsAsFactors = FALSE
-    )
+  # Initialize set manager (replaces values$selected_codes)
+  set_manager <- selectedIndicatorsMultiServer(
+    "selected",
+    indicators_data = indicators,
+    sector_colors = SECTOR_COLORS
   )
   
   # Filter module
@@ -193,7 +182,7 @@ server <- function(input, output, session) {
     session$sendCustomMessage("showLoading", TRUE)
     
     indicators_data <- isolate(filtered_indicators())
-    selected_codes <- isolate(values$selected_codes)
+    selected_codes <- isolate(set_manager$get_active_indicators()) 
     
     # Clear existing indicators
     removeUI(selector = "#indicator_container > *", immediate = TRUE, multiple = TRUE)
@@ -264,40 +253,30 @@ server <- function(input, output, session) {
     
     isolate({
       if (action == "add") {
-        values$selected_codes <- union(values$selected_codes, id)
+        set_manager$add_to_active(id)         # NEW
       } else {
-        values$selected_codes <- setdiff(values$selected_codes, id)
+        set_manager$remove_from_active(id)    # NEW
       }
-      
-      # Update selected indicators dataframe
-      values$selected_indicators <- indicators %>%
-        filter(indicator_id %in% values$selected_codes) %>%
-        select(indicator_id, indicator_name, indicator_description, indicator_long_description, 
-               main_mandate, main_objectives, main_sector, 
-               preset_foundation, preset_digital, gender_questions)
     })
   }, ignoreNULL = TRUE, ignoreInit = TRUE)
   
-  # Selected indicators module
-  selectedIndicatorsServer("selected", 
-                           reactive(values$selected_indicators),
-                           SECTOR_COLORS)
   
   # Selected tab title
   output$selected_tab_title <- renderUI({
-    selected <- values$selected_indicators
+    active_indicators <- set_manager$get_active_indicators()    # NEW
+    count <- length(active_indicators)                          # NEW
     
-    if (nrow(selected) == 0) {
+    if (count == 0) {
       span(
         icon("clipboard-list", lib = "font-awesome"),
-        " YOUR INDICATOR SET"
+        " YOUR INDICATOR SETS"    # Changed to plural
       )
     } else {
       span(
         icon("clipboard-check", lib = "font-awesome"),
-        " YOUR INDICATOR SET",
+        " YOUR INDICATOR SETS",    # Changed to plural
         span(
-          paste0(nrow(selected)),
+          paste0(count),           # Use count instead of nrow
           style = "background-color: #198754; color: white; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin-left: 5px;"
         )
       )
