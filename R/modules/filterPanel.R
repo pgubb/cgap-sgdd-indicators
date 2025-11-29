@@ -90,7 +90,39 @@ filterPanelUI <- function(id) {
           checkboxGroupInput(ns("sectors"), "", choices = NULL)
         )
       ),
-    
+      
+      # Links with other initiatives filter
+      accordion_panel(
+        value = "initiatives",
+        title = div(
+          style = "display: inline-flex; align-items: center; gap: 8px;",
+          "Links with other initiatives",
+          div(
+            class = "my-tooltip",
+            tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
+            div(
+              class = "my-tooltiptext",
+              "Filter indicators that have correspondence with those used by other global organizations and initiatives."
+            )
+          )
+        ), 
+        icon = icon("link"),
+        div(
+          class = "modern-checkbox-group",
+          checkboxGroupInput(
+            ns("initiatives"), 
+            "", 
+            choices = c(
+              "GPFI" = "GPFI",
+              "IMF-FAS" = "IMF",
+              "AFI" = "AFI",
+              "WE Finance Code" = "WEF"
+            ),
+            selected = character(0)
+          )
+        )
+      ),
+      
       # Presets filter with toggle and CSS tooltip
       accordion_panel(
         value = "presets",
@@ -140,8 +172,8 @@ filterPanelUI <- function(id) {
           class = "btn btn-sm"
         )
       )
-    
-  )
+      
+    )
   )
 }
 
@@ -168,7 +200,7 @@ filterPanelServer <- function(id, indicators_data) {
         str_trim() %>% 
         unique() %>% 
         sort()
-        
+      
       # Sectors
       sectors <- unique_sectors
       updateCheckboxGroupInput(
@@ -290,6 +322,7 @@ filterPanelServer <- function(id, indicators_data) {
       updateCheckboxGroupInput(session, "mandates", selected = character(0))
       selected_objectives(character(0))  # Reset objectives
       updateCheckboxGroupInput(session, "sectors", selected = character(0))
+      updateCheckboxGroupInput(session, "initiatives", selected = character(0))  # Reset initiatives
       updateTextInput(session, "search", value = "")
       
       # Reset toggles
@@ -388,8 +421,25 @@ filterPanelServer <- function(id, indicators_data) {
               FALSE
             }
           })
-            
+          
         })
+      
+      # Initiatives filter (GPFI, IMF, AFI, WEF)
+      # Only apply if at least one initiative is selected
+      if (length(input$initiatives) > 0) {
+        selected_initiatives <- input$initiatives
+        
+        # Build a logical vector indicating which rows have at least one selected initiative
+        has_initiative <- rowSums(
+          sapply(selected_initiatives, function(col) {
+            vals <- filtered[[col]]
+            !is.na(vals) & vals != ""
+          }),
+          na.rm = TRUE
+        ) > 0
+        
+        filtered <- filtered[has_initiative, ]
+      }
       
       # Presets filter
       if (input$presets_foundation) {

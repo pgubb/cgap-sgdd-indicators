@@ -1,7 +1,6 @@
 
 # This file prepares edits and modification made by TAG on October 12, these were changes not made in the master file 
 
-
 indicators_update <- read_csv("data/LENS_indicators_100925_TAG.csv") %>% 
   filter(is.na(DROP)) %>% select(-DROP) %>% 
   mutate(indicator_id = as.character(indicator_id))
@@ -133,6 +132,23 @@ indicators %>%
     main_sector = str_replace(main_sector, ", Other", "")
   ) %>% 
   select(-secondary_sectors) -> indicators
+
+# Identifying which indicators have a mismatch between the number of secondary mandates and secondary objectives
+
+delim_count <- function(x) {
+  if (!is.na(x)) {
+    m <- stringr::str_split(x, ",\\s*")[[1]]
+    return(as.character(length(m)))   # <- convert to character
+  } else {
+    return("0")
+  }
+}
+
+indicators %>% mutate(
+  n_sec_mandates = map_chr(secondary_mandates, delim_count), 
+  n_sec_objectives = map_chr(secondary_objectives, delim_count)
+) -> indicators 
+
 
 # Ordering the main_mandates column: 
 

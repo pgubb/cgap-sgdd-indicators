@@ -387,19 +387,48 @@ indicators <- indicators %>%
 # Check the unique values after cleaning
 unique(indicators$secondary_mandates_umbrella)
   
+library(stringr)
+
 combine_cols <- function(mandates, objectives) {
-  # split both into vectors
+  # Split into vectors
   m <- str_split(mandates, ",\\s*")[[1]]
   o <- str_split(objectives, ",\\s*")[[1]]
   
-  # make lengths match (optional safeguard)
-  len <- min(length(m), length(o))
-  m <- m[1:len]
-  o <- o[1:len]
+  # Treat literal "NA" and "" as missing
+  o[o %in% c("NA", "")] <- NA_character_
   
-  # paste pairwise and collapse
-  paste0(m, " (", o, ")", collapse = ", ")
+  ## Case 1: only 1 mandate
+  if (length(m) == 1) {
+    # keep only non-missing objectives
+    o_valid <- o[!is.na(o)]
+    
+    if (length(o_valid) == 0) {
+      # no objectives → return just the mandate
+      return(m)
+    } else {
+      # all objectives go into a single parenthesis group
+      return(paste0(m, " (", paste(o_valid, collapse = ", "), ")"))
+    }
+  }
+  
+  ## Case 2: multiple mandates
+  
+  # If there's a single objective and it's not NA, recycle it for all mandates
+  if (length(o) == 1 && !is.na(o)) {
+    o <- rep(o, length(m))
+  } else if (length(o) != length(m)) {
+    # Recycle shorter vector to match the longer one (safe recycling)
+    len <- max(length(m), length(o))
+    m <- rep(m, length.out = len)
+    o <- rep(o, length.out = len)
+  }
+  
+  # Build "m (o)" but drop parentheses when objective is missing
+  out <- ifelse(is.na(o), m, paste0(m, " (", o, ")"))
+  
+  paste(out, collapse = ", ")
 }
+
 
 indicators <- indicators %>%
   mutate(secondary_mandate_objective = map2_chr(secondary_mandates, secondary_objectives, combine_cols), 
