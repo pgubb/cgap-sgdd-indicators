@@ -252,6 +252,41 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                 )
               ),
               
+              # Expandable details section
+              if (is_expanded) {
+                div(
+                  style = paste0(
+                    "background: #f8f9fa; ",
+                    "padding: 12px; ",
+                    "border-radius: 8px; ",
+                    "margin-bottom: 16px; ",
+                    "font-size: 12px; ",
+                    "animation: fadeIn 0.3s ease;"
+                  ),
+                  
+                  # Long description
+                  if (!is.na(ind$indicator_long_description) && ind$indicator_long_description != "") {
+                    div(
+                      style = "margin-bottom: 12px;",
+                      strong("Detailed Description:", style = "color: #495057; display: block; margin-bottom: 4px;"),
+                      p(substr(ind$indicator_long_description, 1, 300),
+                        if(nchar(ind$indicator_long_description) > 300) "...",
+                        style = "margin: 0; color: #6c757d; line-height: 1.4;")
+                    )
+                  },
+                  
+                  # Gender questions
+                  if (!is.na(ind$gender_questions) && ind$gender_questions != "") {
+                    div(
+                      strong("Gender Analysis Questions:", style = "color: #495057; display: block; margin-bottom: 4px;"),
+                      p(substr(ind$gender_questions, 1, 200),
+                        if(nchar(ind$gender_questions) > 200) "...",
+                        style = "margin: 0; color: #6c757d; line-height: 1.4;")
+                    )
+                  }
+                )
+              },
+              
               # Comments section
               div(
                 style = "margin-top: auto;",
@@ -267,7 +302,34 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                   rows = 2,
                   resize = "vertical"
                 )
+              ), 
+              
+              # Action buttons
+              div(
+                style = "display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e9ecef;",
+                
+                # Expand/collapse button
+                actionButton(
+                  ns(paste0("toggle_", ind$indicator_id)),
+                  label = if (is_expanded) "Show less" else "Show more",
+                  icon = icon(if (is_expanded) "chevron-up" else "chevron-down"),
+                  class = "btn btn-sm btn-outline-secondary",
+                  style = "font-size: 12px;",
+                  onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})", 
+                                    ns("toggle_expand"), ind$indicator_id)
+                ),
+                
+                # View full details button (links to browse page)
+                tags$a(
+                  href = "#",
+                  class = "btn btn-sm btn-link",
+                  style = "font-size: 12px; text-decoration: none;",
+                  onclick = "document.querySelector('[data-value=\"Browse indicators\"]').click(); return false;",
+                  icon("arrow-right", class = "fas", style = "margin-right: 4px;"),
+                  "View full details"
+                )
               )
+              
             )
           )
         })
