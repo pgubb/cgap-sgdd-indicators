@@ -285,7 +285,7 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
         })
         
         # Create HTML content for the report
-        report_html <- create_pdf_report(selected, comments, sector_colors)
+        report_html <- create_pdf_report(selected, comments, sector_colors, set_manager$active_set())
         
         # Send custom message to open in new tab
         session$sendCustomMessage("openPdfInNewTab", list(html = report_html))

@@ -878,7 +878,7 @@ html, body {
 }
 
 
-* Selected Indicators Card Styling - Add to www/custom.css */
+/* Selected Indicators Card Styling - Add to www/custom.css */
 
 /* Card hover effect */
 .selected-indicator-card:hover {
@@ -1144,3 +1144,286 @@ html, body {
     transform: translateY(2px);
     transition: transform 0.2s ease;
 }
+
+
+/* ============================================================================
+   ADD ALL / REMOVE ALL BUTTON STYLES - NAVIGATION HEADER
+   Add these styles to your www/custom.css file
+   ============================================================================ */
+
+/* Add All button - matches new compact sizing */
+#add_all_filtered {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #198754 !important;
+  border: none !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 6px 12px !important;
+  border-radius: 16px !important;
+  line-height: 1.4 !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+#add_all_filtered:hover {
+  background: #198754 !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.4) !important;
+}
+
+#add_all_filtered:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(25, 135, 84, 0.3) !important;
+}
+
+/* Remove All button - matches new compact sizing */
+#remove_all_filtered {
+  background: transparent !important;
+  color: white !important;
+  border: 1px solid rgba(255,255,255,0.6) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  padding: 6px 12px !important;
+  border-radius: 16px !important;
+  line-height: 1.4 !important;
+  transition: all 0.2s ease;
+}
+
+#remove_all_filtered:hover {
+  background: rgba(220, 53, 69, 0.9) !important;
+  border-color: rgba(220, 53, 69, 0.9) !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
+}
+
+#remove_all_filtered:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Animation for button icons */
+#add_all_filtered i,
+#remove_all_filtered i {
+  font-size: 11px !important;
+  transition: transform 0.2s ease;
+}
+
+#add_all_filtered:hover i,
+#remove_all_filtered:hover i {
+  transform: scale(1.1);
+}
+
+/* ============================================================================
+   INDICATOR CARD BUTTON STYLES - UNIFIED WITH NAVIGATION HEADER
+   ============================================================================ */
+
+/* Base button styles - unselected state */
+.select-indicator-btn-modern.btn-unselected {
+    background: white !important;
+    border: 1px solid #dee2e6 !important;
+    color: #198754 !important;
+    padding: 6px 12px !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+.select-indicator-btn-modern.btn-unselected:hover {
+    background: #198754 !important;
+    border-color: #198754 !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3) !important;
+}
+
+/* Base button styles - selected state */
+.select-indicator-btn-modern.btn-selected {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
+    border: none !important;
+    color: white !important;
+    padding: 6px 12px !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3) !important;
+}
+
+/* Icon sizing within indicator card buttons */
+.select-indicator-btn-modern i {
+    font-size: 11px !important;
+    margin-right: 6px !important;
+    transition: transform 0.2s ease;
+}
+
+.select-indicator-btn-modern:hover i {
+    transform: scale(1.1);
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  /* Navigation header buttons */
+  #add_all_filtered,
+  #remove_all_filtered {
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Indicator card buttons */
+  .select-indicator-btn-modern {
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+  }
+  
+  .navigation-header > div:first-child {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  
+  .navigation-header > div:first-child > div:last-child {
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
+  }
+}
+
+/* ************** */ 
+
+/* ============================================================================
+   SET MANAGER STYLING - BRAND BLUE #1A5A80
+   Precise selectors based on setManager.R module with id="set_manager"
+   ============================================================================ */
+
+/* ---- SelectInput Dropdown Styling ---- */
+
+/* Target the selectize control via the wrapper class */
+.set-selector-control .selectize-input {
+    border: 2px solid #1A5A80 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    box-shadow: 0 2px 4px rgba(26, 90, 128, 0.1) !important;
+    transition: all 0.2s ease !important;
+    min-height: 38px !important;
+    background-color: white !important;
+}
+
+.set-selector-control .selectize-input.focus,
+.set-selector-control .selectize-input:focus {
+    border-color: #1A5A80 !important;
+    box-shadow: 0 0 0 3px rgba(26, 90, 128, 0.2) !important;
+    outline: none !important;
+}
+
+.set-selector-control .selectize-input .item {
+    color: #1A5A80 !important;
+    font-weight: 600 !important;
+}
+
+/* Dropdown menu styling */
+.set-selector-control .selectize-dropdown {
+    border: 2px solid #1A5A80 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(26, 90, 128, 0.15) !important;
+    margin-top: 4px !important;
+    background-color: white !important;
+}
+
+.set-selector-control .selectize-dropdown .option {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    transition: all 0.15s ease !important;
+}
+
+.set-selector-control .selectize-dropdown .option:hover,
+.set-selector-control .selectize-dropdown .option.active {
+    background-color: rgba(26, 90, 128, 0.1) !important;
+    color: #1A5A80 !important;
+}
+
+.set-selector-control .selectize-dropdown .option.selected {
+    background-color: #1A5A80 !important;
+    color: white !important;
+}
+
+/* Caret/arrow styling */
+.set-selector-control .selectize-input::after {
+    border-color: #1A5A80 transparent transparent transparent !important;
+}
+
+/* ---- Action Buttons Styling ---- */
+
+
+/* Delete Set Button - Keep as danger/red for clarity */
+button#set_manager-delete_set.btn.btn-sm.btn-outline-danger,
+#set_manager-delete_set.btn-outline-danger,
+#set_manager-delete_set {
+    background-color: transparent !important;
+    border: 2px solid #dc3545 !important;
+    color: #dc3545 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+button#set_manager-delete_set.btn.btn-sm.btn-outline-danger:hover,
+#set_manager-delete_set.btn-outline-danger:hover,
+#set_manager-delete_set:hover {
+    background-color: #dc3545 !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2) !important;
+}
+
+button#set_manager-delete_set.btn.btn-sm.btn-outline-danger:active,
+#set_manager-delete_set:active {
+    transform: translateY(0) !important;
+}
+
+/* ---- Modal Dialog Styling ---- */
+
+/* Modal icon color - Brand Blue for create/rename */
+.modal-body .fa-layer-group,
+.modal-body .fa-pen {
+    color: #1A5A80 !important;
+}
+
+/* Modal title icon wrapper - override the inline style */
+.modal-header div[style*="color: #4dadf7"] {
+    color: #1A5A80 !important;
+}
+
+/* Modal Confirm Buttons - Brand Blue for primary actions */
+.modal-footer .btn-primary,
+#set_manager-confirm_create,
+#set_manager-confirm_rename {
+    background-color: #1A5A80 !important;
+    border-color: #1A5A80 !important;
+    color: white !important;
+}
+
+.modal-footer .btn-primary:hover,
+#set_manager-confirm_create:hover,
+#set_manager-confirm_rename:hover {
+    background-color: #145070 !important;
+    border-color: #145070 !important;
+}
+
+/* Modal text input focus state */
+.modern-input input:focus {
+    box-shadow: 0 0 0 4px rgba(26, 90, 128, 0.15) !important;
+    border-color: #1A5A80 !important;
+}
+
+

@@ -144,10 +144,10 @@ delim_count <- function(x) {
   }
 }
 
-indicators %>% mutate(
-  n_sec_mandates = map_chr(secondary_mandates, delim_count), 
-  n_sec_objectives = map_chr(secondary_objectives, delim_count)
-) -> indicators 
+# indicators %>% mutate(
+#   n_sec_mandates = map_chr(secondary_mandates, delim_count), 
+#   n_sec_objectives = map_chr(secondary_objectives, delim_count)
+# ) -> indicators 
 
 
 # Ordering the main_mandates column: 

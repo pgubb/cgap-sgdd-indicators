@@ -67,7 +67,11 @@ COLUMN_DESCRIPTIONS <- c(
   "disaggregation_vars" = "Suggested breakdowns for segmentation analysis"
 )
 
+
 BREAKDOWNS <- list(
+  
+  "Access point type" = c("PHYSICAL CHANNELS", "-ATM", "-POS", "-Banking agents", "-Mobile money/e-money agents", "-Merchants", "-Insurance agents/brokers", "-Pension agents/brokers", "-Investment broker/intermediary", "DIGITAL CHANNELS", "-Online merchants/agent", "-Financial app registration/subscription", "-Internet banking registration/subscription", "-Online trading platform", "-P2P platform", "Crowdfunding platform"), 
+  
   "Customer gender" = c("Female", "Male", "Non-binary", "Transgender"), 
   "Customer type" = c("Natural person-individual", "Legal person-entity/organization"), 
   "Customer age" = c("< 30 years", "30-55 years", "55-65 years", "65+ years"), 

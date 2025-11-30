@@ -55,7 +55,7 @@ setManagerUI <- function(id) {
             ns("create_set"),
             label = NULL,
             icon = icon("plus", class = "fas"),
-            class = "btn btn-sm btn-primary",
+            class = "btn btn-sm btn-success",
             title = "Create new set",
             style = "padding: 6px 12px;"
           ),
@@ -195,7 +195,7 @@ setManagerServer <- function(id) {
             textInput(
               ns("new_set_name"),
               label = NULL,
-              placeholder = "e.g., Financial Inclusion 2024",
+              placeholder = "e.g. Credit usage set",
               value = "",
               width = "100%"
             )

@@ -1,3 +1,4 @@
+
 library(shiny)
 library(tidyverse)
 library(readxl)
@@ -25,9 +26,9 @@ ui <- page_navbar(
       "display: flex; ",
       "align-items: center; ",
       "gap: 15px; ",
-      "padding: 0; ",           # Remove padding
-      "margin: 0; ",            # Remove margin
-      "height: 40px;"           # Fixed height
+      "padding: 0; ",
+      "margin: 0; ",
+      "height: 40px;"
     ),
     tags$img(
       src = "cgap_logo.png", 
@@ -46,7 +47,7 @@ ui <- page_navbar(
         "font-size: 40px; ",
         "font-weight: 700; ",
         "color: #1A5A80; ",
-        "line-height: 40px; ",     # Match container height
+        "line-height: 40px; ",
         "font-family: 'Figtree', sans-serif; ",
         "display: inline-block; ",
         "vertical-align: middle;"
@@ -54,11 +55,10 @@ ui <- page_navbar(
       "LENS"
     )
   ),
-
+  
   header = tagList(
     includeCSS("www/custom.css"),
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
-    # Add the JavaScript for indicator card toggling
     indicatorCardJS()
   ),
   
@@ -82,7 +82,6 @@ ui <- page_navbar(
         "Jump to indicators grouped by their primary mandate",
         uiOutput("mandate_links")
       ),
-      # Main content area
       div(
         uiOutput("navigation_helper"),
         uiOutput("key"),
@@ -106,7 +105,7 @@ ui <- page_navbar(
   
   nav_panel(
     title = uiOutput("selected_tab_title"),
-    selectedIndicatorsMultiUI("selected")    # NEW
+    selectedIndicatorsMultiUI("selected")
   ),
   
   nav_item(
@@ -117,13 +116,13 @@ ui <- page_navbar(
       style = "color: inherit; text-decoration: none; border: none; background: transparent; font-size: 14px;"
     )
   )
-
+  
 )
 
 # SERVER ----------
 server <- function(input, output, session) {
   
-  # Initialize set manager (replaces values$selected_codes)
+  # Initialize set manager
   set_manager <- selectedIndicatorsMultiServer(
     "selected",
     indicators_data = indicators,
@@ -133,13 +132,13 @@ server <- function(input, output, session) {
   # Filter module
   filter_values <- filterPanelServer("filters", indicators)
   
-  # Filtered indicators with debouncing for better performance
+  # Filtered indicators with debouncing
   filtered_indicators <- reactive({
     filter_values$filtered_indicators()
   }) %>% 
-    debounce(200)  # Wait 300ms after last change before updating
+    debounce(200)
   
-  # Track when we need to re-render indicators (only on filter changes)
+  # Track when we need to re-render indicators
   filter_trigger <- reactiveVal(0)
   
   observeEvent(filtered_indicators(), {
@@ -150,18 +149,25 @@ server <- function(input, output, session) {
   output$navigation_helper <- renderUI({
     indicators_data <- filtered_indicators()
     
-    # Get active filters from the filter module
-    # These should come from the filter panel inputs
     active_filters <- list(
       mandates = input$`filters-mandates`,
-      objectives = filter_values$selected_objectives(),  # You'll need to expose this from the filter module
+      objectives = filter_values$selected_objectives(),
       sectors = input$`filters-sectors`,
       use_cases = input$`filters-use_cases`,
       search = input$`filters-search`,
-      presets_foundation = input$`filters-presets_foundation`
+      presets_foundation = input$`filters-presets_foundation`,
+      presets_digital = input$`filters-presets_digital`
     )
     
-    enhanced_navigation_helper(indicators_data, indicators, active_filters)
+    # Get the active set name from set_manager
+    active_set_name <- set_manager$active_set()
+    
+    enhanced_navigation_helper(
+      indicators_data, 
+      indicators, 
+      active_filters,
+      active_set_name = active_set_name
+    )
   })
   
   # Key
@@ -175,15 +181,67 @@ server <- function(input, output, session) {
     create_mandate_links(indicators_data)
   })
   
+ 
+  # ADD ALL / REMOVE ALL BUTTON HANDLERS -------------
+
+  
+  # Add all filtered indicators to the active set
+  observeEvent(input$add_all_filtered, {
+    filtered_ids <- isolate(filtered_indicators()$indicator_id)
+    
+    if (length(filtered_ids) > 0) {
+      for (id in filtered_ids) {
+        set_manager$add_to_active(id)
+      }
+      
+      showNotification(
+        paste("Added", length(filtered_ids), "indicators to your set"),
+        type = "message",
+        duration = 3
+      )
+      
+      # Re-render to update button states
+      filter_trigger(filter_trigger() + 1)
+    }
+  })
+  
+  # Remove all filtered indicators from the active set
+  observeEvent(input$remove_all_filtered, {
+    filtered_ids <- isolate(filtered_indicators()$indicator_id)
+    current_selected <- isolate(set_manager$get_active_indicators())
+    to_remove <- intersect(filtered_ids, current_selected)
+    
+    if (length(to_remove) > 0) {
+      for (id in to_remove) {
+        set_manager$remove_from_active(id)
+      }
+      
+      showNotification(
+        paste("Removed", length(to_remove), "indicators from your set"),
+        type = "message",
+        duration = 3
+      )
+      
+      filter_trigger(filter_trigger() + 1)
+    } else {
+      showNotification(
+        "No filtered indicators are in your current set",
+        type = "warning",
+        duration = 3
+      )
+    }
+  })
+  
+
+  # END ADD ALL / REMOVE ALL HANDLERS -----------
+  
   # Render indicators only when filter_trigger changes
   observeEvent(filter_trigger(), {
-    # Show loading spinner
     session$sendCustomMessage("showLoading", TRUE)
     
     indicators_data <- isolate(filtered_indicators())
     selected_codes <- isolate(set_manager$get_active_indicators()) 
     
-    # Clear existing indicators
     removeUI(selector = "#indicator_container > *", immediate = TRUE, multiple = TRUE)
     
     if (nrow(indicators_data) == 0) {
@@ -196,27 +254,23 @@ server <- function(input, output, session) {
         )),
         immediate = TRUE
       )
-      # Hide loading spinner
       session$sendCustomMessage("showLoading", FALSE)
       return()
     }
     
-    # Group by mandate and render
     mandates <- unique(indicators_data$main_mandate)
     
     for (mandate in mandates) {
       mandate_indicators <- indicators_data %>% 
         filter(main_mandate == mandate)
       
-      # FIXED: Use consistent casing for both ID and header
       title_case_mandate <- str_to_title(mandate)
       mandate_id <- paste0("mandate_", slugify(title_case_mandate))
       
       insertUI(
         selector = "#indicator_container",
         ui = tags$div(
-          id = mandate_id,  # This now matches the navigation links
-          # Use the title case version for display
+          id = mandate_id,
           enhanced_mandate_header(title_case_mandate, nrow(mandate_indicators)),
           accordion(
             id = paste0(mandate_id, "_accordion"),
@@ -236,14 +290,11 @@ server <- function(input, output, session) {
       )
     }
     
-    # Setup button handlers after rendering
     session$sendCustomMessage("setupSelectButtons", list())
-    
-    # Hide loading spinner after a short delay to ensure smooth transition
     session$sendCustomMessage("hideLoadingDelayed", list(delay = 300))
   }, ignoreNULL = TRUE, ignoreInit = FALSE)
   
-  # Handle selection events from JavaScript - isolated from UI rendering
+  # Handle selection events from JavaScript
   observeEvent(input$indicator_selected, {
     req(input$indicator_selected)
     
@@ -252,38 +303,36 @@ server <- function(input, output, session) {
     
     isolate({
       if (action == "add") {
-        set_manager$add_to_active(id)         # NEW
+        set_manager$add_to_active(id)
       } else {
-        set_manager$remove_from_active(id)    # NEW
+        set_manager$remove_from_active(id)
       }
     })
   }, ignoreNULL = TRUE, ignoreInit = TRUE)
   
-  
   # Selected tab title
   output$selected_tab_title <- renderUI({
-    active_indicators <- set_manager$get_active_indicators()    # NEW
-    count <- length(active_indicators)                          # NEW
+    active_indicators <- set_manager$get_active_indicators()
+    count <- length(active_indicators)
     
     if (count == 0) {
       span(
         icon("clipboard-list", lib = "font-awesome"),
-        " YOUR INDICATOR SETS"    # Changed to plural
+        " YOUR INDICATOR SETS"
       )
     } else {
       span(
         icon("clipboard-check", lib = "font-awesome"),
-        " YOUR INDICATOR SETS",    # Changed to plural
+        " YOUR INDICATOR SETS",
         span(
-          paste0(count),           # Use count instead of nrow
+          paste0(count),
           style = "background-color: #198754; color: white; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin-left: 5px;"
         )
       )
     }
   })
   
-  
-  # About modal ------
+  # About modal 
   # Add this observer in your server function:
   observeEvent(input$show_about, {
     showModal(

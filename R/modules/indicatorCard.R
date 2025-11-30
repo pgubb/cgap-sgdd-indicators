@@ -170,7 +170,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
           )
         ),
         
-        # Right side - action button
+        # Right side - action button (UPDATED STYLING)
         div(
           style = "flex-shrink: 0;",
           tags$button(
@@ -182,25 +182,28 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
             style = if (is_selected) {
               paste0(
                 "background: linear-gradient(135deg, #198754 0%, #20c997 100%); ",
-                "border: 1px solid #198754; ",
+                "border: none; ",
                 "color: white; ",
-                "padding: 8px 16px; ",
-                "border-radius: 20px; ",
+                "padding: 6px 12px; ",
+                "border-radius: 16px; ",
                 "font-size: 13px; ",
-                "font-weight: 500; ",
+                "font-weight: 600; ",
+                "line-height: 1.4; ",
                 "transition: all 0.2s ease; ",
                 "box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);"
               )
             } else {
               paste0(
                 "background: white; ",
-                "border: 2px solid #e9ecef; ",
-                "color: #495057; ",
-                "padding: 8px 16px; ",
-                "border-radius: 20px; ",
+                "border: 1px solid #dee2e6; ",
+                "color: #198754; ",
+                "padding: 6px 12px; ",
+                "border-radius: 16px; ",
                 "font-size: 13px; ",
-                "font-weight: 500; ",
-                "transition: all 0.2s ease;"
+                "font-weight: 600; ",
+                "line-height: 1.4; ",
+                "transition: all 0.2s ease; ",
+                "box-shadow: 0 2px 8px rgba(0,0,0,0.08);"
               )
             },
             

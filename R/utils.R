@@ -152,10 +152,6 @@ create_mandate_links <- function(indicators_data) {
   # Create named vector for lookup
   ref <- setNames(as.character(N_ind_bymandate$n), as.character(N_ind_bymandate$main_mandate))
   
-  # Debug: print the reference to console (remove in production)
-  # print("Mandate counts:")
-  # print(ref)
-  
   tagList(
     lapply(mandates, function(mandate) {
       # Convert mandate to character to ensure proper matching
@@ -628,9 +624,11 @@ render_disagg_table_vertical <- function(indicator_row, columns,
 
 
 
-# Enhanced navigation helper with active filters display for R/utils.R
+# Enhanced navigation helper with active filters display and Add All/Remove All buttons
 
-enhanced_navigation_helper <- function(filtered_indicators, total_indicators, active_filters = NULL) {
+enhanced_navigation_helper <- function(filtered_indicators, total_indicators, active_filters = NULL,
+                                       selected_count = 0, filtered_ids = character(),
+                                       active_set_name = "My Indicators") {
   n <- nrow(filtered_indicators)
   N <- nrow(total_indicators)
   
@@ -646,7 +644,8 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       length(active_filters$sectors) > 0 ||
       length(active_filters$use_cases) > 0 ||
       !is.null(active_filters$search) && active_filters$search != "" ||
-      active_filters$presets_foundation == TRUE
+      isTRUE(active_filters$presets_foundation) ||
+      isTRUE(active_filters$presets_digital)
   )
   
   div(
@@ -660,11 +659,13 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       "box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);"
     ),
     
-    # Main title and count
+    # Main title and count row with Add All / Remove All buttons
     div(
-      style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;",
+      style = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 16px; flex-wrap: wrap;",
       
+      # Left side - title and description
       div(
+        style = "flex: 1; min-width: 300px;",
         h2(
           "Regulatory indicators with a sociodemographic lens",
           style = "margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);"
@@ -672,6 +673,79 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
         p(
           paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
           style = "margin: 8px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 300;"
+        )
+      ),
+      
+      # Right side - Active set name + Add All / Remove All buttons
+      div(
+        style = "display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;",
+        
+        # Active set name label
+        div(
+          style = paste0(
+            "display: flex; ",
+            "align-items: center; ",
+            "gap: 6px; ",
+            "padding: 6px 12px; ",
+            "background: rgba(255, 255, 255, 0.15); ",
+            "border-radius: 16px; ",
+            "font-size: 13px; ",
+            "backdrop-filter: blur(10px);"
+          ),
+          icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
+          span("Adding to:", style = "opacity: 0.8;"),
+          span(
+            active_set_name,
+            style = "font-weight: 600;"
+          )
+        ),
+        
+        # Buttons row
+        div(
+          style = "display: flex; gap: 8px; align-items: center;",
+          
+          # Add All button
+          actionButton(
+            "add_all_filtered",
+            label = tagList(
+              icon("plus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
+              paste("Add all", n)
+            ),
+            class = "btn btn-sm",
+            style = paste0(
+              "background: rgba(255, 255, 255, 0.95); ",
+              "color: #198754; ",
+              "border: none; ",
+              "font-weight: 600; ",
+              "font-size: 13px; ",
+              "padding: 6px 12px; ",
+              "border-radius: 16px; ",
+              "transition: all 0.2s ease; ",
+              "box-shadow: 0 2px 8px rgba(0,0,0,0.15); ",
+              "line-height: 1.4;"
+            )
+          ),
+          
+          # Remove All button
+          actionButton(
+            "remove_all_filtered",
+            label = tagList(
+              icon("minus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
+              "Remove all"
+            ),
+            class = "btn btn-sm",
+            style = paste0(
+              "background: transparent; ",
+              "color: white; ",
+              "border: 1px solid rgba(255,255,255,0.6); ",
+              "font-weight: 500; ",
+              "font-size: 13px; ",
+              "padding: 6px 12px; ",
+              "border-radius: 16px; ",
+              "transition: all 0.2s ease; ",
+              "line-height: 1.4;"
+            )
+          )
         )
       )
     ),
@@ -813,8 +887,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
                 sector
               )
             })
-          },
-          
+          }
         )
       )
     },
@@ -1054,14 +1127,14 @@ format_text_for_pdf <- function(text) {
   return(text)
 }
 
-create_pdf_report <- function(indicators, comments, sector_colors) {
+create_pdf_report <- function(indicators, comments, sector_colors, active_set_name = "Selected Indicators") {
   paste0('
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selected Indicators Report - CGAP LENS</title>
+    <title>', htmlEscape(active_set_name), ' - CGAP LENS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles */
@@ -1414,8 +1487,8 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
     <div class="container">
         <!-- Header -->
         <div class="report-header">
-            <h1><i class="fas fa-clipboard-check"></i> Selected Indicators Report</h1>
-            <div class="report-subtitle">CGAP LENS - Regulatory Indicators with a Sociodemographic Lens</div>
+            <h1><i class="fas fa-clipboard-check"></i>', htmlEscape(paste("", active_set_name)), '</h1>
+            <div class="report-subtitle"> Regulatory Indicators with a Sociodemographic LENS </div>
             <div class="report-meta">
                 <div class="meta-item">
                     <div class="meta-label">Generated</div>
@@ -1550,4 +1623,3 @@ create_pdf_report <- function(indicators, comments, sector_colors) {
 </body>
 </html>')
 }
-
