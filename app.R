@@ -368,6 +368,83 @@ server <- function(input, output, session) {
           div(
             style = "padding: 0 20px;",
             
+            # User Guide Download - Prominent Card
+            div(
+              class = "about-section",
+              style = paste0(
+                "margin-bottom: 30px; ",
+                "background: linear-gradient(135deg, #1A5A80 0%, #2980b9 100%); ",
+                "border-radius: 12px; ",
+                "padding: 24px; ",
+                "color: white; ",
+                "position: relative; ",
+                "overflow: hidden;"
+              ),
+              # Decorative background element
+              div(
+                style = paste0(
+                  "position: absolute; ",
+                  "top: -30px; ",
+                  "right: -30px; ",
+                  "width: 120px; ",
+                  "height: 120px; ",
+                  "background: rgba(255,255,255,0.1); ",
+                  "border-radius: 50%;"
+                )
+              ),
+              div(
+                style = "position: relative; z-index: 1;",
+                div(
+                  style = "display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;",
+                  # Icon container
+                  div(
+                    style = paste0(
+                      "background: rgba(255,255,255,0.2); ",
+                      "border-radius: 12px; ",
+                      "padding: 16px; ",
+                      "display: flex; ",
+                      "align-items: center; ",
+                      "justify-content: center;"
+                    ),
+                    icon("file-pdf", class = "fas", style = "font-size: 32px; color: white;")
+                  ),
+                  # Text and button container
+                  div(
+                    style = "flex: 1; min-width: 250px;",
+                    h4(
+                      "LENS User Guide",
+                      style = "margin: 0 0 8px 0; font-size: 20px; font-weight: 600;"
+                    ),
+                    p(
+                      "New to LENS? Download our comprehensive user guide to learn how to navigate the indicator catalog, create custom indicator sets, and generate reports for your analysis.",
+                      style = "margin: 0 0 16px 0; font-size: 14px; opacity: 0.9; line-height: 1.5;"
+                    ),
+                    tags$a(
+                      href = "CGAP LENS User Guide.pdf",
+                      download = "CGAP LENS User Guide.pdf",
+                      style = paste0(
+                        "display: inline-flex; ",
+                        "align-items: center; ",
+                        "gap: 8px; ",
+                        "background: white; ",
+                        "color: #1A5A80; ",
+                        "text-decoration: none; ",
+                        "font-size: 14px; ",
+                        "font-weight: 600; ",
+                        "padding: 12px 24px; ",
+                        "border-radius: 8px; ",
+                        "transition: all 0.2s ease; ",
+                        "box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
+                      ),
+                      class = "user-guide-download-btn",
+                      icon("download", class = "fas", style = "font-size: 14px;"),
+                      "Download User Guide (PDF)"
+                    )
+                  )
+                )
+              )
+            ),
+            
             # Context & Additional Resources
             div(
               class = "about-section",
@@ -376,27 +453,6 @@ server <- function(input, output, session) {
                 icon("graduation-cap", class = "fas", style = "margin-right: 8px; color: #667eea;"),
                 "Context & Additional Resources",
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
-              ),
-              div(
-                style = "display: flex; gap: 10px; flex-wrap: wrap;",
-                tags$a(
-                  href = "CGAP LENS User Guide.pdf",
-                  download = "CGAP LENS User Guide.pdf",
-                  style = paste0(
-                    "display: flex; ",
-                    "align-items: center; ",
-                    "gap: 6px; ",
-                    "color: #6c757d; ",
-                    "text-decoration: none; ",
-                    "font-size: 13px; ",
-                    "transition: all 0.2s ease; ",
-                    "padding: 4px 8px; ",
-                    "border-radius: 4px;"
-                  ),
-                  class = "catalog-download-link",
-                  icon("download", class = "fas", style = "font-size: 12px;"),
-                  "Download User Guide"
-                )
               ),
               p(
                 "LENS is one component of CGAP's project to support the mainstreaming of gender-disaggregated regulatory data in the financial sector and should be consulted jointly with 'Using Gender-Disaggregated Regulatory Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities'.",
