@@ -377,6 +377,27 @@ server <- function(input, output, session) {
                 "Context & Additional Resources",
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
+              div(
+                style = "display: flex; gap: 10px; flex-wrap: wrap;",
+                tags$a(
+                  href = "CGAP LENS User Guide.pdf",
+                  download = "CGAP LENS User Guide.pdf",
+                  style = paste0(
+                    "display: flex; ",
+                    "align-items: center; ",
+                    "gap: 6px; ",
+                    "color: #6c757d; ",
+                    "text-decoration: none; ",
+                    "font-size: 13px; ",
+                    "transition: all 0.2s ease; ",
+                    "padding: 4px 8px; ",
+                    "border-radius: 4px;"
+                  ),
+                  class = "catalog-download-link",
+                  icon("download", class = "fas", style = "font-size: 12px;"),
+                  "Download User Guide"
+                )
+              ),
               p(
                 "LENS is one component of CGAP's project to support the mainstreaming of gender-disaggregated regulatory data in the financial sector and should be consulted jointly with 'Using Gender-Disaggregated Regulatory Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities'.",
                 style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
@@ -388,18 +409,18 @@ server <- function(input, output, session) {
               div(
                 style = "display: flex; gap: 10px; flex-wrap: wrap;",
                 tags$a(
-                  href = "https://www.cgap.org",
+                  href = "",
                   target = "_blank",
                   class = "btn btn-outline-primary btn-sm",
                   icon("book", class = "fas", style = "margin-right: 6px;"),
-                  "Technical Guide"
+                  "Technical Guide (Forthcoming 2026/Q3)"
                 ),
                 tags$a(
-                  href = "https://www.worldbank.org",
+                  href = "",
                   target = "_blank",
                   class = "btn btn-outline-primary btn-sm",
                   icon("file-alt", class = "fas", style = "margin-right: 6px;"),
-                  "Companion Notes"
+                  "Use cases companion note (Forthcoming 2026/Q2)"
                 )
               )
             ),
@@ -425,7 +446,7 @@ server <- function(input, output, session) {
               style = "margin-bottom: 30px;",
               h3(
                 icon("database", class = "fas", style = "margin-right: 8px; color: #667eea;"),
-                "Sources",
+                "References and sources",
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
               p(
