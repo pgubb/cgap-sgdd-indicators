@@ -634,7 +634,12 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   
   # Calculate statistics
   mandates_count <- length(unique(filtered_indicators$main_mandate))
-  sectors_count <- length(unique(filtered_indicators$main_sector))
+  sectors_count <- filtered_indicators$main_sector %>%
+    strsplit(",\\s*") %>%
+    unlist() %>%
+    trimws() %>%
+    unique() %>%
+    length()
   objectives_count <- length(unique(filtered_indicators$main_objectives))
   
   # Check if any filters are active
