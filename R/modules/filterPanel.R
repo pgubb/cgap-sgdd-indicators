@@ -454,32 +454,63 @@ filterPanelServer <- function(id, indicators_data) {
       }
       
       # Apply search filter if not empty
-      if (!is.null(input$search) && input$search != "") {
+      if (!is.null(input$search) && nchar(trimws(input$search)) > 0) {
         
-        # 1. Split the search string into individual words by space
-        #    simplify = TRUE returns a vector instead of a list
-        words <- str_split(input$search, " ", simplify = TRUE)[1, ]
-        # 2. Remove empty strings (caused by double spaces) and duplicates
-        words <- unique(words[words != ""])
-        # 3. Stem the words (e.g., "cards" -> "card")
-        stemmed_words <- wordStem(words, language = "english")
+        # Convert search input to lowercase and trim whitespace
+        search_input <- tolower(trimws(input$search))
         
-        # 4. Iteratively filter the data for EACH word
-        #    This ensures "AND" logic: The row must contain Word A AND Word B
-        for (word in stemmed_words) {
+        # Split into words
+        search_words <- unlist(strsplit(search_input, "\\s+"))
+        search_words <- search_words[nchar(search_words) > 0]
+        
+        # Helper function: safely get column value as lowercase character
+        safe_lower <- function(x) {
+          tolower(as.character(ifelse(is.na(x), "", x)))
+        }
+        
+        # Create a combined searchable text field for each row (do this once, outside the loop)
+        # This is more efficient than checking multiple columns repeatedly
+        filtered <- filtered %>%
+          mutate(
+            .search_text = paste(
+              safe_lower(indicator_name),
+              safe_lower(indicator_description),
+              safe_lower(main_sector),
+              safe_lower(main_mandate),
+              safe_lower(main_objectives),
+              safe_lower(secondary_objectives),
+              safe_lower(secondary_mandates),
+              # Only include these columns if they exist
+              if ("GPFI" %in% names(.)) safe_lower(GPFI) else "",
+              if ("IMF" %in% names(.)) safe_lower(IMF) else "",
+              if ("AFI" %in% names(.)) safe_lower(AFI) else "",
+              if ("WEF" %in% names(.)) safe_lower(WEF) else "",
+              sep = " "
+            )
+          )
+        
+        # For each search word, check if EITHER the original word OR its stemmed version matches
+        # This ensures "early" matches "early" in the text, and "cards" matches "card"
+        for (word in search_words) {
+          # Get stemmed version (if SnowballC available)
+          if (requireNamespace("SnowballC", quietly = TRUE)) {
+            stemmed_word <- SnowballC::wordStem(word, language = "english")
+          } else {
+            stemmed_word <- word
+          }
           
-          search_pattern <- regex(word, ignore_case = TRUE)
-          
+          # Match if EITHER original word OR stemmed word is found
+          # This handles cases like "early" (where stem "earli" won't match "early" in text)
+          # and "cards" (where stem "card" will match "card" in text)
           filtered <- filtered %>%
             filter(
-              if_any(
-                .cols = c(indicator_name, indicator_description, main_sector, 
-                          main_mandate, main_objectives, secondary_objectives, 
-                          secondary_mandates, GPFI, IMF, AFI, WEF),
-                .fns = ~ str_detect(coalesce(., ""), search_pattern)
-              )
+              grepl(word, .search_text, fixed = TRUE) | 
+                grepl(stemmed_word, .search_text, fixed = TRUE)
             )
         }
+        
+        # Remove the temporary search column
+        filtered <- filtered %>% select(-.search_text)
       }
       
       # Sort by mandate count, then by other fields
