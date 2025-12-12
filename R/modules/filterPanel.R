@@ -116,7 +116,8 @@ filterPanelUI <- function(id) {
               "GPFI" = "GPFI",
               "IMF-FAS" = "IMF",
               "AFI" = "AFI",
-              "WE Finance Code" = "WEF"
+              "WE Finance Code" = "WEF", 
+              "CGAP FeMA Meter" = "FEMAMETER"
             ),
             selected = character(0)
           )
@@ -370,7 +371,7 @@ filterPanelServer <- function(id, indicators_data) {
             main_mandate %in% selected_mandates | 
               (!is.na(secondary_mandates) & 
                  sapply(secondary_mandates, function(x) {
-                   any(trimws(unlist(strsplit(x, ","))) %in% selected_mandates)
+                   any(trimws(unlist(strsplit(x, ";"))) %in% selected_mandates)
                  }))
           } else {
             main_mandate %in% selected_mandates

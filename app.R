@@ -455,11 +455,11 @@ server <- function(input, output, session) {
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
               p(
-                "LENS is one component of CGAP's project to support the mainstreaming of gender-disaggregated regulatory data in the financial sector and should be consulted jointly with 'Using Gender-Disaggregated Regulatory Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities'.",
+                "LENS is one component of CGAP's project to support the mainstreaming of regulatory gender-disaggregated data (RGDD) in the financial sector and should be consulted jointly with 'Using Disaggregated Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities' and accompanying pieces",
                 style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
               ),
               p(
-                "This technical guide describes use cases for Regulatory gender-disaggregated data (RGDD), provides recommendations for Financial Sector Authorities on how to leverage regulatory reporting regimes to maximize the use of gender-disaggregated data for multiple FSA mandates and to support the goals of other actors (policymakers, FSPs, funders and investors), and provide recommendations for FSAs to collect, use and disseminate gender equality data about their own organizations.",
+                "This Guidance package describes RGDD use cases, provides recommendations for Financial Sector Authorities on how to leverage regulatory reporting regimes to maximize the use of gender-disaggregated data for multiple FSA mandates and to support the goals of other actors (including funders and financial firms).",
                 style = "line-height: 1.6; color: #555; margin-bottom: 15px;"
               ),
               div(
@@ -491,7 +491,7 @@ server <- function(input, output, session) {
                 style = "color: #333; margin-bottom: 15px; font-size: 20px;"
               ),
               p(
-                "LENS provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, safety, stability and competition. The selection of indicators is informed both by their general relevance to these different dimensions of the financial system as well as their potential relevance for understanding the role of gender within those dimensions. The indicators in LENS, including their definitions and classifications to mandates,  do not reflect a global consensus but rather constitute an attempt at providing working definitions and classification options that each user should adapt to their specific country context and institutional goals.",
+                "LENS provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, stability and soundness, market development and sustainability. The selection of indicators is informed both by their general relevance to these different mandates and goals of financial sector authorities as well as their potential relevance for understanding the role of key sociodemographic traits, such as gender, within those dimensions. The indicators in LENS, including their definitions, assigned mandates/objectives and proposed breakdowns, do not reflect a global consensus but rather constitute an attempt at providing working definitions, classification options and analytical questions that each user should adapt to their specific country context and institutional goals.",
                 style = "line-height: 1.6; color: #555;"
               )
             ),
@@ -534,6 +534,12 @@ server <- function(input, output, session) {
                   target = "_blank",
                   class = "btn btn-outline-secondary btn-sm",
                   "WE Finance Code"
+                ), 
+                tags$a(
+                  href = "https://www.cgap.org/topics/collections/fema-meter",
+                  target = "_blank",
+                  class = "btn btn-outline-secondary btn-sm",
+                  "CGAP FeMa-Meter"
                 )
               )
             ),

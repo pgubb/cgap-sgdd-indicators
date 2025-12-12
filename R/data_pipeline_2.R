@@ -8,10 +8,18 @@ indicators_update <- read_csv("data/LENS_indicators_100925_TAG.csv") %>%
 # Checking for duplicated indicators
 indicators_update %>% get_dupes(indicator_id)
                      
-#Fixing main_mandate_umbrella column
+#Fixing main_mandate_umbrella column (including replacing 'Prudential supervision' with 'Stability, safety and soundness')
 indicators_update %>% 
   mutate(
-    main_mandate_umbrella = ifelse(main_mandate_umbrella == "Financial Inclusion", "Financial inclusion", main_mandate_umbrella)
+    main_mandate_umbrella = ifelse(main_mandate_umbrella == "Financial Inclusion", "Financial inclusion", main_mandate_umbrella), 
+    main_mandate_umbrella = ifelse(main_mandate_umbrella == "Prudential supervision", "Stability, safety and soundness", main_mandate_umbrella)
+  ) -> indicators_update
+
+# Fixing main objectives column (merging solvency into soundness)
+indicators_update %>% 
+  mutate(
+    main_objectives = str_replace_all(main_objectives, "Solvency", "Soundness"), 
+    main_objectives = str_replace_all(main_objectives, "Statistics & research", "Statistics and research")
   ) -> indicators_update
 
 #Fixing main sector column
@@ -44,22 +52,39 @@ indicators_update %>%
   mutate(secondary_mandates_umbrella = map_chr(secondary_mandates, reclassify_mandates), 
          secondary_mandates_umbrella = ifelse(secondary_mandates_umbrella == "NA", NA, secondary_mandates_umbrella), 
          secondary_mandates_umbrella = remove_trailing_comma(secondary_mandates_umbrella), 
-         secondary_mandates_umbrella = ifelse(secondary_mandates_umbrella == "All", "Financial inclusion, Consumer protection, Prudential supervision, Market development", secondary_mandates_umbrella)) -> indicators_update
+         secondary_mandates_umbrella = str_replace_all(secondary_mandates_umbrella, ",", ";"), 
+         secondary_mandates_umbrella = ifelse(secondary_mandates_umbrella == "All", "Financial inclusion; Consumer protection; Prudential supervision; Market development", secondary_mandates_umbrella)) -> indicators_update
 
+# Replacing 
+indicators_update %>% 
+  mutate(
+    secondary_mandates_umbrella = str_replace(secondary_mandates_umbrella, "Prudential supervision", "Stability, safety and soundness")
+  ) -> indicators_update
+  
 # Check the unique values after cleaning
 unique(indicators_update$secondary_mandates_umbrella)
+
+# Merging solvency into soundness
+indicators_update %>% 
+  mutate(
+    secondary_objectives = str_replace_all(secondary_objectives, "Solvency", "Soundness"), 
+    secondary_objectives = str_replace_all(secondary_objectives, "Statistics & research", "Statistics and research"), 
+  ) -> indicators_update
+
+unique(indicators_update$secondary_objectives)
 
 # Stitching together mandates and objectives: 
 
 indicators_update %>% 
   mutate(
-    main_mandate_objective = map2_chr(main_mandate_umbrella, main_objectives, combine_cols),
-    secondary_mandate_objective = map2_chr(secondary_mandates_umbrella, secondary_objectives, combine_cols), 
+    main_mandate_objective = map2_chr(main_mandate_umbrella, main_objectives, combine_cols_semi2),
+    secondary_mandate_objective = map2_chr(secondary_mandates_umbrella, secondary_objectives, combine_cols_semi1), 
     secondary_mandate_objective = ifelse(secondary_mandate_objective == "NA (NA)", NA, secondary_mandate_objective), 
     secondary_mandate_objective = ifelse(secondary_mandate_objective == "Financial inclusion (NA)", NA, secondary_mandate_objective)
   ) -> indicators_update
 
-
+unique(indicators_update$main_mandate_objective)
+unique(indicators_update$secondary_mandate_objective)
 
 # Harmonizing disaggregation variables 
 
@@ -133,6 +158,19 @@ indicators %>%
   ) %>% 
   select(-secondary_sectors) -> indicators
 
+# Adding column to identify FEMA-METER indicators: 
+
+indicators %>% 
+  mutate(
+    FEMAMETER = ifelse(indicator_name %in% c("Insurance policy holders"), "Number of total policyholders", NA),
+    FEMAMETER = ifelse(indicator_name %in% c("Insurance policies (number)"), "Number of Insured or Lives Covered", FEMAMETER),
+    FEMAMETER = ifelse(indicator_name %in% c("Insurance claims settlement ratio"), "Number of Claims Paid", FEMAMETER), 
+    FEMAMETER = ifelse(indicator_name %in% c("Insurance claims rejection rate"), "Number of Claims Rejected", FEMAMETER), 
+    FEMAMETER = ifelse(indicator_name %in% c("Insurance premiums written"), "Amount/value of gross premium written", FEMAMETER), 
+    sources_any = ifelse(sources_any == 1 | !is.na(FEMAMETER), 1, NA)
+  )  -> indicators
+
+
 # Identifying which indicators have a mismatch between the number of secondary mandates and secondary objectives
 
 delim_count <- function(x) {
@@ -159,7 +197,7 @@ indicators <- indicators %>%
       main_mandate == "Consumer protection" ~ 2, 
       main_mandate == "Market development" ~ 3, 
       main_mandate == "Sustainability" ~ 4, 
-      main_mandate == "Prudential supervision" ~ 5, 
+      main_mandate == "Stability, safety and soundness" ~ 5, 
       main_mandate == "Other" ~ 6
     ), 
     main_mandate = fct_reorder(main_mandate, main_mandate_order)

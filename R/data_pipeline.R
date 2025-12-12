@@ -429,6 +429,86 @@ combine_cols <- function(mandates, objectives) {
   paste(out, collapse = ", ")
 }
 
+combine_cols_semi2 <- function(mandates, objectives) {
+  # Split into vectors
+  m <- str_split(mandates, ";\\s*")[[1]]
+  o <- str_split(objectives, ";\\s*")[[1]]
+  
+  # Treat literal "NA" and "" as missing
+  o[o %in% c("NA", "")] <- NA_character_
+  
+  ## Case 1: only 1 mandate
+  if (length(m) == 1) {
+    # keep only non-missing objectives
+    o_valid <- o[!is.na(o)]
+    
+    if (length(o_valid) == 0) {
+      # no objectives → return just the mandate
+      return(m)
+    } else {
+      # all objectives go into a single parenthesis group
+      return(paste0(m, " (", paste(o_valid, collapse = ", "), ")"))
+    }
+  }
+  
+  ## Case 2: multiple mandates
+  
+  # If there's a single objective and it's not NA, recycle it for all mandates
+  if (length(o) == 1 && !is.na(o)) {
+    o <- rep(o, length(m))
+  } else if (length(o) != length(m)) {
+    # Recycle shorter vector to match the longer one (safe recycling)
+    len <- max(length(m), length(o))
+    m <- rep(m, length.out = len)
+    o <- rep(o, length.out = len)
+  }
+  
+  # Build "m (o)" but drop parentheses when objective is missing
+  out <- ifelse(is.na(o), m, paste0(m, " (", o, ")"))
+  
+  paste(out, collapse = ", ")
+}
+
+combine_cols_semi1 <- function(mandates, objectives) {
+  # Split into vectors
+  m <- str_split(mandates, ";\\s*")[[1]]
+  o <- str_split(objectives, ",\\s*")[[1]]
+  
+  # Treat literal "NA" and "" as missing
+  o[o %in% c("NA", "")] <- NA_character_
+  
+  ## Case 1: only 1 mandate
+  if (length(m) == 1) {
+    # keep only non-missing objectives
+    o_valid <- o[!is.na(o)]
+    
+    if (length(o_valid) == 0) {
+      # no objectives → return just the mandate
+      return(m)
+    } else {
+      # all objectives go into a single parenthesis group
+      return(paste0(m, " (", paste(o_valid, collapse = ", "), ")"))
+    }
+  }
+  
+  ## Case 2: multiple mandates
+  
+  # If there's a single objective and it's not NA, recycle it for all mandates
+  if (length(o) == 1 && !is.na(o)) {
+    o <- rep(o, length(m))
+  } else if (length(o) != length(m)) {
+    # Recycle shorter vector to match the longer one (safe recycling)
+    len <- max(length(m), length(o))
+    m <- rep(m, length.out = len)
+    o <- rep(o, length.out = len)
+  }
+  
+  # Build "m (o)" but drop parentheses when objective is missing
+  out <- ifelse(is.na(o), m, paste0(m, " (", o, ")"))
+  
+  paste(out, collapse = ", ")
+}
+
 
 indicators <- indicators %>%
   mutate(secondary_mandate_objective = map2_chr(secondary_mandates, secondary_objectives, combine_cols), 
