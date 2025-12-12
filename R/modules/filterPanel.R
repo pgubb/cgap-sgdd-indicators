@@ -376,53 +376,62 @@ filterPanelServer <- function(id, indicators_data) {
           } else {
             main_mandate %in% selected_mandates
           }
-        }) %>%
+        })
+      
+      # FIXED: Objectives filter - now properly returns a logical vector for all rows
+      filtered <- filtered %>%
         filter({
-          # Objectives filter with toggle
-          if (input$include_secondary_objectives) {
+          n_rows <- n()
+          
+          # If no rows, return empty logical (this won't cause issues as there's nothing to filter)
+          if (n_rows == 0) {
+            logical(0)
+          } else if (input$include_secondary_objectives) {
             # Check both main and secondary objectives
-            sapply(1:n(), function(i) {
+            vapply(seq_len(n_rows), function(i) {
               main_obj <- main_objectives[i]
               sec_obj <- secondary_objectives[i]
               
               # Check main objectives
-              main_match <- if (!is.na(main_obj)) {
+              main_match <- if (!is.na(main_obj) && main_obj != "") {
                 any(trimws(unlist(strsplit(main_obj, ","))) %in% objectives_filter)
               } else {
                 FALSE
               }
               
               # Check secondary objectives
-              sec_match <- if (!is.na(sec_obj)) {
+              sec_match <- if (!is.na(sec_obj) && sec_obj != "") {
                 any(trimws(unlist(strsplit(sec_obj, ","))) %in% objectives_filter)
               } else {
                 FALSE
               }
               
-              main_match | sec_match
-            })
+              main_match || sec_match
+            }, logical(1))
           } else {
             # Only check main objectives
-            sapply(main_objectives, function(obj) {
-              if (!is.na(obj)) {
+            vapply(seq_len(n_rows), function(i) {
+              obj <- main_objectives[i]
+              if (!is.na(obj) && obj != "") {
                 any(trimws(unlist(strsplit(obj, ","))) %in% objectives_filter)
               } else {
                 FALSE
               }
-            })
+            }, logical(1))
           }
-        }) %>%
+        })
+      
+      # Sectors filter
+      filtered <- filtered %>%
         filter({
-          
           # Only check main sectors
-          sapply(main_sector, function(sec) {
-            if (!is.na(sec)) {
+          vapply(main_sector, function(sec) {
+            if (!is.na(sec) && sec != "") {
               any(trimws(unlist(strsplit(sec, ","))) %in% selected_sectors)
             } else {
               FALSE
             }
-          })
-          
+          }, logical(1))
         })
       
       # Initiatives filter (GPFI, IMF, AFI, WEF)
