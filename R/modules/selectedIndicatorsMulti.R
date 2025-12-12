@@ -63,7 +63,7 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
       indicators_data %>%
         filter(indicator_id %in% indicator_ids) %>%
         select(indicator_id, indicator_name, indicator_description, indicator_long_description, 
-               main_mandate, main_objectives, main_sector, 
+               main_mandate, main_objectives, main_sector, secondary_mandate_objective, 
                preset_foundation, preset_digital, gender_questions)
     })
     

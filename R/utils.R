@@ -1598,7 +1598,19 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                         </div>')
                   } else {
                     ''
+                  },
+                  
+                  if (!is.null(ind$secondary_mandate_objective) && !is.na(ind$secondary_mandate_objective) && ind$secondary_mandate_objective != "") {
+                    paste0('
+      <div class="detail-item">
+          <div class="detail-label"><i class="fas fa-scroll"></i> Secondary mandates (objectives)</div>
+          <div class="detail-value">', htmlEscape(ind$secondary_mandate_objective), '</div>
+      </div>')
+                  } else {
+                    ''
                   },'
+                  
+                  
                     </div>',
                   
                   if (comment != "") paste0('
