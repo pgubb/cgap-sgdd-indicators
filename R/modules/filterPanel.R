@@ -6,7 +6,7 @@ filterPanelUI <- function(id) {
   
   tagList(
     textInput(ns("search"), "Search", 
-              placeholder = "Search by indicator name, sector, use-case..."),
+              placeholder = "Search by keyword or phrase"),
     
     accordion(
       open = c("mandates"),
@@ -117,7 +117,7 @@ filterPanelUI <- function(id) {
               "IMF-FAS" = "IMF",
               "AFI" = "AFI",
               "WE Finance Code" = "WEF", 
-              "CGAP FeMA Meter" = "FEMAMETER"
+              "A2ii FeMa-Meter" = "FEMAMETER"
             ),
             selected = character(0)
           )

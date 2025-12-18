@@ -11,14 +11,30 @@ SECTOR_COLORS <- list(
 )
 
 # Globals
+MND_OBJ <- 
+  list(
+    "Central banking" = c("Currency management & cash handling"), 
+    "Statistics & research" = c("Statistics & research"), 
+    "Macroprudential supervision" = c("Stability"), 
+    "Microprudential supervision" = c("Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
+    "Competition" = c("Competition"), 
+    "Capital markets development" = c("Capital markets development"), 
+    "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
+    "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency"), 
+    "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
+    "Financial safety net" = c("Depositor protection")
+  )
+
+# NEED to figure out where to put central banking and statistics and research
+
 MND_OBJ_2 <- 
   list(
     "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
     "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency", "Depositor protection"), 
     "Market development" = c("Capital markets development", "Competition"), 
     "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
-    "Stability, safety and soundness" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Soundness", "Reputational and legal risk", "AML/CFT"), 
-    "Other" = c("Currency management and cash handling", "Statistics and research")
+    "Prudential supervision" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
+    "Other" = c("Currency management & cash handling", "Statistics & research")
   )
 
 
@@ -51,11 +67,7 @@ COLUMN_DESCRIPTIONS <- c(
   "disaggregation_vars" = "Suggested breakdowns for segmentation analysis"
 )
 
-
 BREAKDOWNS <- list(
-  
-  "Access point type" = c("PHYSICAL CHANNELS", "-ATM", "-POS", "-Banking agents", "-Mobile money/e-money agents", "-Merchants", "-Insurance agents/brokers", "-Pension agents/brokers", "-Investment broker/intermediary", "DIGITAL CHANNELS", "-Online merchants/agent", "-Financial app registration/subscription", "-Internet banking registration/subscription", "-Online trading platform", "-P2P platform", "Crowdfunding platform"), 
-  
   "Customer gender" = c("Female", "Male", "Non-binary", "Transgender"), 
   "Customer type" = c("Natural person-individual", "Legal person-entity/organization"), 
   "Customer age" = c("< 30 years", "30-55 years", "55-65 years", "65+ years"), 

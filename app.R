@@ -53,6 +53,19 @@ ui <- page_navbar(
         "vertical-align: middle;"
       ), 
       "LENS"
+    ), 
+    span(
+      style = paste0(
+        "font-size: 17px; ",
+        "font-weight: 200; ",
+        "font-style: Italic;", 
+        "color: #1A5A80; ",
+        "line-height: 17px; ",
+        "font-family: 'Figtree', sans-serif; ",
+        "display: inline-block; ",
+        "vertical-align: top;"
+      ), 
+      "Beta"
     )
   ),
   
@@ -539,7 +552,7 @@ server <- function(input, output, session) {
                   href = "https://www.cgap.org/topics/collections/fema-meter",
                   target = "_blank",
                   class = "btn btn-outline-secondary btn-sm",
-                  "CGAP FeMa-Meter"
+                  "A2ii FeMa-Meter"
                 )
               )
             ),
