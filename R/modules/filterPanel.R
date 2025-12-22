@@ -88,6 +88,15 @@ filterPanelUI <- function(id) {
         div(
           class = "modern-checkbox-group sector-checkboxes",
           checkboxGroupInput(ns("sectors"), "", choices = NULL)
+        ),
+        # NEW: Toggle for multi-sector indicators
+        div(
+          style = "margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
+          input_switch(
+            ns("include_multi_sector"), 
+            label = "Include multi-sector indicators",
+            value = TRUE
+          )
         )
       ),
       
@@ -318,7 +327,7 @@ filterPanelServer <- function(id, indicators_data) {
       }
     }
     
-    # Reset filters (clear all selections)
+    # Reset filters (clear all selections and set toggles to ON)
     observeEvent(input$reset, {
       updateCheckboxGroupInput(session, "mandates", selected = character(0))
       selected_objectives(character(0))  # Reset objectives
@@ -326,11 +335,12 @@ filterPanelServer <- function(id, indicators_data) {
       updateCheckboxGroupInput(session, "initiatives", selected = character(0))  # Reset initiatives
       updateTextInput(session, "search", value = "")
       
-      # Reset toggles
-      updateInputSwitch(session, "include_secondary_mandates", value = FALSE)
-      updateInputSwitch(session, "include_secondary_objectives", value = FALSE)
+      # Reset toggles to ON (TRUE) - these are the "include" toggles
+      updateInputSwitch(session, "include_secondary_mandates", value = TRUE)
+      updateInputSwitch(session, "include_secondary_objectives", value = TRUE)
+      updateInputSwitch(session, "include_multi_sector", value = TRUE)
       
-      # Reset presets filters
+      # Reset presets filters to OFF (FALSE) - these are filter-on toggles
       updateInputSwitch(session, "presets_foundation", value = FALSE)
       updateInputSwitch(session, "presets_digital", value = FALSE)
       
@@ -421,13 +431,24 @@ filterPanelServer <- function(id, indicators_data) {
           }
         })
       
-      # Sectors filter
+      # Sectors filter with multi-sector toggle
       filtered <- filtered %>%
         filter({
-          # Only check main sectors
           vapply(main_sector, function(sec) {
             if (!is.na(sec) && sec != "") {
-              any(trimws(unlist(strsplit(sec, ","))) %in% selected_sectors)
+              # Split the sector string to get individual sectors
+              sector_list <- trimws(unlist(strsplit(sec, ",")))
+              is_multi_sector <- length(sector_list) > 1
+              
+              # Check if any of the indicator's sectors match the selected sectors
+              has_matching_sector <- any(sector_list %in% selected_sectors)
+              
+              # If include_multi_sector is FALSE, exclude multi-sector indicators
+              if (!input$include_multi_sector && is_multi_sector) {
+                FALSE
+              } else {
+                has_matching_sector
+              }
             } else {
               FALSE
             }
