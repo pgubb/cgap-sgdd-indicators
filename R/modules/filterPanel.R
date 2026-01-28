@@ -74,13 +74,13 @@ filterPanelUI <- function(id) {
         value = "sectors",
         title = div(
           style = "display: inline-flex; align-items: center; gap: 8px;",
-          "Sectors",
+          "Services",
           div(
             class = "my-tooltip",
             tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
             div(
               class = "my-tooltiptext",
-              "Filter by financial sector (Payments, Credit, Insurance, etc.)"
+              "Filter by financial service (Payments, Credit, Insurance, etc.)"
             )
           )
         ), 
@@ -94,7 +94,7 @@ filterPanelUI <- function(id) {
           style = "margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
           input_switch(
             ns("include_multi_sector"), 
-            label = "Include multi-sector indicators",
+            label = "Include cross-cutting indicators",
             value = TRUE
           )
         )

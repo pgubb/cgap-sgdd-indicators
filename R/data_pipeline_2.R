@@ -167,6 +167,8 @@ indicators %>%
     FEMAMETER = ifelse(indicator_name %in% c("Insurance claims settlement ratio"), "Number of Claims Paid", FEMAMETER), 
     FEMAMETER = ifelse(indicator_name %in% c("Insurance claims rejection rate"), "Number of Claims Rejected", FEMAMETER), 
     FEMAMETER = ifelse(indicator_name %in% c("Insurance premiums written"), "Amount/value of gross premium written", FEMAMETER), 
+    FEMAMETER = ifelse(indicator_name %in% c("Insurance claims (number)"), "Insurance claims (number)", FEMAMETER), 
+    FEMAMETER = ifelse(indicator_name %in% c("Insurance claims paid"), "Insurance claims paid", FEMAMETER), 
     sources_any = ifelse(sources_any == 1 | !is.na(FEMAMETER), 1, NA)
   )  -> indicators
 

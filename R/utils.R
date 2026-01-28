@@ -93,7 +93,7 @@ indicator_key <- function() {
       
       # Main sector example with multicolor gradient
       span(
-        "Main sector", 
+        "Main service", 
         style = paste0(
           "background: ", gradient_bg, "; ",
           "color: #333; ",
@@ -976,7 +976,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
         )
       ), 
       
-      # Sectors card
+      # Services (ex-sectors) card
       div(
         class = "stat-card",
         style = paste0(
@@ -996,7 +996,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
         ),
         div(
-          "Sectors",
+          "Services",
           style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
         )
       )
@@ -1518,7 +1518,7 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                 <div class="summary-card">
                     <i class="fas fa-chart-pie"></i>
                     <div class="summary-card-value">', length(unique(indicators$main_sector)), '</div>
-                    <div class="summary-card-label">Sectors</div>
+                    <div class="summary-card-label">Services</div>
                 </div>
                 <div class="summary-card">
                     <i class="fas fa-bullseye"></i>

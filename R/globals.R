@@ -33,7 +33,7 @@ MND_OBJ_2 <-
     "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency", "Depositor protection"), 
     "Market development" = c("Capital markets development", "Competition"), 
     "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
-    "Prudential supervision" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
+    "Stability, safety and soundness" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
     "Other" = c("Currency management & cash handling", "Statistics & research")
   )
 
@@ -56,8 +56,8 @@ COLUMN_DESCRIPTIONS <- c(
   "secondary_objectives"  = "Other applicable objectives",    
   "main_mandate_objective" = "Main mandate (main objective)", 
   "secondary_mandate_objective" = "Secondary mandate (secondary objectives)", 
-  "main_sector" = "Main sector",               
-  "secondary_sectors" = "Other applicable sectors",      
+  "main_sector" = "Main financial service",               
+  "secondary_sectors" = "Other applicable services",      
   "preset_foundation" = "Basic preset", 
   "IMF" = "IMF-FAS",                  
   "GPFI" = "GPFI",                  
