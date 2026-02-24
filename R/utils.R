@@ -110,8 +110,8 @@ indicator_key <- function() {
     
     # Right side - download link
     tags$a(
-      href = "LENS_INDICATORS_DB_v11062025.xlsx",
-      download = "LENS_INDICATORS_DB_v11062025.xlsx",
+      href = "LENS_INDICATORS_DB.xlsx",
+      download = "LENS_INDICATORS_DB.xlsx",
       style = paste0(
         "display: flex; ",
         "align-items: center; ",
