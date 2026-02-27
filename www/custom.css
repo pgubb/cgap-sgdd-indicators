@@ -1463,3 +1463,12 @@ button#set_manager-delete_set.btn.btn-sm.btn-outline-danger:active,
 .user-guide-download-btn:hover i {
   transform: translateY(2px);
 }
+
+.video-container {
+    position: relative;
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}

@@ -483,16 +483,25 @@ server <- function(input, output, session) {
                   class = "btn btn-outline-primary btn-sm",
                   icon("book", class = "fas", style = "margin-right: 6px;"),
                   "Technical Guide (Forthcoming 2026/Q3)"
-                ),
-                tags$a(
-                  href = "",
-                  target = "_blank",
-                  class = "btn btn-outline-primary btn-sm",
-                  icon("file-alt", class = "fas", style = "margin-right: 6px;"),
-                  "Use cases companion note (Forthcoming 2026/Q2)"
                 )
               )
             ),
+            
+            # Tutorial 
+            div(
+              tags$div(
+                class = "video-container",
+                tags$iframe(
+                  src = "https://www.loom.com/embed/30cd180dc6bb4c31b3ff78a0c85effe3",
+                  width = "100%",
+                  height = "480",
+                  frameborder = "0",
+                  webkitallowfullscreen = TRUE,
+                  mozallowfullscreen = TRUE,
+                  allowfullscreen = TRUE
+                )
+              )
+            ), 
             
             # Objectives & Approach
             div(
