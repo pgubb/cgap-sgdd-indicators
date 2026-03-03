@@ -488,20 +488,59 @@ server <- function(input, output, session) {
             ),
             
             # Tutorial 
-            div(
-              tags$div(
-                class = "video-container",
-                tags$iframe(
-                  src = "https://www.loom.com/embed/30cd180dc6bb4c31b3ff78a0c85effe3",
-                  width = "100%",
-                  height = "480",
-                  frameborder = "0",
-                  webkitallowfullscreen = TRUE,
-                  mozallowfullscreen = TRUE,
-                  allowfullscreen = TRUE
+            tags$div(
+              class = "video-link-container",
+              style = "max-width: 680px; margin: 20px auto;",
+              tags$a(
+                href = "https://www.loom.com/share/30cd180dc6bb4c31b3ff78a0c85effe3",
+                target = "_blank",
+                style = "text-decoration: none; color: inherit;",
+                tags$div(
+                  style = paste0(
+                    "display: flex; align-items: center; gap: 16px; ",
+                    "padding: 20px 24px; ",
+                    "background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); ",
+                    "border-radius: 12px; ",
+                    "box-shadow: 0 4px 12px rgba(0,0,0,0.15); ",
+                    "transition: transform 0.2s ease, box-shadow 0.2s ease; ",
+                    "cursor: pointer;"
+                  ),
+                  onmouseenter = "this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.25)';",
+                  onmouseleave = "this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';",
+                  # Play button circle
+                  tags$div(
+                    style = paste0(
+                      "flex-shrink: 0; ",
+                      "width: 52px; height: 52px; ",
+                      "background: #e63946; ",
+                      "border-radius: 50%; ",
+                      "display: flex; align-items: center; justify-content: center;"
+                    ),
+                    # Play triangle via CSS border trick
+                    tags$div(
+                      style = paste0(
+                        "width: 0; height: 0; ",
+                        "border-top: 10px solid transparent; ",
+                        "border-bottom: 10px solid transparent; ",
+                        "border-left: 16px solid #ffffff; ",
+                        "margin-left: 3px;"
+                      )
+                    )
+                  ),
+                  # Text block
+                  tags$div(
+                    tags$div(
+                      style = "font-size: 1.05em; font-weight: 600; color: #ffffff; margin-bottom: 4px;",
+                      "Watch the LENS Video Tutorial"
+                    ),
+                    tags$div(
+                      style = "font-size: 0.85em; color: #a0aec0;",
+                      "Learn how to explore indicators, build custom sets, and generate reports"
+                    )
+                  )
                 )
               )
-            ), 
+            ),
             
             # Objectives & Approach
             div(
