@@ -81,7 +81,7 @@ BREAKDOWNS <- list(
   "Financial service provider (FSP) main activity" = c("All FSPs giving credit", "All FSPs taking deposits", "All FSPs offering payment services", "..."), 
   
   "Product type" = c("PAYMENT INSTRUMENTS", "-Debit card", "-Credit card", "-Prepaid card", "-E-money (includes mobile money)", "-Cash", "-EFT (Electronic funds transfer)", "-Fast payments", "-Cheque", "CREDIT", "-Loans-all retail", "-Loans-consumer", "-Loans-housing", "-Loans-mortgage", "-Credit card", "-Revolving credit", "-P2P loans", "-Line of credit (except credit cards)", "DEPOSITS", "-Checking accounts", "--Basic/no-frills accounts", "-Savings accounts", "-Time/term deposit accounts", "INSURANCE", "-Life insuarance", "-Non-life insurance", "-Microinsurance-life", "-Microinsurance-non life", "-Climate disaster risk insurance", "PENSIONS", "-Micro pensions", "-Other pensions", "-Other long term investments for old age", "INVESTMENT", "-Equity", "-Bonds", "-Crowdfunding-debt (P2P lending)", "-Crowdfunding-equity"),  
-  "Channel type" = c("PHYSICAL", "-Branch", "-ATM", "-POS", "-Agents (banking agents)", "-Agents (mobile money agent)", "-Merchants (physical merchants) (POS/QR)", "-Insurance agents/intermediaries/brokers", "-Pension agents/brokers", "-Investment broker/intermediary"), 
+  "Channel type" = c("PHYSICAL", "-Branch", "-ATM", "-POS", "-Agents (banking agents)", "-Agents (mobile money agent)", "-Merchants (physical merchants) (POS/QR)", "-Insurance agents/intermediaries/brokers", "-Pension agents/brokers", "-Investment broker/intermediary", "DIGITAL", "-Online merchants/agents", "-Financial app registration/subscription", "-Internet banking registration/subscription", "-Online trading platform", "-P2P platform", "-Crowdfunding platform"), 
   "Transaction type" = c("DIGITAL/CASHLESS TRANSACTIONS", "-Payments and transfers", "-Deposits (digital)", "-Remittances (in/out flows)", "-EFT transactions", "-Fast payments", "-E-money", "-Mobile money", "-Cards", "CASH", "-Withdrawals/cash-out", "-Deposits (cash-in)", "-Remittances (in/out flows)", "CHEQUES", "-Cheque transactions", "NON-FINANCIAL", "-Balance enquiry", "-Payment initiation request", "-Data sharing consent"), 
   "Insurance type" = c("Life insuarance", "Non-life insurance", "Microinsurance-life", "Microinsurance-non life", "Climate disaster risk insurance"), 
   "Account type" = c("TRANSACTION ACCOUNT", "- Deposit account", "- Payment account", "-- E-money account", "--- Mobile money account", "-- Other payment accounts", "- Investment account", "NON-TRANSACTION ACCOUNT", "- Pension accounts", "- Time/term deposits"), 
@@ -90,7 +90,7 @@ BREAKDOWNS <- list(
     
   "Loan size" = c("Nano", "Micro-natural person", "Micro-legal person", "Small", "Medium"),  
   "Loan term" = c("A day or less (<= 1 day)", "A week or less (=<1w)", "30 days or less (=<1m)", "180 days or less (=<6m)", "A year or less (=<1y)"), 
-  "Loan type" = c("Loans-all retail", "Loans-consumer", "Loans-housing", "Loans-mortgage", "Credit card", "Revolving credit", "P2P loans", "Line of credit (except credit cards)"), 
+  "Loan type" = c("Loans-all retail", "Loans-consumer", "Loans-housing", "Loans-mortgage", "Digital loans", "Credit card", "Revolving credit", "P2P loans", "Line of credit (except credit cards)"), 
   
   "Interest rate category"= c("Variable", "Fixed", "Combination of fixed and variable"), 
   
