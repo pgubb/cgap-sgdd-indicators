@@ -168,7 +168,7 @@ server <- function(input, output, session) {
       sectors = input$`filters-sectors`,
       use_cases = input$`filters-use_cases`,
       search = input$`filters-search`,
-      presets_foundation = input$`filters-presets_foundation`,
+      #presets_foundation = input$`filters-presets_foundation`,
       presets_digital = input$`filters-presets_digital`
     )
     

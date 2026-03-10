@@ -150,15 +150,15 @@ filterPanelUI <- function(id) {
         ), 
         icon = icon("sliders"),
         
-        # Foundational indicators preset
-        div(
-          style = "display: flex; align-items: center; gap: 2px;",
-          input_switch(
-            ns("presets_foundation"), 
-            label = "Foundational indicators",
-            value = FALSE
-          )
-        ),
+        # # Foundational indicators preset
+        # div(
+        #   style = "display: flex; align-items: center; gap: 2px;",
+        #   input_switch(
+        #     ns("presets_foundation"), 
+        #     label = "Foundational indicators",
+        #     value = FALSE
+        #   )
+        # ),
         
         # Basic preset
         div(
@@ -341,7 +341,7 @@ filterPanelServer <- function(id, indicators_data) {
       updateInputSwitch(session, "include_multi_sector", value = TRUE)
       
       # Reset presets filters to OFF (FALSE) - these are filter-on toggles
-      updateInputSwitch(session, "presets_foundation", value = FALSE)
+      #updateInputSwitch(session, "presets_foundation", value = FALSE)
       updateInputSwitch(session, "presets_digital", value = FALSE)
       
     })
@@ -472,11 +472,11 @@ filterPanelServer <- function(id, indicators_data) {
         filtered <- filtered[has_initiative, ]
       }
       
-      # Presets filter
-      if (input$presets_foundation) {
-        filtered <- filtered %>%
-          filter(preset_foundation == 1)
-      }
+      # # Presets filter
+      # if (input$presets_foundation) {
+      #   filtered <- filtered %>%
+      #     filter(preset_foundation == 1)
+      # }
       
       # Presets filter
       if (input$presets_digital) {

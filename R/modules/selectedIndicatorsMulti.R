@@ -64,7 +64,7 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
         filter(indicator_id %in% indicator_ids) %>%
         select(indicator_id, indicator_name, indicator_description, indicator_long_description, 
                main_mandate, main_objectives, main_sector, secondary_mandate_objective, 
-               preset_foundation, preset_digital, gender_questions)
+               preset_digital, gender_questions)
     })
     
     # Count badge with active set name

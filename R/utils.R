@@ -649,7 +649,6 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       length(active_filters$sectors) > 0 ||
       length(active_filters$use_cases) > 0 ||
       !is.null(active_filters$search) && active_filters$search != "" ||
-      isTRUE(active_filters$presets_foundation) ||
       isTRUE(active_filters$presets_digital)
   )
   
@@ -794,23 +793,23 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           },
           
           # Presets foundation filter
-          if (!is.null(active_filters$presets_foundation) && active_filters$presets_foundation == TRUE) {
-            span(
-              style = paste0(
-                "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-                "color: #856404; ",
-                "padding: 4px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 600; ",
-                "display: flex; ",
-                "align-items: center; ",
-                "gap: 6px;"
-              ),
-              icon("building-columns", class = "fas", style = "font-size: 10px;"),
-              "Foundational"
-            )
-          },
+          # if (!is.null(active_filters$presets_foundation) && active_filters$presets_foundation == TRUE) {
+          #   span(
+          #     style = paste0(
+          #       "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
+          #       "color: #856404; ",
+          #       "padding: 4px 12px; ",
+          #       "border-radius: 16px; ",
+          #       "font-size: 12px; ",
+          #       "font-weight: 600; ",
+          #       "display: flex; ",
+          #       "align-items: center; ",
+          #       "gap: 6px;"
+          #     ),
+          #     icon("building-columns", class = "fas", style = "font-size: 10px;"),
+          #     "Foundational"
+          #   )
+          # },
           
           # Presets digital filter
           if (!is.null(active_filters$presets_digital) && active_filters$presets_digital == TRUE) {
@@ -1562,9 +1561,10 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                                 <i class="fas fa-chart-pie"></i>
                                 ', htmlEscape(ind$main_sector), '
                             </span>',
-                  if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
-                    '<span class="badge badge-priority"><i class="fas fa-building-columns"></i> Foundational</span>'
-                  } else if (!is.null(ind$preset_digital) && !is.na(ind$preset_digital) && ind$preset_digital == 1) {
+                  #if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
+                  #  '<span class="badge badge-priority"><i class="fas fa-building-columns"></i> Foundational</span>'
+                  #} 
+                  if (!is.null(ind$preset_digital) && !is.na(ind$preset_digital) && ind$preset_digital == 1) {
                     '<span class="badge badge-priority"><i class="fas fa-mobile-screen"></i> Digital finance ecosystem </span>'
                   } else {
                     ''
