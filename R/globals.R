@@ -30,11 +30,10 @@ MND_OBJ <-
 MND_OBJ_2 <- 
   list(
     "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
-    "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency", "Depositor protection"), 
+    "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Depositor protection"), 
     "Market development" = c("Capital markets development", "Competition"), 
     "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
-    "Stability, safety and soundness" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
-    "Other" = c("Currency management & cash handling", "Statistics & research")
+    "Stability, safety and soundness" = c("Stability", "Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Soundness", "Reputational and legal risk", "AML/CFT")
   )
 
 
