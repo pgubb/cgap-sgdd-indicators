@@ -549,7 +549,7 @@ filterPanelServer <- function(id, indicators_data) {
         group_by(main_mandate) %>% 
         add_count() %>% 
         ungroup() %>% 
-        arrange(desc(n), main_objectives, indicator_order)
+        arrange(desc(n), main_objectives, indicator_name)
     })
     
     # Return the reactive
