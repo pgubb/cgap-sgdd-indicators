@@ -89,7 +89,7 @@ BREAKDOWNS <- list(
     
   "Loan size" = c("Nano", "Micro-natural person", "Micro-legal person", "Small", "Medium"),  
   "Loan term" = c("A day or less (<= 1 day)", "A week or less (=<1w)", "30 days or less (=<1m)", "180 days or less (=<6m)", "A year or less (=<1y)"), 
-  "Loan type" = c("Loans-all retail", "Loans-consumer", "Loans-housing", "Loans-mortgage", "Digital loans", "Credit card", "Revolving credit", "P2P loans", "Line of credit (except credit cards)"), 
+  "Loan type" = c("Loans-all retail", "Loans-consumer", "Loans-housing", "Loans-mortgage", "Payroll loans", "Digital loans", "Credit card", "Revolving credit", "P2P loans", "Line of credit (except credit cards)"), 
   
   "Interest rate category"= c("Variable", "Fixed", "Combination of fixed and variable"), 
   
