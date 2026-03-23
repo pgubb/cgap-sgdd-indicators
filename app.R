@@ -77,7 +77,7 @@ ui <- page_navbar(
   
   sidebar = sidebar(
     width = 400,
-    p(style = "font-size: 14px;", "CGAP's LENS presents a curated catalog of indicators for use with regulatory data, enabling financial sector authorities and stakeholders to better understand who is using retail financial services, under what conditions, and with what outcomes. When disaggregated by customer characteristics (such as gender), product type or financial provider type, these indicators can support analyses that uncover insights for more inclusive, evidence-based financial policies and supervision."),
+    p(style = "font-size: 14px;", "CGAP's LENS is a curated catalog of indicators for use with regulatory adminisitrative data, helping financial sector authorities understand who uses retail financial services, under what conditions, and with what outcomes. Rather than pre-built metrics, LENS is built around high-level indicators that analysts combine with breakdowns — such as customer type, gender, or provider type — to achieve the disaggregated analysis needed for more inclusive, evidence-based financial policies and supervision. Both indicators and breakdowns should be adapted to specific country contexts. For a full explanation, consult the User Guide in the About section."),
     filterPanelUI("filters")
   ),
   
