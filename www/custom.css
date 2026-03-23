@@ -1135,16 +1135,18 @@ html, body {
 }
 
 .catalog-download-link:hover {
-    color: #1A5A80 !important;
-    background-color: #f8f9fa;
+    background-color: #1A5A80 !important;
+    color: white !important;
     text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 90, 128, 0.3);
 }
 
 .catalog-download-link:hover i {
-    transform: translateY(2px);
+    color: white !important;
+    transform: translateY(1px);
     transition: transform 0.2s ease;
 }
-
 
 /* ============================================================================
    ADD ALL / REMOVE ALL BUTTON STYLES - NAVIGATION HEADER

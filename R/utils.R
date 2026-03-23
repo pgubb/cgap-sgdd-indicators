@@ -113,15 +113,18 @@ indicator_key <- function() {
       href = "LENS_INDICATORS_DB.xlsx",
       download = "LENS_INDICATORS_DB.xlsx",
       style = paste0(
-        "display: flex; ",
+        "display: inline-flex; ",
         "align-items: center; ",
-        "gap: 6px; ",
-        "color: #6c757d; ",
+        "gap: 8px; ",
+        "color: #1A5A80; ",
         "text-decoration: none; ",
         "font-size: 13px; ",
-        "transition: all 0.2s ease; ",
-        "padding: 4px 8px; ",
-        "border-radius: 4px;"
+        "font-weight: 600; ",
+        "padding: 8px 16px; ",
+        "border-radius: 20px; ",
+        "border: 1.5px solid #1A5A80; ",
+        "background: rgba(26, 90, 128, 0.05); ",
+        "transition: all 0.2s ease;"
       ),
       class = "catalog-download-link",
       icon("download", class = "fas", style = "font-size: 12px;"),
@@ -1605,6 +1608,49 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
       <div class="detail-item">
           <div class="detail-label"><i class="fas fa-scroll"></i> Secondary mandates (objectives)</div>
           <div class="detail-value">', htmlEscape(ind$secondary_mandate_objective), '</div>
+      </div>')
+                  } else {
+                    ''
+                  },
+                  
+                  # Suggested Breakdowns with categories
+                  if (!is.null(ind$disaggregation_vars) && !is.na(ind$disaggregation_vars) && ind$disaggregation_vars != "") {
+                    breakdown_items <- trimws(unlist(strsplit(ind$disaggregation_vars, ";")))
+                    breakdown_items <- breakdown_items[breakdown_items != ""]
+                    
+                    breakdown_cards <- paste0(lapply(breakdown_items, function(item) {
+                      categories <- BREAKDOWNS[[item]]
+                      if (!is.null(categories)) {
+                        cats_html <- paste0(
+                          '<span style="font-size: 11px; color: #6c757d; line-height: 1.4;">',
+                          paste(vapply(categories, htmlEscape, character(1)), collapse = " &middot; "),
+                          '</span>'
+                        )
+                        paste0(
+                          '<div style="padding: 8px 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #667eea;">',
+                          '<div style="font-weight: 600; font-size: 13px; color: #333; margin-bottom: 4px;">', htmlEscape(item), '</div>',
+                          cats_html,
+                          '</div>'
+                        )
+                      } else {
+                        paste0(
+                          '<div style="padding: 8px 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #667eea;">',
+                          '<div style="font-weight: 600; font-size: 13px; color: #333;">', htmlEscape(item), '</div>',
+                          '</div>'
+                        )
+                      }
+                    }), collapse = "\n")
+                    
+                    breakdown_html <- paste0(
+                      '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">',
+                      breakdown_cards,
+                      '</div>'
+                    )
+                    
+                    paste0('
+      <div class="detail-item">
+          <div class="detail-label"><i class="fas fa-layer-group"></i> Suggested Breakdowns</div>
+          <div class="detail-value">', breakdown_html, '</div>
       </div>')
                   } else {
                     ''
