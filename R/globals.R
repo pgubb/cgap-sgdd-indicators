@@ -68,7 +68,7 @@ COLUMN_DESCRIPTIONS <- c(
 
 BREAKDOWNS <- list(
   "Customer gender" = c("Female", "Male", "Non-binary", "Transgender"), 
-  "Customer type" = c("Natural person-individual", "Legal person-entity/organization", "-MSME", "-Small and Medium enterprises (SME)", "--Small enterprises", "--Medium enterprises", "-Microenterprises"), 
+  "Customer type" = c("Natural person-individual", "Legal person-entity/organization", "-Micro, Small and Medium enterprises (MSMEs)", "-Small and Medium enterprises (SMEs)", "--Small enterprises", "--Medium enterprises", "--Micro enterprises"), 
   "Customer age" = c("< 30 years", "30-55 years", "55-65 years", "65+ years"), 
   "Customer location" = c("Urban", "Rural", "By region", "By district", "By administrative unit level (State/province; city/municipality)"), 
   "Customer income category" = c("By income brackets (eg. monthly income)", "By government categorization (eg. GP2 beneficiary)", "By account balance brackets"), 
