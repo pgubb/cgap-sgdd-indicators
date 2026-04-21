@@ -489,32 +489,29 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   div(
     class = "navigation-header nav-header-banner",
 
-    # Top row: title + actions
+    # Main title row with Add All / Remove All buttons
     div(
-      style = "display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;",
+      style = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 16px; flex-wrap: wrap;",
 
-      # Left side - title and compact stats
+      # Left side - title and description
       div(
-        style = "flex: 1; min-width: 280px;",
+        style = "flex: 1; min-width: 300px;",
         h2("Regulatory indicators with a sociodemographic lens",
            style = "margin: 0; font-size: 22px; font-weight: 700;"),
-        # Compact stat summary line
-        div(
-          style = "display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 14px; opacity: 0.9; flex-wrap: wrap;",
-          span(style = "font-weight: 700; font-size: 20px;", n),
-          span(paste("of", N, "indicators")),
-          span(style = "opacity: 0.5;", "\u00B7"),
-          span(paste(mandates_count, "mandates")),
-          span(style = "opacity: 0.5;", "\u00B7"),
-          span(paste(objectives_count, "objectives")),
-          span(style = "opacity: 0.5;", "\u00B7"),
-          span(paste(sectors_count, "services"))
-        )
+        p(paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
+          style = "margin: 6px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 300;")
       ),
 
       # Right side - Active set name + Add All / Remove All buttons
       div(
         style = "display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;",
+
+        div(
+          class = "active-set-label",
+          icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
+          span("Adding to:", style = "opacity: 0.8;"),
+          span(active_set_name, style = "font-weight: 600;")
+        ),
 
         div(
           style = "display: flex; gap: 8px; align-items: center;",
@@ -526,13 +523,6 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
             label = tagList(icon("minus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
                             "Remove all"),
             class = "btn btn-sm")
-        ),
-
-        div(
-          class = "active-set-label",
-          icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
-          span("Adding to:", style = "opacity: 0.8;"),
-          span(active_set_name, style = "font-weight: 600;")
         )
       )
     ),
@@ -541,7 +531,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
     if (has_active_filters) {
       div(
         class = "active-filters-box",
-        style = "margin-top: 16px;",
+        style = "margin-bottom: 16px;",
         div(
           style = "display: flex; align-items: center; gap: 8px; margin-bottom: 10px;",
           icon("filter", class = "fas", style = "font-size: 13px;"),
@@ -573,7 +563,41 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           }
         )
       )
-    }
+    },
+
+    # Compact statistics cards
+    div(
+      class = "stat-card-grid",
+
+      div(
+        class = "stat-card stat-card-highlight",
+        div(icon("chart-simple", class = "fas", style = "font-size: 18px; color: #ffd700; margin-bottom: 4px;")),
+        div(n, style = "font-size: 26px; font-weight: 800; margin-bottom: 2px;"),
+        div(paste("of", N, "indicators"), class = "stat-card-label")
+      ),
+
+      div(
+        class = "stat-card stat-card-default",
+        div(icon("scroll", class = "fas stat-card-icon")),
+        div(mandates_count, class = "stat-card-value"),
+        div("Mandates", class = "stat-card-label")
+      ),
+
+      div(
+        class = "stat-card stat-card-default",
+        div(icon("bullseye", class = "fas stat-card-icon")),
+        div(objectives_count, class = "stat-card-value"),
+        div("Objectives", class = "stat-card-label")
+      ),
+
+      div(
+        class = "stat-card stat-card-default",
+        div(icon("chart-pie", class = "fas stat-card-icon")),
+        div(sectors_count, class = "stat-card-value"),
+        div("Services", class = "stat-card-label")
+      )
+
+    )
   )
 }
 

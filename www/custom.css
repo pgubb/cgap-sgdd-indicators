@@ -31,18 +31,18 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 6px 24px rgba(102, 126, 234, 0.25);
 }
 
-/* Stat cards in navigation header */
+/* Stat cards in navigation header — compact */
 .stat-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
 }
 
 .stat-card-default {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  padding: 16px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
   transition: all 0.3s ease;
@@ -51,33 +51,27 @@ h1, h2, h3, h4, h5, h6 {
 .stat-card-highlight {
   background: rgba(255, 215, 0, 0.2);
   backdrop-filter: blur(10px);
-  padding: 16px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 215, 0, 0.3);
   text-align: center;
   transition: all 0.3s ease;
 }
 
 .stat-card-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
+  font-size: 18px;
+  margin-bottom: 4px;
   opacity: 0.8;
 }
 
 .stat-card-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.stat-card-value-lg {
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .stat-card-label {
-  font-size: 13px;
+  font-size: 12px;
   opacity: 0.8;
   font-weight: 400;
 }
