@@ -689,7 +689,7 @@ about_modal_content <- function() {
           "color: white; ",
           "padding: 30px; ",
           "margin: -15px -15px 30px -15px; ",
-          "border-radius: 8px 8px 0 0;"
+          "border-radius: 6px 6px 0 0;"
         ),
         h2(
           icon("book", class = "fas", style = "margin-right: 10px;"),
@@ -712,7 +712,7 @@ about_modal_content <- function() {
           style = paste0(
             "margin-bottom: 30px; ",
             "background: linear-gradient(135deg, #1A5A80 0%, #2980b9 100%); ",
-            "border-radius: 12px; ",
+            "border-radius: 8px; ",
             "padding: 24px; ",
             "color: white; ",
             "position: relative; ",
@@ -751,9 +751,8 @@ about_modal_content <- function() {
                   style = paste0(
                     "display: inline-flex; align-items: center; gap: 8px; ",
                     "background: white; color: #1A5A80; text-decoration: none; ",
-                    "font-size: 14px; font-weight: 600; padding: 12px 24px; ",
-                    "border-radius: 8px; transition: all 0.2s ease; ",
-                    "box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
+                    "font-size: 14px; font-weight: 600; padding: 10px 20px; ",
+                    "border-radius: 6px; transition: background-color 0.2s ease;"
                   ),
                   class = "user-guide-download-btn",
                   icon("download", class = "fas", style = "font-size: 14px;"),
@@ -768,7 +767,7 @@ about_modal_content <- function() {
         div(
           class = "about-section",
           style = "margin-bottom: 30px;",
-          h3(icon("graduation-cap", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+          h3(icon("graduation-cap", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
              "Context & Additional Resources",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("LENS is one component of CGAP's project to support the mainstreaming of regulatory gender-disaggregated data (RGDD) in the financial sector and should be consulted jointly with 'Using Disaggregated Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities' and accompanying pieces",
@@ -777,9 +776,10 @@ about_modal_content <- function() {
             style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
           div(
             style = "display: flex; gap: 10px; flex-wrap: wrap;",
-            tags$a(href = "", target = "_blank", class = "btn btn-outline-primary btn-sm",
-                   icon("book", class = "fas", style = "margin-right: 6px;"),
-                   "Technical Guide (Forthcoming 2026/Q3)")
+            span(class = "btn btn-outline-secondary btn-sm",
+                 style = "opacity: 0.6; pointer-events: none;",
+                 icon("book", class = "fas", style = "margin-right: 6px;"),
+                 "Technical Guide (Coming 2026/Q3)")
           )
         ),
 
@@ -796,17 +796,16 @@ about_modal_content <- function() {
                 "display: flex; align-items: center; gap: 16px; ",
                 "padding: 20px 24px; ",
                 "background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); ",
-                "border-radius: 12px; ",
-                "box-shadow: 0 4px 12px rgba(0,0,0,0.15); ",
-                "transition: transform 0.2s ease, box-shadow 0.2s ease; ",
+                "border-radius: 8px; ",
+                "transition: background-color 0.2s ease; ",
                 "cursor: pointer;"
               ),
-              onmouseenter = "this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.25)';",
-              onmouseleave = "this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';",
+              onmouseenter = "this.style.background='linear-gradient(135deg, #252542 0%, #1e2d4a 100%)';",
+              onmouseleave = "this.style.background='linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';",
               tags$div(
                 style = paste0(
                   "flex-shrink: 0; width: 52px; height: 52px; ",
-                  "background: #e63946; border-radius: 50%; ",
+                  "background: #6F5B9D; border-radius: 50%; ",
                   "display: flex; align-items: center; justify-content: center;"
                 ),
                 tags$div(style = paste0(
@@ -831,7 +830,7 @@ about_modal_content <- function() {
         div(
           class = "about-section",
           style = "margin-bottom: 30px;",
-          h3(icon("bullseye", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+          h3(icon("bullseye", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
              "Objectives & Approach",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("LENS provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, stability and soundness, market development and sustainability. The selection of indicators is informed both by their general relevance to these different mandates and goals of financial sector authorities as well as their potential relevance for understanding the role of key sociodemographic traits, such as gender, within those dimensions. The indicators in LENS, including their definitions, assigned mandates/objectives and proposed breakdowns, do not reflect a global consensus but rather constitute an attempt at providing working definitions, classification options and analytical questions that each user should adapt to their specific country context and institutional goals.",
@@ -842,7 +841,7 @@ about_modal_content <- function() {
         div(
           class = "about-section",
           style = "margin-bottom: 30px;",
-          h3(icon("database", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+          h3(icon("database", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
              "References and sources",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("To build LENS, the CGAP team examined a variety of sources, including work from prior CGAP projects and existing indicators from international organizations focused on financial inclusion and regulation.",
@@ -866,10 +865,11 @@ about_modal_content <- function() {
         div(
           class = "about-section",
           style = paste0(
-            "background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); ",
-            "padding: 20px; border-radius: 12px; margin-bottom: 20px;"
+            "background: #f8f9fa; ",
+            "padding: 20px; border-radius: 8px; margin-bottom: 20px; ",
+            "border: 1px solid rgba(0,0,0,0.08);"
           ),
-          h3(icon("users", class = "fas", style = "margin-right: 8px; color: #667eea;"),
+          h3(icon("users", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
              "About CGAP",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("CGAP is a global partnership of more than 40 leading development organizations that works to advance the lives of people living in poverty, especially women, through financial inclusion. CGAP works at the frontier of inclusive finance to test solutions, spark innovation, generate evidence, and share insights. Our knowledge enables public and private stakeholders to scale solutions that make financial ecosystems meet the needs of poor, vulnerable, and underserved people and of micro and small enterprises (MSEs), including through advancing women's economic empowerment.",
@@ -1013,7 +1013,7 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
         
         .summary-card i {
             font-size: 28px;
-            color: #667eea;
+            color: #1A5A80;
             margin-bottom: 12px;
         }
         
@@ -1429,7 +1429,7 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
             </div>
             <div class="footer-text">
                 This report was generated by the CGAP LENS platform<br>
-                For more information, visit <a href="https://www.cgap.org" style="color: #667eea;">www.cgap.org</a>
+                For more information, visit <a href="https://www.cgap.org" style="color: #1A5A80;">www.cgap.org</a>
             </div>
         </div>
     </div>
