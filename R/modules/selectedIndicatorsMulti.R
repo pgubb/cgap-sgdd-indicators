@@ -174,11 +174,10 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
             class = "selected-indicator-card",
             style = paste0(
               "background: white; ",
-              "border: 1px solid #e9ecef; ",
-              "border-radius: 12px; ",
+              "border: 1px solid rgba(0,0,0,0.1); ",
+              "border-radius: 8px; ",
               "overflow: hidden; ",
-              "transition: all 0.3s ease; ",
-              "box-shadow: 0 2px 8px rgba(0,0,0,0.08); ",
+              "transition: border-color 0.2s ease; ",
               "display: flex; ",
               "flex-direction: column; ",
               "height: 100%;"
@@ -218,20 +217,20 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                     "background-color: #e3f2fd; ",
                     "color: #1565c0; ",
                     "padding: 3px 8px; ",
-                    "border-radius: 12px; ",
+                    "border-radius: 4px; ",
                     "font-size: 11px; ",
                     "font-weight: 500; ",
                     "border: 1px solid #bbdefb;"
                   )
                 ),
-                
+
                 span(
                   ind$main_sector,
                   style = paste0(
                     "background-color: ", sector_color, "; ",
                     "color: #333; ",
                     "padding: 3px 8px; ",
-                    "border-radius: 12px; ",
+                    "border-radius: 4px; ",
                     "font-size: 11px; ",
                     "font-weight: 500; ",
                     "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"

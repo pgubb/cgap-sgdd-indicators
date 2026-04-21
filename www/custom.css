@@ -12,8 +12,14 @@
                Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
+/* Subtle warm-tinted page background — cards separate naturally on white */
+body {
+  background-color: #fafaf8;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
+  line-height: 1.2;
 }
 
 /* ============================================
@@ -26,9 +32,8 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%);
   color: white;
   padding: 20px 24px;
-  border-radius: 12px;
+  border-radius: 8px;
   margin-bottom: 24px;
-  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.25);
 }
 
 /* Stat cards in navigation header — compact */
@@ -80,8 +85,8 @@ h1, h2, h3, h4, h5, h6 {
 .filter-pill {
   background: rgba(255, 255, 255, 0.9);
   color: #667eea;
-  padding: 4px 12px;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   display: flex;
@@ -92,8 +97,8 @@ h1, h2, h3, h4, h5, h6 {
 .filter-pill-preset {
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
   color: #856404;
-  padding: 4px 12px;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   display: flex;
@@ -103,36 +108,33 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Active filters container */
 .active-filters-box {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Badge styles for indicator cards */
 .badge-objective {
   background-color: #e3f2fd;
   color: #1565c0;
-  padding: 4px 10px;
-  border-radius: 16px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
   border: 1px solid #bbdefb;
 }
 
 .badge-digital-preset {
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  background: #ffd700;
   color: #856404;
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 4px;
-  box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
 }
 
 /* Mandate section headers */
@@ -450,21 +452,21 @@ html, body {
     100% { left: 100%; }
 }
 
-/* MODERN CARD STYLES - UNIFIED */
+/* MODERN CARD STYLES — border-driven depth, restrained hovers */
 .indicator-card-modern {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
     z-index: 1;
     animation: cardEntrance 0.3s ease forwards;
 }
 
 .indicator-card-modern:hover,
 .indicator-card-modern.card-hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+    border-color: rgba(0,0,0,0.18);
+    background: white;
 }
 
 .indicator-card-modern.expanded {
-    box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important;
+    border-color: rgba(0,0,0,0.15);
     z-index: 2;
 }
 
@@ -490,33 +492,15 @@ html, body {
     100% { opacity: 1; }
 }
 
-/* CARD HEADER AND EXPANSION - UNIFIED */
+/* CARD HEADER AND EXPANSION */
 .card-header-modern {
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
     position: relative;
 }
 
-.card-header-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-    border-radius: 12px 12px 0 0;
-}
-
-.card-header-modern:hover::before {
-    opacity: 1;
-}
-
-.card-header-modern:active {
-    transform: scale(0.98);
+.card-header-modern:hover {
+    background-color: #fafaf8;
 }
 
 /* EXPAND INDICATOR - In-flow text hint */
@@ -564,50 +548,43 @@ html, body {
     }
 }
 
-/* BUTTON STYLES - UNIFIED */
+/* BUTTON STYLES — flat, no gradients or shadows */
 .btn-selected {
-    background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
+    background: #198754 !important;
     border: 1px solid #198754 !important;
     color: white !important;
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 500;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-selected:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(25, 135, 84, 0.4);
+    background: #157347 !important;
+    border-color: #157347 !important;
 }
 
 .btn-unselected {
     background: white !important;
-    border: 2px solid #e9ecef !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
     color: #495057 !important;
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .btn-unselected:hover {
     background: #f8f9fa !important;
-    border-color: #007bff !important;
-    color: #007bff !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+    border-color: rgba(0,0,0,0.2) !important;
+    color: #198754 !important;
 }
 
 /* TAG STYLES */
 .tag {
-    transition: all 0.2s ease;
-}
-
-.tag:hover {
-    transform: scale(1.02);
+    transition: color 0.2s ease;
 }
 
 /* PRIORITY BADGE */
@@ -917,10 +894,9 @@ html, body {
 
 /* Selected Indicators Card Styling - Add to www/custom.css */
 
-/* Card hover effect */
+/* Card hover effect — border-driven */
 .selected-indicator-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    border-color: rgba(0,0,0,0.18);
 }
 
 /* Fade in animation for expanded content */
@@ -1190,7 +1166,7 @@ html, body {
    Add these styles to your www/custom.css file
    ============================================================================ */
 
-/* Add All button - matches new compact sizing */
+/* Add All / Remove All buttons — flat, no shadows */
 #add_all_filtered {
   background: rgba(255, 255, 255, 0.95) !important;
   color: #198754 !important;
@@ -1198,111 +1174,77 @@ html, body {
   font-weight: 600 !important;
   font-size: 13px !important;
   padding: 6px 12px !important;
-  border-radius: 16px !important;
+  border-radius: 8px !important;
   line-height: 1.4 !important;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #add_all_filtered:hover {
-  background: #198754 !important;
-  color: white !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.4) !important;
+  background: white !important;
+  color: #157347 !important;
 }
 
-#add_all_filtered:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(25, 135, 84, 0.3) !important;
-}
-
-/* Remove All button - matches new compact sizing */
 #remove_all_filtered {
   background: transparent !important;
   color: white !important;
-  border: 1px solid rgba(255,255,255,0.6) !important;
+  border: 1px solid rgba(255,255,255,0.5) !important;
   font-weight: 500 !important;
   font-size: 13px !important;
   padding: 6px 12px !important;
-  border-radius: 16px !important;
+  border-radius: 8px !important;
   line-height: 1.4 !important;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 #remove_all_filtered:hover {
-  background: rgba(220, 53, 69, 0.9) !important;
-  border-color: rgba(220, 53, 69, 0.9) !important;
-  color: white !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
-}
-
-#remove_all_filtered:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3) !important;
-}
-
-/* Animation for button icons */
-#add_all_filtered i,
-#remove_all_filtered i {
-  font-size: 11px !important;
-  transition: transform 0.2s ease;
-}
-
-#add_all_filtered:hover i,
-#remove_all_filtered:hover i {
-  transform: scale(1.1);
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.8) !important;
 }
 
 /* ============================================================================
    INDICATOR CARD BUTTON STYLES - UNIFIED WITH NAVIGATION HEADER
    ============================================================================ */
 
-/* Base button styles - unselected state */
+/* Indicator card button styles — flat, border-driven */
 .select-indicator-btn-modern.btn-unselected {
     background: white !important;
-    border: 1px solid #dee2e6 !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
     color: #198754 !important;
     padding: 6px 12px !important;
-    border-radius: 16px !important;
+    border-radius: 8px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     line-height: 1.4 !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+    box-shadow: none !important;
 }
 
 .select-indicator-btn-modern.btn-unselected:hover {
-    background: #198754 !important;
+    background: #f8f9fa !important;
     border-color: #198754 !important;
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3) !important;
+    color: #198754 !important;
 }
 
-/* Base button styles - selected state */
 .select-indicator-btn-modern.btn-selected {
-    background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
-    border: none !important;
+    background: #198754 !important;
+    border: 1px solid #198754 !important;
     color: white !important;
     padding: 6px 12px !important;
-    border-radius: 16px !important;
+    border-radius: 8px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     line-height: 1.4 !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3) !important;
+    transition: background-color 0.2s ease !important;
+    box-shadow: none !important;
 }
 
-/* Icon sizing within indicator card buttons */
+.select-indicator-btn-modern.btn-selected:hover {
+    background: #157347 !important;
+}
+
 .select-indicator-btn-modern i {
     font-size: 11px !important;
     margin-right: 6px !important;
-    transition: transform 0.2s ease;
-}
-
-.select-indicator-btn-modern:hover i {
-    transform: scale(1.1);
 }
 
 /* ============================================================================

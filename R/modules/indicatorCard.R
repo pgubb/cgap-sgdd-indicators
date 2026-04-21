@@ -21,13 +21,11 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
     class = "indicator-card-modern",
     `data-indicator-id` = indicator$indicator_id,
     style = paste0(
-      "background: linear-gradient(135deg, white 0%, #f8f9fa 100%); ",
-      "border: 1px solid #e9ecef; ",
-      "border-radius: 12px; ",
+      "background: white; ",
+      "border: 1px solid rgba(0,0,0,0.1); ",
+      "border-radius: 8px; ",
       "padding: 0; ",
-      "margin-bottom: 20px; ",
-      "box-shadow: 0 2px 8px rgba(0,0,0,0.06); ",
-      "transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); ",
+      "margin-bottom: 12px; ",
       "overflow: hidden; ",
       "position: relative;"
     ),
@@ -73,7 +71,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
             span(indicator$main_sector, class = "tag sector-tag",
                  style = paste0(
                    "background-color: ", sector_color, "; ",
-                   "color: #333; padding: 4px 10px; border-radius: 16px; ",
+                   "color: #333; padding: 3px 8px; border-radius: 4px; ",
                    "font-size: 12px; font-weight: 500; ",
                    "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"))
           ),
