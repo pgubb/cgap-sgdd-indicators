@@ -429,30 +429,29 @@ indicatorCardJS <- function() {
             .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
         });
 
-        // Force layout recalculation after collapsing cards
-        target[0].offsetHeight;
-
-        // Scroll to target with header offset
         var headerOffset = 100;
-        var elementPosition = target[0].getBoundingClientRect().top;
-        var targetScrollPosition = elementPosition + window.pageYOffset - headerOffset;
 
-        window.scrollTo({ top: targetScrollPosition, behavior: 'auto' });
+        // Wait for layout to settle after collapsing cards, then scroll
+        setTimeout(function() {
+          var elementPosition = target[0].getBoundingClientRect().top;
+          var targetScrollPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({ top: targetScrollPosition, behavior: 'auto' });
 
-        // Single verification pass after layout settles
-        requestAnimationFrame(function() {
-          var correctedPos = target[0].getBoundingClientRect().top + window.pageYOffset - headerOffset;
-          if (Math.abs(correctedPos - window.pageYOffset) > 5) {
-            window.scrollTo(0, correctedPos);
-          }
-
-          // Highlight flash
-          target.find('.mandate-section-header').addClass('highlight-flash');
+          // Verification pass — correct if layout shifted further
           setTimeout(function() {
-            target.find('.mandate-section-header').removeClass('highlight-flash');
-            updateActiveMandateLink();
-          }, 1500);
-        });
+            var correctedPos = target[0].getBoundingClientRect().top + window.pageYOffset - headerOffset;
+            if (Math.abs(correctedPos - window.pageYOffset) > 5) {
+              window.scrollTo(0, correctedPos);
+            }
+
+            // Highlight flash
+            target.find('.mandate-section-header').addClass('highlight-flash');
+            setTimeout(function() {
+              target.find('.mandate-section-header').removeClass('highlight-flash');
+              updateActiveMandateLink();
+            }, 1500);
+          }, 100);
+        }, 50);
       });
       
       // URL-safe active mandate highlighting
