@@ -489,29 +489,32 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   div(
     class = "navigation-header nav-header-banner",
 
-    # Main title and count row with Add All / Remove All buttons
+    # Top row: title + actions
     div(
-      style = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 16px; flex-wrap: wrap;",
+      style = "display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;",
 
-      # Left side - title and description
+      # Left side - title and compact stats
       div(
-        style = "flex: 1; min-width: 300px;",
+        style = "flex: 1; min-width: 280px;",
         h2("Regulatory indicators with a sociodemographic lens",
-           style = "margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);"),
-        p(paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
-          style = "margin: 8px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 300;")
+           style = "margin: 0; font-size: 22px; font-weight: 700;"),
+        # Compact stat summary line
+        div(
+          style = "display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 14px; opacity: 0.9; flex-wrap: wrap;",
+          span(style = "font-weight: 700; font-size: 20px;", n),
+          span(paste("of", N, "indicators")),
+          span(style = "opacity: 0.5;", "\u00B7"),
+          span(paste(mandates_count, "mandates")),
+          span(style = "opacity: 0.5;", "\u00B7"),
+          span(paste(objectives_count, "objectives")),
+          span(style = "opacity: 0.5;", "\u00B7"),
+          span(paste(sectors_count, "services"))
+        )
       ),
 
       # Right side - Active set name + Add All / Remove All buttons
       div(
         style = "display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;",
-
-        div(
-          class = "active-set-label",
-          icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
-          span("Adding to:", style = "opacity: 0.8;"),
-          span(active_set_name, style = "font-weight: 600;")
-        ),
 
         div(
           style = "display: flex; gap: 8px; align-items: center;",
@@ -523,6 +526,13 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
             label = tagList(icon("minus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
                             "Remove all"),
             class = "btn btn-sm")
+        ),
+
+        div(
+          class = "active-set-label",
+          icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
+          span("Adding to:", style = "opacity: 0.8;"),
+          span(active_set_name, style = "font-weight: 600;")
         )
       )
     ),
@@ -531,13 +541,14 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
     if (has_active_filters) {
       div(
         class = "active-filters-box",
+        style = "margin-top: 16px;",
         div(
-          style = "display: flex; align-items: center; gap: 8px; margin-bottom: 12px;",
-          icon("filter", class = "fas", style = "font-size: 16px;"),
-          span("Active Filters:", style = "font-weight: 600; font-size: 14px;")
+          style = "display: flex; align-items: center; gap: 8px; margin-bottom: 10px;",
+          icon("filter", class = "fas", style = "font-size: 13px;"),
+          span("Active Filters:", style = "font-weight: 600; font-size: 13px;")
         ),
         div(
-          style = "display: flex; flex-wrap: wrap; gap: 8px;",
+          style = "display: flex; flex-wrap: wrap; gap: 6px;",
           if (!is.null(active_filters$search) && active_filters$search != "") {
             span(class = "filter-pill",
                  icon("search", class = "fas", style = "font-size: 10px;"),
@@ -562,42 +573,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           }
         )
       )
-    },
-
-    # Statistics cards
-    div(
-      class = "stat-card-grid",
-
-      div(
-        class = "stat-card stat-card-highlight",
-        div(icon("chart-simple", class = "fas stat-card-icon", style = "color: #ffd700;")),
-        div(n, class = "stat-card-value-lg"),
-        div(paste("of", N, "indicators"), style = "font-size: 14px; opacity: 0.8; font-weight: 400;")
-      ),
-
-      div(
-        class = "stat-card stat-card-default",
-        div(icon("scroll", class = "fas stat-card-icon")),
-        div(mandates_count, class = "stat-card-value"),
-        div("Mandates", class = "stat-card-label")
-      ),
-
-      div(
-        class = "stat-card stat-card-default",
-        div(icon("bullseye", class = "fas stat-card-icon")),
-        div(objectives_count, class = "stat-card-value"),
-        div("Objectives", class = "stat-card-label")
-      ),
-
-      div(
-        class = "stat-card stat-card-default",
-        div(icon("chart-pie", class = "fas stat-card-icon")),
-        div(sectors_count, class = "stat-card-value"),
-        div("Services", class = "stat-card-label"
-        )
-      )
-      
-    )
+    }
   )
 }
 
@@ -616,52 +592,20 @@ enhanced_mandate_header <- function(mandate, count) {
   
   div(
     class = "mandate-section-header",
-    
+
     div(
-      style = "position: relative; z-index: 1;",
-      
-      # Header row
-      div(
-        style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;",
-        
-        h3(
-          mandate,
-          style = paste0(
-            "margin: 0; ",
-            "font-size: 24px; ",
-            "font-weight: 700; ",
-            "color: #1a1a1a; ",
-            "text-transform: capitalize;"
-          )
-        ),
-        
-        span(
-          paste(count, "indicators"),
-          style = paste0(
-            "background: #007bff; ",
-            "color: white; ",
-            "padding: 6px 16px; ",
-            "border-radius: 20px; ",
-            "font-size: 14px; ",
-            "font-weight: 600; ",
-            "box-shadow: 0 2px 8px rgba(0,123,255,0.3);"
-          )
-        )
-      ),
-      
-      # Description
-      if (!is.null(descriptions[[toupper(mandate)]])) {
-        p(
-          descriptions[[toupper(mandate)]],
-          style = paste0(
-            "margin: 0; ",
-            "color: #6c757d; ",
-            "font-size: 15px; ",
-            "line-height: 1.5;"
-          )
-        )
-      }
-    )
+      style = "display: flex; justify-content: space-between; align-items: baseline;",
+      h3(mandate,
+         style = "margin: 0; font-size: 18px; font-weight: 700; color: #1a1a1a; text-transform: capitalize;"),
+      span(paste(count, "indicators"),
+           style = "color: #6c757d; font-size: 13px; font-weight: 500; white-space: nowrap;")
+    ),
+
+    # Description as subtitle
+    if (!is.null(descriptions[[toupper(mandate)]])) {
+      p(descriptions[[toupper(mandate)]],
+        style = "margin: 6px 0 0 0; color: #9ca3af; font-size: 13px; line-height: 1.4;")
+    }
   )
 }
 

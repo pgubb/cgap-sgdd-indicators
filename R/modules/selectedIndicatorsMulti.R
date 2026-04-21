@@ -8,16 +8,16 @@ selectedIndicatorsMultiUI <- function(id) {
     # Set manager UI at the top
     setManagerUI(ns("set_manager")),
     
-    # Header section with count and actions
+    # Header section with count and actions — brand blue to differentiate from Browse tab
     div(
       class = "selected-indicators-header",
       style = paste0(
-        "background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%); ",
+        "background: linear-gradient(135deg, #1A5A80 0%, #2980b9 100%); ",
         "color: white; ",
-        "padding: 24px; ",
-        "border-radius: 16px; ",
-        "margin-bottom: 32px; ",
-        "box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);"
+        "padding: 20px 24px; ",
+        "border-radius: 12px; ",
+        "margin-bottom: 24px; ",
+        "box-shadow: 0 6px 24px rgba(26, 90, 128, 0.25);"
       ),
       
       div(

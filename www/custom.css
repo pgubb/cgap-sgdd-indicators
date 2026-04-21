@@ -25,10 +25,10 @@ h1, h2, h3, h4, h5, h6 {
 .nav-header-banner {
   background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%);
   color: white;
-  padding: 24px;
-  border-radius: 16px;
-  margin-bottom: 32px;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.25);
 }
 
 /* Stat cards in navigation header */
@@ -143,25 +143,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Mandate section headers */
 .mandate-section-header {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
-  padding: 24px;
-  margin: 32px 0 24px 0;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  position: relative;
-  overflow: hidden;
-}
-
-.mandate-section-header::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  right: -10%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(0,123,255,0.05) 0%, transparent 70%);
-  border-radius: 50%;
+  border-left: 4px solid #1A5A80;
+  padding: 12px 16px;
+  margin: 28px 0 16px 0;
+  background: #f8f9fa;
+  border-radius: 0 8px 8px 0;
 }
 
 /* Active set label in nav header */
@@ -474,7 +460,7 @@ html, body {
 .indicator-card-modern {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
-    animation: cardEntrance 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: cardEntrance 0.3s ease forwards;
 }
 
 .indicator-card-modern:hover,
@@ -506,14 +492,8 @@ html, body {
 }
 
 @keyframes cardEntrance {
-    0% {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 /* CARD HEADER AND EXPANSION - UNIFIED */
@@ -638,12 +618,7 @@ html, body {
 
 /* PRIORITY BADGE */
 .priority-badge {
-    animation: subtle-pulse 2s infinite;
-}
-
-@keyframes subtle-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.85; }
+    /* Static — no animation to avoid visual noise across many cards */
 }
 
 /* MANDATE NAVIGATION - UNIFIED AND FIXED */
@@ -685,20 +660,6 @@ html, body {
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
-.mandate-sidebar a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    transition: left 0.5s ease;
-}
-
-.mandate-sidebar a:hover::before {
-    left: 100%;
-}
 
 .mandate-sidebar a::after {
     content: '';
@@ -726,12 +687,7 @@ html, body {
 }
 
 .mandate-section-header {
-    transition: all 0.3s ease;
-}
-
-.mandate-section-header:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transform: translateY(-1px);
+    transition: background 0.2s ease;
 }
 
 /* HIGHLIGHT EFFECT FOR JUMP NAVIGATION */
@@ -740,20 +696,9 @@ html, body {
 }
 
 @keyframes mandateHighlight {
-    0% {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    }
-    30% {
-        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-        box-shadow: 0 8px 24px rgba(0,123,255,0.15);
-        transform: scale(1.01);
-    }
-    100% {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        transform: scale(1);
-    }
+    0% { background: #f8f9fa; }
+    30% { background: #e3f2fd; }
+    100% { background: #f8f9fa; }
 }
 
 /* LINK BUTTON STYLES */
