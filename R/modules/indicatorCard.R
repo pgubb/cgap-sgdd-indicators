@@ -43,7 +43,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
     # Card header
     div(
       class = "card-header-modern",
-      style = "padding: 16px 20px; background: white; cursor: pointer;",
+      style = "padding: 14px 16px; background: white; cursor: pointer;",
 
       # Main content row
       div(
@@ -55,7 +55,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
 
           # Title row with digital preset badge
           div(
-            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px;",
+            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 6px;",
             h4(indicator$indicator_name,
                style = "margin: 0; font-size: 16px; font-weight: 600; color: #1a1a1a; line-height: 1.35; flex: 1; min-width: 200px;"),
             if (!is.na(indicator$preset_digital) && indicator$preset_digital == 1) {
@@ -66,13 +66,13 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
 
           # Tags row
           div(
-            style = "display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;",
+            style = "display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px;",
             span(indicator$main_objectives, class = "tag badge-objective"),
             span(indicator$main_sector, class = "tag sector-tag",
                  style = paste0(
                    "background-color: ", sector_color, "; ",
-                   "color: #333; padding: 3px 8px; border-radius: 4px; ",
-                   "font-size: 12px; font-weight: 500; ",
+                   "color: #333; padding: 2px 7px; border-radius: 4px; ",
+                   "font-size: 11px; font-weight: 500; ",
                    "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"))
           ),
 
@@ -102,7 +102,7 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
       # Expand hint — in-flow below content, not overlapping
       div(
         class = "expand-indicator",
-        style = "display: flex; align-items: center; justify-content: center; padding-top: 8px; cursor: pointer;",
+        style = "display: flex; align-items: center; justify-content: center; padding-top: 6px; cursor: pointer;",
         div(
           style = paste0(
             "display: flex; align-items: center; gap: 4px; ",
