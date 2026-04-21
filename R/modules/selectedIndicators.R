@@ -256,7 +256,7 @@ selectedIndicatorsServer <- function(id, selected_indicators, sector_colors) {
                   }, 
                   
                   # Presets: Digital
-                  if (!is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
+                  if (!is.na(ind$preset_digital) && ind$preset_digital == 1) {
                     span(
                       style = paste0(
                         "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",

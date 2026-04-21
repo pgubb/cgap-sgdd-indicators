@@ -48,3 +48,12 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 .Rproj.user
+
+# Google service account keys
+cgap-lens-*.json
+
+# Internal documents (not for deployment)
+NOT_PUBLIC/
+
+# R profile
+.Rprofile
