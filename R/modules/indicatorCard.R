@@ -45,175 +45,75 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
     # Card header
     div(
       class = "card-header-modern",
-      style = paste0(
-        "padding: 20px 24px 16px 24px; ",
-        "border-bottom: 1px solid #f1f3f4; ",
-        "background: white; ",
-        "cursor: pointer; ",
-        "position: relative;"
-      ),
-      
+      style = "padding: 16px 20px; background: white; cursor: pointer;",
+
       # Main content row
       div(
-        style = "display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;",
-        
+        style = "display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;",
+
         # Left side - main info
         div(
-          style = "flex: 1; min-width: 0;", # min-width prevents text overflow
-          
-          # Title and badges row
-          div(
-            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px;",
-            
-            h4(
-              indicator$indicator_name,
-              style = paste0(
-                "margin: 0; ",
-                "font-size: 18px; ",
-                "font-weight: 600; ",
-                "color: #1a1a1a; ",
-                "line-height: 1.3; ",
-                "flex: 1; ",
-                "min-width: 200px;"
-              )
-            ),
-            
+          style = "flex: 1; min-width: 0;",
 
-            # Digital ecosystem preset
+          # Title row with digital preset badge
+          div(
+            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px;",
+            h4(indicator$indicator_name,
+               style = "margin: 0; font-size: 16px; font-weight: 600; color: #1a1a1a; line-height: 1.35; flex: 1; min-width: 200px;"),
             if (!is.na(indicator$preset_digital) && indicator$preset_digital == 1) {
-              div(
-                class = "priority-badge",
-                style = paste0(
-                  "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-                  "color: #856404; ",
-                  "padding: 4px 8px; ",
-                  "border-radius: 12px; ",
-                  "font-size: 11px; ",
-                  "font-weight: 600; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 4px; ",
-                  "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
-                ),
-                icon("mobile-screen", class = "fas", style = "font-size: 10px;")
-              )
+              div(class = "badge-digital-preset",
+                  icon("mobile-screen", class = "fas", style = "font-size: 10px;"))
             }
-            
-            
           ),
-          
+
           # Tags row
           div(
-            style = "display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;",
-            
-            # Mandate tag
-            span(
-              indicator$main_objectives,
-              class = "tag mandate-tag",
-              style = paste0(
-                "background-color: #e3f2fd; ",
-                "color: #1565c0; ",
-                "padding: 4px 10px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 500; ",
-                "border: 1px solid #bbdefb;"
-              )
-            ),
-            
-            # Sector tag
-            span(
-              indicator$main_sector,
-              class = "tag sector-tag",
-              style = paste0(
-                "background-color: ", sector_color, "; ",
-                "color: #333; ",
-                "padding: 4px 10px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 500; ",
-                "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"
-              )
-            )
+            style = "display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;",
+            span(indicator$main_objectives, class = "tag badge-objective"),
+            span(indicator$main_sector, class = "tag sector-tag",
+                 style = paste0(
+                   "background-color: ", sector_color, "; ",
+                   "color: #333; padding: 4px 10px; border-radius: 16px; ",
+                   "font-size: 12px; font-weight: 500; ",
+                   "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"))
           ),
-          
+
           # Description preview
-          p(
-            substr(indicator$indicator_description, 1, 120),
-            if(nchar(indicator$indicator_description) > 120) "...",
-            style = paste0(
-              "margin: 0; ",
-              "color: #5f6368; ",
-              "font-size: 14px; ",
-              "line-height: 1.4;"
-            )
-          )
+          p(substr(indicator$indicator_description, 1, 150),
+            if(nchar(indicator$indicator_description) > 150) "...",
+            style = "margin: 0; color: #5f6368; font-size: 13px; line-height: 1.45;")
         ),
-        
-        # Right side - action button (UPDATED STYLING)
+
+        # Right side - action button
         div(
-          style = "flex-shrink: 0;",
+          style = "flex-shrink: 0; padding-top: 2px;",
           tags$button(
             id = paste0("select_", indicator$indicator_id),
-            class = paste("btn select-indicator-btn-modern", 
+            class = paste("btn select-indicator-btn-modern",
                           if (is_selected) "btn-selected" else "btn-unselected"),
             `data-indicator-id` = indicator$indicator_id,
             `data-selected` = tolower(as.character(is_selected)),
-            style = if (is_selected) {
-              paste0(
-                "background: linear-gradient(135deg, #198754 0%, #20c997 100%); ",
-                "border: none; ",
-                "color: white; ",
-                "padding: 6px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 13px; ",
-                "font-weight: 600; ",
-                "line-height: 1.4; ",
-                "transition: all 0.2s ease; ",
-                "box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);"
-              )
-            } else {
-              paste0(
-                "background: white; ",
-                "border: 1px solid #dee2e6; ",
-                "color: #198754; ",
-                "padding: 6px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 13px; ",
-                "font-weight: 600; ",
-                "line-height: 1.4; ",
-                "transition: all 0.2s ease; ",
-                "box-shadow: 0 2px 8px rgba(0,0,0,0.08);"
-              )
-            },
-            
-            icon(if (is_selected) "check" else "plus", class = "fas", 
-                 style = "font-size: 11px; margin-right: 6px;"),
-            span(class = "btn-text", 
+            icon(if (is_selected) "check" else "plus", class = "fas",
+                 style = "font-size: 11px; margin-right: 5px;"),
+            span(class = "btn-text",
                  if (is_selected) "Added" else "Add")
           )
         )
       ),
-      
-      # Expand/collapse indicator
+
+      # Expand hint — in-flow below content, not overlapping
       div(
         class = "expand-indicator",
-        style = paste0(
-          "position: absolute; ",
-          "bottom: 8px; ",
-          "left: 50%; ",
-          "transform: translateX(-50%); ",
-          "width: 24px; ",
-          "height: 24px; ",
-          "background: #f8f9fa; ",
-          "border-radius: 50%; ",
-          "display: flex; ",
-          "align-items: center; ",
-          "justify-content: center; ",
-          "cursor: pointer; ",
-          "transition: all 0.2s ease;"
-        ),
-        icon("chevron-down", class = "fas", style = "font-size: 12px; color: #6c757d;")
+        style = "display: flex; align-items: center; justify-content: center; padding-top: 8px; cursor: pointer;",
+        div(
+          style = paste0(
+            "display: flex; align-items: center; gap: 4px; ",
+            "color: #9ca3af; font-size: 11px; font-weight: 500; ",
+            "transition: color 0.2s ease;"
+          ),
+          span(class = "expand-label", "Details"),
+          icon("chevron-down", class = "fas", style = "font-size: 10px;")
+        )
       )
     ),
     

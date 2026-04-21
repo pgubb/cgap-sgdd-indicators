@@ -545,16 +545,14 @@ html, body {
     transform: scale(0.98);
 }
 
-/* EXPAND INDICATOR - UNIFIED */
+/* EXPAND INDICATOR - In-flow text hint */
 .expand-indicator {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     cursor: pointer;
-    z-index: 10;
 }
 
-.expand-indicator:hover {
-    background: #e9ecef !important;
-    transform: translateX(-50%) scale(1.15) !important;
+.expand-indicator:hover div {
+    color: #1A5A80 !important;
 }
 
 .expand-indicator i {
@@ -563,6 +561,10 @@ html, body {
 
 .indicator-card-modern.expanded .expand-indicator i {
     transform: rotate(180deg);
+}
+
+.indicator-card-modern.expanded .expand-indicator .expand-label {
+    display: none;
 }
 
 /* CARD CONTENT - UNIFIED */
@@ -860,15 +862,6 @@ html, body {
 
 /* MOBILE OPTIMIZATION */
 @media (max-width: 768px) {
-    .expand-indicator {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .expand-indicator i {
-        font-size: 13px;
-    }
-    
     .card-header-modern::before {
         border-radius: 8px 8px 0 0;
     }
