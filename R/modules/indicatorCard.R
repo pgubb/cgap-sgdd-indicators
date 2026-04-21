@@ -417,104 +417,42 @@ indicatorCardJS <- function() {
         var targetHref = $(this).attr('href');
         var targetId = extractTargetId(targetHref);
         
-        if (!targetId) {
-          console.warn('Could not extract target ID from href:', targetHref);
-          return;
-        }
-        
+        if (!targetId) return;
+
         var target = $('#' + targetId);
-        
-        if (target.length === 0) {
-          console.warn('Target element not found:', targetId);
-          return;
-        }
-        
+        if (target.length === 0) return;
+
         // Close expanded cards
         $('.indicator-card-modern.expanded').each(function() {
           $(this).removeClass('expanded')
             .find('.card-content-modern').css('display', 'none').end()
             .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
         });
-        
-        // Force layout recalculation
+
+        // Force layout recalculation after collapsing cards
         target[0].offsetHeight;
-        
-        // Calculate the absolute position we want to scroll to
+
+        // Scroll to target with header offset
         var headerOffset = 100;
         var elementPosition = target[0].getBoundingClientRect().top;
-        var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        
-        // Store the target position for verification
-        var targetScrollPosition = offsetPosition;
-        
-        console.log('Scrolling to position:', targetScrollPosition);
-        console.log('Current position:', window.pageYOffset);
-        console.log('Element offset:', target.offset().top);
-        
-        // Method 1: Use the native smooth scroll with fallback
-        try {
-          window.scrollTo({
-            top: targetScrollPosition,
-            behavior: 'auto' // Changed to auto for immediate scroll
-          });
-        } catch (e) {
-          // Fallback for older browsers
-          window.scrollTo(0, targetScrollPosition);
-        }
-        
-        // Aggressive verification and correction
-        var scrollAttempts = 0;
-        var maxAttempts = 10;
-        
-        var verifyScroll = setInterval(function() {
-          scrollAttempts++;
-          var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-          var difference = Math.abs(currentScroll - targetScrollPosition);
-          
-          console.log('Attempt', scrollAttempts, '- Current:', currentScroll, 'Target:', targetScrollPosition, 'Diff:', difference);
-          
-          if (difference < 5) {
-            // Success!
-            clearInterval(verifyScroll);
-            console.log('Scroll successful!');
-            
-            // Add highlight effect
-            target.find('.mandate-section-header').addClass('highlight-flash');
-            setTimeout(function() {
-              target.find('.mandate-section-header').removeClass('highlight-flash');
-              updateActiveMandateLink();
-            }, 1500);
-            
-          } else if (scrollAttempts >= maxAttempts) {
-            // Give up after max attempts
-            clearInterval(verifyScroll);
-            console.log('Max attempts reached, final position:', currentScroll);
-            
-            // Still add highlight even if position isn't perfect
-            target.find('.mandate-section-header').addClass('highlight-flash');
-            setTimeout(function() {
-              target.find('.mandate-section-header').removeClass('highlight-flash');
-              updateActiveMandateLink();
-            }, 1500);
-            
-          } else {
-            // Try again with different methods
-            if (scrollAttempts % 3 === 1) {
-              window.scrollTo(0, targetScrollPosition);
-            } else if (scrollAttempts % 3 === 2) {
-              document.documentElement.scrollTop = targetScrollPosition;
-              document.body.scrollTop = targetScrollPosition;
-            } else {
-              // Try scrollIntoView
-              target[0].scrollIntoView({ behavior: 'auto', block: 'start' });
-              // Then adjust for header
-              setTimeout(function() {
-                var newPos = target[0].getBoundingClientRect().top + window.pageYOffset - headerOffset;
-                window.scrollTo(0, newPos);
-              }, 10);
-            }
+        var targetScrollPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({ top: targetScrollPosition, behavior: 'auto' });
+
+        // Single verification pass after layout settles
+        requestAnimationFrame(function() {
+          var correctedPos = target[0].getBoundingClientRect().top + window.pageYOffset - headerOffset;
+          if (Math.abs(correctedPos - window.pageYOffset) > 5) {
+            window.scrollTo(0, correctedPos);
           }
-        }, 50); // Check every 50ms
+
+          // Highlight flash
+          target.find('.mandate-section-header').addClass('highlight-flash');
+          setTimeout(function() {
+            target.find('.mandate-section-header').removeClass('highlight-flash');
+            updateActiveMandateLink();
+          }, 1500);
+        });
       });
       
       // URL-safe active mandate highlighting

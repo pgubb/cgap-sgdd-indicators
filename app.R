@@ -199,6 +199,7 @@ server <- function(input, output, session) {
   
   # Add all filtered indicators to the active set
   observeEvent(input$add_all_filtered, {
+    req(filtered_indicators())
     filtered_ids <- isolate(filtered_indicators()$indicator_id)
 
     if (length(filtered_ids) > 0) {
@@ -217,6 +218,7 @@ server <- function(input, output, session) {
 
   # Remove all filtered indicators from the active set
   observeEvent(input$remove_all_filtered, {
+    req(filtered_indicators())
     filtered_ids <- isolate(filtered_indicators()$indicator_id)
     current_selected <- isolate(set_manager$get_active_indicators())
     to_remove <- intersect(filtered_ids, current_selected)
