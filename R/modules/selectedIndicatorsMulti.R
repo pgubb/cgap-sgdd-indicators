@@ -8,16 +8,16 @@ selectedIndicatorsMultiUI <- function(id) {
     # Set manager UI at the top
     setManagerUI(ns("set_manager")),
     
-    # Header section with count and actions
+    # Header section with count and actions — brand blue to differentiate from Browse tab
     div(
       class = "selected-indicators-header",
       style = paste0(
-        "background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%); ",
+        "background: linear-gradient(135deg, #1A5A80 0%, #2980b9 100%); ",
         "color: white; ",
-        "padding: 24px; ",
-        "border-radius: 16px; ",
-        "margin-bottom: 32px; ",
-        "box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);"
+        "padding: 20px 24px; ",
+        "border-radius: 12px; ",
+        "margin-bottom: 24px; ",
+        "box-shadow: 0 6px 24px rgba(26, 90, 128, 0.25);"
       ),
       
       div(
@@ -174,11 +174,10 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
             class = "selected-indicator-card",
             style = paste0(
               "background: white; ",
-              "border: 1px solid #e9ecef; ",
-              "border-radius: 12px; ",
+              "border: 1px solid rgba(0,0,0,0.1); ",
+              "border-radius: 8px; ",
               "overflow: hidden; ",
-              "transition: all 0.3s ease; ",
-              "box-shadow: 0 2px 8px rgba(0,0,0,0.08); ",
+              "transition: border-color 0.2s ease; ",
               "display: flex; ",
               "flex-direction: column; ",
               "height: 100%;"
@@ -218,20 +217,20 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                     "background-color: #e3f2fd; ",
                     "color: #1565c0; ",
                     "padding: 3px 8px; ",
-                    "border-radius: 12px; ",
+                    "border-radius: 4px; ",
                     "font-size: 11px; ",
                     "font-weight: 500; ",
                     "border: 1px solid #bbdefb;"
                   )
                 ),
-                
+
                 span(
                   ind$main_sector,
                   style = paste0(
                     "background-color: ", sector_color, "; ",
                     "color: #333; ",
                     "padding: 3px 8px; ",
-                    "border-radius: 12px; ",
+                    "border-radius: 4px; ",
                     "font-size: 11px; ",
                     "font-weight: 500; ",
                     "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"
@@ -287,46 +286,33 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                 )
               },
               
-              # Comments section
+              # Notes — icon inside textarea via wrapper
               div(
-                style = "margin-top: auto;",
+                class = "notes-field-wrapper",
+                style = "margin-top: auto; position: relative;",
+                icon("comment-dots", class = "fas",
+                     style = "position: absolute; left: 10px; top: 10px; font-size: 12px; color: #adb5bd; z-index: 1; pointer-events: none;"),
                 textAreaInput(
                   inputId = ns(paste0("comment_", ind$indicator_id)),
-                  label = div(
-                    style = "display: flex; align-items: center; gap: 6px; margin-bottom: 8px;",
-                    icon("comment-dots", class = "fas", style = "font-size: 12px; color: #6c757d;"),
-                    span("Notes", style = "font-size: 13px; font-weight: 500; color: #495057;")
-                  ),
+                  label = NULL,
                   placeholder = "Add notes...",
                   width = "100%",
                   rows = 2,
                   resize = "vertical"
                 )
-              ), 
-              
-              # Action buttons
+              ),
+
+              # Show more/less toggle
               div(
-                style = "display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e9ecef;",
-                
-                # Expand/collapse button
+                style = "margin-top: 8px; padding-top: 8px; border-top: 1px solid #e9ecef;",
                 actionButton(
                   ns(paste0("toggle_", ind$indicator_id)),
                   label = if (is_expanded) "Show less" else "Show more",
                   icon = icon(if (is_expanded) "chevron-up" else "chevron-down"),
                   class = "btn btn-sm btn-outline-secondary",
                   style = "font-size: 12px;",
-                  onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})", 
+                  onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})",
                                     ns("toggle_expand"), ind$indicator_id)
-                ),
-                
-                # View full details button (links to browse page)
-                tags$a(
-                  href = "#",
-                  class = "btn btn-sm btn-link",
-                  style = "font-size: 12px; text-decoration: none;",
-                  onclick = "document.querySelector('[data-value=\"Browse indicators\"]').click(); return false;",
-                  icon("arrow-right", class = "fas", style = "margin-right: 4px;"),
-                  "View full details"
                 )
               )
               

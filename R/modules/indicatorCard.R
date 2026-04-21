@@ -21,13 +21,11 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
     class = "indicator-card-modern",
     `data-indicator-id` = indicator$indicator_id,
     style = paste0(
-      "background: linear-gradient(135deg, white 0%, #f8f9fa 100%); ",
-      "border: 1px solid #e9ecef; ",
-      "border-radius: 12px; ",
+      "background: white; ",
+      "border: 1px solid rgba(0,0,0,0.1); ",
+      "border-radius: 8px; ",
       "padding: 0; ",
-      "margin-bottom: 20px; ",
-      "box-shadow: 0 2px 8px rgba(0,0,0,0.06); ",
-      "transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); ",
+      "margin-bottom: 12px; ",
       "overflow: hidden; ",
       "position: relative;"
     ),
@@ -45,195 +43,75 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
     # Card header
     div(
       class = "card-header-modern",
-      style = paste0(
-        "padding: 20px 24px 16px 24px; ",
-        "border-bottom: 1px solid #f1f3f4; ",
-        "background: white; ",
-        "cursor: pointer; ",
-        "position: relative;"
-      ),
-      
+      style = "padding: 14px 16px; background: white; cursor: pointer;",
+
       # Main content row
       div(
-        style = "display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;",
-        
+        style = "display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;",
+
         # Left side - main info
         div(
-          style = "flex: 1; min-width: 0;", # min-width prevents text overflow
-          
-          # Title and badges row
+          style = "flex: 1; min-width: 0;",
+
+          # Title row with digital preset badge
           div(
-            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px;",
-            
-            h4(
-              indicator$indicator_name,
-              style = paste0(
-                "margin: 0; ",
-                "font-size: 18px; ",
-                "font-weight: 600; ",
-                "color: #1a1a1a; ",
-                "line-height: 1.3; ",
-                "flex: 1; ",
-                "min-width: 200px;"
-              )
-            ),
-            
-            
-            # Foundational preset
-            # if (!is.na(indicator$preset_foundation) && indicator$preset_foundation == 1) {
-            #   div(
-            #     class = "priority-badge",
-            #     style = paste0(
-            #       "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-            #       "color: #856404; ",
-            #       "padding: 4px 8px; ",
-            #       "border-radius: 12px; ",
-            #       "font-size: 11px; ",
-            #       "font-weight: 600; ",
-            #       "display: flex; ",
-            #       "align-items: center; ",
-            #       "gap: 4px; ",
-            #       "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
-            #     ),
-            #     icon("building-columns", class = "fas", style = "font-size: 10px;")
-            #   )
-            # },
-            
-            # Digital ecosystem preset
+            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 6px;",
+            h4(indicator$indicator_name,
+               style = "margin: 0; font-size: 16px; font-weight: 600; color: #1a1a1a; line-height: 1.35; flex: 1; min-width: 200px;"),
             if (!is.na(indicator$preset_digital) && indicator$preset_digital == 1) {
-              div(
-                class = "priority-badge",
-                style = paste0(
-                  "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-                  "color: #856404; ",
-                  "padding: 4px 8px; ",
-                  "border-radius: 12px; ",
-                  "font-size: 11px; ",
-                  "font-weight: 600; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 4px; ",
-                  "box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);"
-                ),
-                icon("mobile-screen", class = "fas", style = "font-size: 10px;")
-              )
+              div(class = "badge-digital-preset",
+                  icon("mobile-screen", class = "fas", style = "font-size: 10px;"))
             }
-            
-            
           ),
-          
+
           # Tags row
           div(
-            style = "display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;",
-            
-            # Mandate tag
-            span(
-              indicator$main_objectives,
-              class = "tag mandate-tag",
-              style = paste0(
-                "background-color: #e3f2fd; ",
-                "color: #1565c0; ",
-                "padding: 4px 10px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 500; ",
-                "border: 1px solid #bbdefb;"
-              )
-            ),
-            
-            # Sector tag
-            span(
-              indicator$main_sector,
-              class = "tag sector-tag",
-              style = paste0(
-                "background-color: ", sector_color, "; ",
-                "color: #333; ",
-                "padding: 4px 10px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 500; ",
-                "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"
-              )
-            )
+            style = "display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px;",
+            span(indicator$main_objectives, class = "tag badge-objective"),
+            span(indicator$main_sector, class = "tag sector-tag",
+                 style = paste0(
+                   "background-color: ", sector_color, "; ",
+                   "color: #333; padding: 2px 7px; border-radius: 4px; ",
+                   "font-size: 11px; font-weight: 500; ",
+                   "border: 1px solid ", adjustcolor(sector_color, red.f = 0.8, green.f = 0.8, blue.f = 0.8), ";"))
           ),
-          
+
           # Description preview
-          p(
-            substr(indicator$indicator_description, 1, 120),
-            if(nchar(indicator$indicator_description) > 120) "...",
-            style = paste0(
-              "margin: 0; ",
-              "color: #5f6368; ",
-              "font-size: 14px; ",
-              "line-height: 1.4;"
-            )
-          )
+          p(substr(indicator$indicator_description, 1, 150),
+            if(nchar(indicator$indicator_description) > 150) "...",
+            style = "margin: 0; color: #5f6368; font-size: 13px; line-height: 1.45;")
         ),
-        
-        # Right side - action button (UPDATED STYLING)
+
+        # Right side - action button
         div(
-          style = "flex-shrink: 0;",
+          style = "flex-shrink: 0; padding-top: 2px;",
           tags$button(
             id = paste0("select_", indicator$indicator_id),
-            class = paste("btn select-indicator-btn-modern", 
+            class = paste("btn select-indicator-btn-modern",
                           if (is_selected) "btn-selected" else "btn-unselected"),
             `data-indicator-id` = indicator$indicator_id,
             `data-selected` = tolower(as.character(is_selected)),
-            style = if (is_selected) {
-              paste0(
-                "background: linear-gradient(135deg, #198754 0%, #20c997 100%); ",
-                "border: none; ",
-                "color: white; ",
-                "padding: 6px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 13px; ",
-                "font-weight: 600; ",
-                "line-height: 1.4; ",
-                "transition: all 0.2s ease; ",
-                "box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);"
-              )
-            } else {
-              paste0(
-                "background: white; ",
-                "border: 1px solid #dee2e6; ",
-                "color: #198754; ",
-                "padding: 6px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 13px; ",
-                "font-weight: 600; ",
-                "line-height: 1.4; ",
-                "transition: all 0.2s ease; ",
-                "box-shadow: 0 2px 8px rgba(0,0,0,0.08);"
-              )
-            },
-            
-            icon(if (is_selected) "check" else "plus", class = "fas", 
-                 style = "font-size: 11px; margin-right: 6px;"),
-            span(class = "btn-text", 
+            icon(if (is_selected) "check" else "plus", class = "fas",
+                 style = "font-size: 11px; margin-right: 5px;"),
+            span(class = "btn-text",
                  if (is_selected) "Added" else "Add")
           )
         )
       ),
-      
-      # Expand/collapse indicator
+
+      # Expand hint — in-flow below content, not overlapping
       div(
         class = "expand-indicator",
-        style = paste0(
-          "position: absolute; ",
-          "bottom: 8px; ",
-          "left: 50%; ",
-          "transform: translateX(-50%); ",
-          "width: 24px; ",
-          "height: 24px; ",
-          "background: #f8f9fa; ",
-          "border-radius: 50%; ",
-          "display: flex; ",
-          "align-items: center; ",
-          "justify-content: center; ",
-          "cursor: pointer; ",
-          "transition: all 0.2s ease;"
-        ),
-        icon("chevron-down", class = "fas", style = "font-size: 12px; color: #6c757d;")
+        style = "display: flex; align-items: center; justify-content: center; padding-top: 6px; cursor: pointer;",
+        div(
+          style = paste0(
+            "display: flex; align-items: center; gap: 4px; ",
+            "color: #9ca3af; font-size: 11px; font-weight: 500; ",
+            "transition: color 0.2s ease;"
+          ),
+          span(class = "expand-label", "Details"),
+          icon("chevron-down", class = "fas", style = "font-size: 10px;")
+        )
       )
     ),
     
@@ -437,104 +315,56 @@ indicatorCardJS <- function() {
         var targetHref = $(this).attr('href');
         var targetId = extractTargetId(targetHref);
         
-        if (!targetId) {
-          console.warn('Could not extract target ID from href:', targetHref);
-          return;
-        }
-        
+        if (!targetId) return;
+
         var target = $('#' + targetId);
-        
-        if (target.length === 0) {
-          console.warn('Target element not found:', targetId);
-          return;
-        }
-        
+        if (target.length === 0) return;
+
         // Close expanded cards
         $('.indicator-card-modern.expanded').each(function() {
           $(this).removeClass('expanded')
             .find('.card-content-modern').css('display', 'none').end()
             .find('.expand-indicator i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
         });
-        
-        // Force layout recalculation
-        target[0].offsetHeight;
-        
-        // Calculate the absolute position we want to scroll to
+
         var headerOffset = 100;
-        var elementPosition = target[0].getBoundingClientRect().top;
-        var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        
-        // Store the target position for verification
-        var targetScrollPosition = offsetPosition;
-        
-        console.log('Scrolling to position:', targetScrollPosition);
-        console.log('Current position:', window.pageYOffset);
-        console.log('Element offset:', target.offset().top);
-        
-        // Method 1: Use the native smooth scroll with fallback
-        try {
-          window.scrollTo({
-            top: targetScrollPosition,
-            behavior: 'auto' // Changed to auto for immediate scroll
-          });
-        } catch (e) {
-          // Fallback for older browsers
-          window.scrollTo(0, targetScrollPosition);
-        }
-        
-        // Aggressive verification and correction
-        var scrollAttempts = 0;
-        var maxAttempts = 10;
-        
-        var verifyScroll = setInterval(function() {
-          scrollAttempts++;
-          var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-          var difference = Math.abs(currentScroll - targetScrollPosition);
-          
-          console.log('Attempt', scrollAttempts, '- Current:', currentScroll, 'Target:', targetScrollPosition, 'Diff:', difference);
-          
-          if (difference < 5) {
-            // Success!
-            clearInterval(verifyScroll);
-            console.log('Scroll successful!');
-            
-            // Add highlight effect
-            target.find('.mandate-section-header').addClass('highlight-flash');
-            setTimeout(function() {
-              target.find('.mandate-section-header').removeClass('highlight-flash');
-              updateActiveMandateLink();
-            }, 1500);
-            
-          } else if (scrollAttempts >= maxAttempts) {
-            // Give up after max attempts
-            clearInterval(verifyScroll);
-            console.log('Max attempts reached, final position:', currentScroll);
-            
-            // Still add highlight even if position isn't perfect
-            target.find('.mandate-section-header').addClass('highlight-flash');
-            setTimeout(function() {
-              target.find('.mandate-section-header').removeClass('highlight-flash');
-              updateActiveMandateLink();
-            }, 1500);
-            
-          } else {
-            // Try again with different methods
-            if (scrollAttempts % 3 === 1) {
-              window.scrollTo(0, targetScrollPosition);
-            } else if (scrollAttempts % 3 === 2) {
-              document.documentElement.scrollTop = targetScrollPosition;
-              document.body.scrollTop = targetScrollPosition;
-            } else {
-              // Try scrollIntoView
-              target[0].scrollIntoView({ behavior: 'auto', block: 'start' });
-              // Then adjust for header
-              setTimeout(function() {
-                var newPos = target[0].getBoundingClientRect().top + window.pageYOffset - headerOffset;
-                window.scrollTo(0, newPos);
-              }, 10);
+
+        // Find the scrollable container (bslib uses a nested scrollable div)
+        function findScrollParent(el) {
+          var parent = el.parentElement;
+          while (parent) {
+            var style = window.getComputedStyle(parent);
+            if (/(auto|scroll)/.test(style.overflow + style.overflowY)) {
+              return parent;
             }
+            parent = parent.parentElement;
           }
-        }, 50); // Check every 50ms
+          return document.documentElement;
+        }
+
+        var scrollContainer = findScrollParent(target[0]);
+
+        // Wait for layout to settle after collapsing cards, then scroll
+        setTimeout(function() {
+          // Try scrollIntoView first — works regardless of scroll container
+          target[0].scrollIntoView({ behavior: 'auto', block: 'start' });
+
+          // Adjust for fixed header offset
+          setTimeout(function() {
+            if (scrollContainer === document.documentElement) {
+              window.scrollBy(0, -headerOffset);
+            } else {
+              scrollContainer.scrollTop -= headerOffset;
+            }
+
+            // Highlight flash
+            target.find('.mandate-section-header').addClass('highlight-flash');
+            setTimeout(function() {
+              target.find('.mandate-section-header').removeClass('highlight-flash');
+              updateActiveMandateLink();
+            }, 1500);
+          }, 50);
+        }, 50);
       });
       
       // URL-safe active mandate highlighting

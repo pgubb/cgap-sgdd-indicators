@@ -1,77 +1,164 @@
-/* www/custom.css - Sanitized Custom styles for RGDD Explorer */
+/* www/custom.css - Custom styles for CGAP LENS */
 
 /* ============================================
    FIGTREE FONT IMPLEMENTATION
    ============================================ */
 
-/* Import Figtree font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-/* Set Figtree as the default font for the entire app */
-body, html {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
-               Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-/* Apply to all common elements */
+/* Universal font — the * selector covers all elements */
 * {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI',
                Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Specific elements that might need explicit font declaration */
+/* Subtle warm-tinted page background — cards separate naturally on white */
+body {
+  background-color: #fafaf8;
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
-               Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 600; /* Figtree looks great at 600 for headings */
+  font-weight: 600;
+  line-height: 1.2;
 }
 
-p, span, div, a, button, input, select, textarea, label {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
-               Roboto, 'Helvetica Neue', Arial, sans-serif;
+/* ============================================
+   REUSABLE COMPONENT CLASSES
+   (Replacing inline paste0() styles in R code)
+   ============================================ */
+
+/* Navigation header — purple gradient banner */
+.nav-header-banner {
+  background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%);
+  color: white;
+  padding: 20px 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
 }
 
-/* Shiny-specific elements */
-.shiny-input-container,
-.form-control,
-.btn,
-.selectize-input,
-.selectize-dropdown,
-.checkbox label,
-.radio label {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
-               Roboto, 'Helvetica Neue', Arial, sans-serif;
+/* Stat cards in navigation header — compact */
+.stat-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
 }
 
-/* Navigation and headers */
-.navbar,
-.navbar-brand,
-.nav-link {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
-               Roboto, 'Helvetica Neue', Arial, sans-serif;
+.stat-card-default {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
-/* Cards and panels */
-.card,
-.card-header,
-.card-body,
-.panel,
-.well {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
-               Roboto, 'Helvetica Neue', Arial, sans-serif;
+.stat-card-highlight {
+  background: rgba(255, 215, 0, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
-/* Tables */
-table,
-th,
-td {
-  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
-               Roboto, 'Helvetica Neue', Arial, sans-serif;
+.stat-card-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+  opacity: 0.8;
 }
 
-/* Global Smooth Scrolling - UNIFIED */
+.stat-card-value {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
 
-/* Update your CSS - Replace the existing smooth scrolling section with this: */
+.stat-card-label {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+/* Active filter pills */
+.filter-pill {
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-pill-preset {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #856404;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Active filters container */
+.active-filters-box {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Badge styles for indicator cards */
+.badge-objective {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid #bbdefb;
+}
+
+.badge-digital-preset {
+  background: #ffd700;
+  color: #856404;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Mandate section headers */
+.mandate-section-header {
+  border-left: 4px solid #1A5A80;
+  padding: 12px 16px;
+  margin: 28px 0 16px 0;
+  background: #f8f9fa;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Active set label in nav header */
+.active-set-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  font-size: 13px;
+  backdrop-filter: blur(10px);
+}
+
+/* Global Smooth Scrolling */
 
 /* Controlled smooth scrolling - allows JavaScript override */
 html {
@@ -365,21 +452,21 @@ html, body {
     100% { left: 100%; }
 }
 
-/* MODERN CARD STYLES - UNIFIED */
+/* MODERN CARD STYLES — border-driven depth, restrained hovers */
 .indicator-card-modern {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
     z-index: 1;
-    animation: cardEntrance 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: cardEntrance 0.3s ease forwards;
 }
 
 .indicator-card-modern:hover,
 .indicator-card-modern.card-hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+    border-color: rgba(0,0,0,0.18);
+    background: white;
 }
 
 .indicator-card-modern.expanded {
-    box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important;
+    border-color: rgba(0,0,0,0.15);
     z-index: 2;
 }
 
@@ -401,55 +488,29 @@ html, body {
 }
 
 @keyframes cardEntrance {
-    0% {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
-/* CARD HEADER AND EXPANSION - UNIFIED */
+/* CARD HEADER AND EXPANSION */
 .card-header-modern {
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
     position: relative;
 }
 
-.card-header-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-    border-radius: 12px 12px 0 0;
+.card-header-modern:hover {
+    background-color: #fafaf8;
 }
 
-.card-header-modern:hover::before {
-    opacity: 1;
-}
-
-.card-header-modern:active {
-    transform: scale(0.98);
-}
-
-/* EXPAND INDICATOR - UNIFIED */
+/* EXPAND INDICATOR - In-flow text hint */
 .expand-indicator {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     cursor: pointer;
-    z-index: 10;
 }
 
-.expand-indicator:hover {
-    background: #e9ecef !important;
-    transform: translateX(-50%) scale(1.15) !important;
+.expand-indicator:hover div {
+    color: #1A5A80 !important;
 }
 
 .expand-indicator i {
@@ -458,6 +519,10 @@ html, body {
 
 .indicator-card-modern.expanded .expand-indicator i {
     transform: rotate(180deg);
+}
+
+.indicator-card-modern.expanded .expand-indicator .expand-label {
+    display: none;
 }
 
 /* CARD CONTENT - UNIFIED */
@@ -483,60 +548,48 @@ html, body {
     }
 }
 
-/* BUTTON STYLES - UNIFIED */
+/* BUTTON STYLES — flat, no gradients or shadows */
 .btn-selected {
-    background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
+    background: #198754 !important;
     border: 1px solid #198754 !important;
     color: white !important;
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 500;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-selected:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(25, 135, 84, 0.4);
+    background: #157347 !important;
+    border-color: #157347 !important;
 }
 
 .btn-unselected {
     background: white !important;
-    border: 2px solid #e9ecef !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
     color: #495057 !important;
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .btn-unselected:hover {
     background: #f8f9fa !important;
-    border-color: #007bff !important;
-    color: #007bff !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+    border-color: rgba(0,0,0,0.2) !important;
+    color: #198754 !important;
 }
 
 /* TAG STYLES */
 .tag {
-    transition: all 0.2s ease;
-}
-
-.tag:hover {
-    transform: scale(1.02);
+    transition: color 0.2s ease;
 }
 
 /* PRIORITY BADGE */
 .priority-badge {
-    animation: subtle-pulse 2s infinite;
-}
-
-@keyframes subtle-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.85; }
+    /* Static — no animation to avoid visual noise across many cards */
 }
 
 /* MANDATE NAVIGATION - UNIFIED AND FIXED */
@@ -578,20 +631,6 @@ html, body {
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
-.mandate-sidebar a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    transition: left 0.5s ease;
-}
-
-.mandate-sidebar a:hover::before {
-    left: 100%;
-}
 
 .mandate-sidebar a::after {
     content: '';
@@ -619,12 +658,7 @@ html, body {
 }
 
 .mandate-section-header {
-    transition: all 0.3s ease;
-}
-
-.mandate-section-header:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transform: translateY(-1px);
+    transition: background 0.2s ease;
 }
 
 /* HIGHLIGHT EFFECT FOR JUMP NAVIGATION */
@@ -633,20 +667,9 @@ html, body {
 }
 
 @keyframes mandateHighlight {
-    0% {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    }
-    30% {
-        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-        box-shadow: 0 8px 24px rgba(0,123,255,0.15);
-        transform: scale(1.01);
-    }
-    100% {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        transform: scale(1);
-    }
+    0% { background: #f8f9fa; }
+    30% { background: #e3f2fd; }
+    100% { background: #f8f9fa; }
 }
 
 /* LINK BUTTON STYLES */
@@ -755,15 +778,6 @@ html, body {
 
 /* MOBILE OPTIMIZATION */
 @media (max-width: 768px) {
-    .expand-indicator {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .expand-indicator i {
-        font-size: 13px;
-    }
-    
     .card-header-modern::before {
         border-radius: 8px 8px 0 0;
     }
@@ -880,10 +894,9 @@ html, body {
 
 /* Selected Indicators Card Styling - Add to www/custom.css */
 
-/* Card hover effect */
+/* Card hover effect — border-driven */
 .selected-indicator-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    border-color: rgba(0,0,0,0.18);
 }
 
 /* Fade in animation for expanded content */
@@ -898,17 +911,22 @@ html, body {
     }
 }
 
-/* Text area styling for comments */
-.selected-indicator-card textarea {
+/* Notes field — icon inside textarea */
+.notes-field-wrapper .form-group {
+    margin-bottom: 0;
+}
+
+.notes-field-wrapper textarea {
     font-size: 13px;
-    border: 1px solid #dee2e6;
+    border: 1px solid rgba(0,0,0,0.1);
     border-radius: 6px;
+    padding-left: 30px !important;
     transition: border-color 0.2s ease;
 }
 
-.selected-indicator-card textarea:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+.notes-field-wrapper textarea:focus {
+    border-color: #1A5A80;
+    box-shadow: 0 0 0 2px rgba(26, 90, 128, 0.15);
     outline: none;
 }
 
@@ -1061,7 +1079,7 @@ html, body {
 
 /* Navigation links */
 .nav-link,
-.nav-item a {f
+.nav-item a {
   color: #1A5A80 !important;
 }
 
@@ -1153,7 +1171,7 @@ html, body {
    Add these styles to your www/custom.css file
    ============================================================================ */
 
-/* Add All button - matches new compact sizing */
+/* Add All / Remove All buttons — flat, no shadows */
 #add_all_filtered {
   background: rgba(255, 255, 255, 0.95) !important;
   color: #198754 !important;
@@ -1161,111 +1179,77 @@ html, body {
   font-weight: 600 !important;
   font-size: 13px !important;
   padding: 6px 12px !important;
-  border-radius: 16px !important;
+  border-radius: 8px !important;
   line-height: 1.4 !important;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #add_all_filtered:hover {
-  background: #198754 !important;
-  color: white !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.4) !important;
+  background: white !important;
+  color: #157347 !important;
 }
 
-#add_all_filtered:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(25, 135, 84, 0.3) !important;
-}
-
-/* Remove All button - matches new compact sizing */
 #remove_all_filtered {
   background: transparent !important;
   color: white !important;
-  border: 1px solid rgba(255,255,255,0.6) !important;
+  border: 1px solid rgba(255,255,255,0.5) !important;
   font-weight: 500 !important;
   font-size: 13px !important;
   padding: 6px 12px !important;
-  border-radius: 16px !important;
+  border-radius: 8px !important;
   line-height: 1.4 !important;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 #remove_all_filtered:hover {
-  background: rgba(220, 53, 69, 0.9) !important;
-  border-color: rgba(220, 53, 69, 0.9) !important;
-  color: white !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
-}
-
-#remove_all_filtered:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3) !important;
-}
-
-/* Animation for button icons */
-#add_all_filtered i,
-#remove_all_filtered i {
-  font-size: 11px !important;
-  transition: transform 0.2s ease;
-}
-
-#add_all_filtered:hover i,
-#remove_all_filtered:hover i {
-  transform: scale(1.1);
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.8) !important;
 }
 
 /* ============================================================================
    INDICATOR CARD BUTTON STYLES - UNIFIED WITH NAVIGATION HEADER
    ============================================================================ */
 
-/* Base button styles - unselected state */
+/* Indicator card button styles — flat, border-driven */
 .select-indicator-btn-modern.btn-unselected {
     background: white !important;
-    border: 1px solid #dee2e6 !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
     color: #198754 !important;
     padding: 6px 12px !important;
-    border-radius: 16px !important;
+    border-radius: 8px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     line-height: 1.4 !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+    box-shadow: none !important;
 }
 
 .select-indicator-btn-modern.btn-unselected:hover {
-    background: #198754 !important;
+    background: #f8f9fa !important;
     border-color: #198754 !important;
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3) !important;
+    color: #198754 !important;
 }
 
-/* Base button styles - selected state */
 .select-indicator-btn-modern.btn-selected {
-    background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
-    border: none !important;
+    background: #198754 !important;
+    border: 1px solid #198754 !important;
     color: white !important;
     padding: 6px 12px !important;
-    border-radius: 16px !important;
+    border-radius: 8px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     line-height: 1.4 !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3) !important;
+    transition: background-color 0.2s ease !important;
+    box-shadow: none !important;
 }
 
-/* Icon sizing within indicator card buttons */
+.select-indicator-btn-modern.btn-selected:hover {
+    background: #157347 !important;
+}
+
 .select-indicator-btn-modern i {
     font-size: 11px !important;
     margin-right: 6px !important;
-    transition: transform 0.2s ease;
-}
-
-.select-indicator-btn-modern:hover i {
-    transform: scale(1.1);
 }
 
 /* ============================================================================

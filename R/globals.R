@@ -10,24 +10,9 @@ SECTOR_COLORS <- list(
   "Savings" = "#0080B2"
 )
 
-# Globals
-MND_OBJ <- 
-  list(
-    "Central banking" = c("Currency management & cash handling"), 
-    "Statistics & research" = c("Statistics & research"), 
-    "Macroprudential supervision" = c("Stability"), 
-    "Microprudential supervision" = c("Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Solvency", "Soundness", "Reputational and legal risk", "AML/CFT"), 
-    "Competition" = c("Competition"), 
-    "Capital markets development" = c("Capital markets development"), 
-    "Sustainability" = c("Climate and environmental objectives", "Gender equality"), 
-    "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Impact", "Transparency"), 
-    "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
-    "Financial safety net" = c("Depositor protection")
-  )
-
-# NEED to figure out where to put central banking and statistics and research
-
-MND_OBJ_2 <- 
+# Mandate-objective hierarchy (used in filter panel and data connector)
+# NOTE: An earlier 10-mandate version (MND_OBJ) existed but was consolidated into these 5.
+MND_OBJ_2 <-
   list(
     "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
     "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Depositor protection"), 

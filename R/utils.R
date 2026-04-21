@@ -5,13 +5,7 @@
   !(x %in% table)
 }
 
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
 
-conditional <- function(condition, success) {
-  if (condition) success else TRUE
-}
 
 # Text processing
 slugify <- function(text) {
@@ -22,15 +16,8 @@ slugify <- function(text) {
     gsub("^-", "", .)
 }
 
-htmlEscape <- function(text) {
-  text <- as.character(text)
-  text <- gsub("&", "&amp;", text, fixed = TRUE)
-  text <- gsub("<", "&lt;", text, fixed = TRUE)
-  text <- gsub(">", "&gt;", text, fixed = TRUE)
-  text <- gsub("\"", "&quot;", text, fixed = TRUE)
-  text <- gsub("'", "&#039;", text, fixed = TRUE)
-  text
-}
+# Use the built-in htmltools version (handles more edge cases)
+htmlEscape <- htmltools::htmlEscape
 
 
 # Generate CSS for sector colors
@@ -50,9 +37,16 @@ generate_sector_styles <- function(sector_colors) {
 
 # Create indicator key legend
 
-indicator_key <- function() {
-  # Simpler, direct gradient creation using all sector colors
-  gradient_bg <- "linear-gradient(90deg, #FFB718 0%, #FFB718 14.28%, #ED7700 14.28%, #ED7700 28.56%, #17A627 28.56%, #17A627 42.84%, #38A5D6 42.84%, #38A5D6 57.12%, #C64689 57.12%, #C64689 71.4%, #EAE9E6 71.4%, #EAE9E6 85.68%, #0080B2 85.68%, #0080B2 100%)"
+indicator_key <- function(sector_colors = SECTOR_COLORS) {
+  # Generate gradient dynamically from sector colors
+  colors <- unlist(sector_colors)
+  n <- length(colors)
+  stops <- unlist(lapply(seq_along(colors), function(i) {
+    start <- round((i - 1) / n * 100, 2)
+    end <- round(i / n * 100, 2)
+    c(paste0(colors[i], " ", start, "%"), paste0(colors[i], " ", end, "%"))
+  }))
+  gradient_bg <- paste0("linear-gradient(90deg, ", paste(stops, collapse = ", "), ")")
   
   div(
     style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 0; margin-bottom: 16px;",
@@ -186,59 +180,6 @@ create_mandate_links <- function(indicators_data) {
   )
 }
 
-# Render disaggregation table with tooltips
-render_disagg_table <- function(essential, nonessential, descriptions = BREAKDOWNS) {
-  
-  render_cell <- function(item) {
-    if (is.na(item) || item == "") return("")
-    
-    matched <- descriptions[[item]]
-    
-    if (!is.null(matched)) {
-      shiny::HTML(
-        paste0(
-          '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-          htmlEscape(item),
-          ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
-          '<div class="my-tooltiptext">',
-          paste(vapply(matched, htmlEscape, character(1)), collapse = "<br>"),
-          '</div>',
-          '</div>'
-        )
-      )
-    } else {
-      htmlEscape(item)
-    }
-  }
-  
-  essentials <- if (!is.na(essential)) unlist(strsplit(essential, ";\\s*")) else character()
-  nonessentials <- if (!is.na(nonessential)) unlist(strsplit(nonessential, ";\\s*")) else character()
-  
-  max_len <- max(length(essentials), length(nonessentials))
-  essentials <- c(essentials, rep("", max_len - length(essentials)))
-  nonessentials <- c(nonessentials, rep("", max_len - length(nonessentials)))
-  
-  tags$div(
-    tags$table(
-      style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
-      tags$thead(
-        tags$tr(
-          tags$th("High priority", style = "border: 1px solid #ccc; padding: 4px; background-color: #f2f2f2;"),
-          tags$th("Low priority", style = "border: 1px solid #ccc; padding: 4px; background-color: #f2f2f2;")
-        )
-      ),
-      tags$tbody(
-        lapply(seq_along(essentials), function(i) {
-          tags$tr(
-            tags$td(render_cell(essentials[i]), style = "border: 1px solid #ccc; padding: 4px;"),
-            tags$td(render_cell(nonessentials[i]), style = "border: 1px solid #ccc; padding: 4px;")
-          )
-        })
-      )
-    )
-  )
-}
-
 # Generalized table renderer
 render_disagg_table_generalized <- function(indicator_row, columns, 
                                             delimiter = ";", 
@@ -300,117 +241,8 @@ render_disagg_table_generalized <- function(indicator_row, columns,
 }
 
 
-render_cols_as_table <- function(indicator_row, columns, descriptions = COLUMN_DESCRIPTIONS) {
-  valid_columns <- columns[columns %in% names(indicator_row) & columns %in% names(descriptions)]
-  if (length(valid_columns) == 0) return(NULL)
-  
-  tags$div(
-    class = "table-responsive",
-    tags$table(
-      class = "table table-bordered table-sm",
-      style = "width: 100%; margin-top: 10px;",
-      tags$thead(
-        tags$tr(
-          lapply(valid_columns, function(col) {
-            tags$th(
-              descriptions[[col]] %||% col,
-              style = "background-color: #f9f9f9;"
-            )
-          })
-        )
-      ),
-      tags$tbody(
-        tags$tr(
-          lapply(valid_columns, function(col) {
-            tags$td(
-              tags$pre(style = "margin: 0; white-space: pre-wrap; word-break: break-word;", htmlEscape(indicator_row[[col]]))
-            )
-          })
-        )
-      )
-    )
-  )
-}
 
 
-
-
-# Alternative version that groups multiple values in a single cell without bullets
-render_disagg_table_vertical_grouped <- function(indicator_row, columns, 
-                                                 delimiter = ";", 
-                                                 descriptions = COLUMN_DESCRIPTIONS,
-                                                 mapping = BREAKDOWNS) {
-  
-  render_item <- function(item) {
-    item <- trimws(item)
-    if (item == "") return("")
-    
-    tooltip <- mapping[[item]]
-    if (!is.null(tooltip)) {
-      shiny::HTML(
-        paste0(
-          '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-          htmlEscape(item),
-          ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
-          '<div class="my-tooltiptext">',
-          paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
-          '</div></div>'
-        )
-      )
-    } else {
-      htmlEscape(item)
-    }
-  }
-  
-  # Create rows for each column
-  rows <- lapply(columns, function(col) {
-    val <- indicator_row[[col]]
-    
-    # Handle NA, NULL, or empty values
-    if (is.na(val) || is.null(val) || val == "") {
-      content <- ""
-    } else {
-      # Split by delimiter if provided
-      items <- unlist(strsplit(val, delimiter))
-      items <- trimws(items)
-      items <- items[items != ""]
-      
-      if (length(items) == 0) {
-        content <- ""
-      } else {
-        # Render all items with line breaks between them
-        content <- tags$div(
-          lapply(seq_along(items), function(i) {
-            tagList(
-              render_item(items[i]),
-              if (i < length(items)) tags$br() else NULL
-            )
-          })
-        )
-      }
-    }
-    
-    tags$tr(
-      tags$td(
-        descriptions[[col]] %||% col,
-        style = "border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2; font-weight: bold; width: 30%; vertical-align: top;"
-      ),
-      tags$td(
-        content,
-        style = "border: 1px solid #ccc; padding: 8px; vertical-align: top;"
-      )
-    )
-  })
-  
-  # Return the table
-  tags$table(
-    style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
-    tags$tbody(rows)
-  )
-}
-
-# Fixed render_disagg_table_vertical function in R/utils.R
-# Updated render_disagg_table_vertical function in R/utils.R
 render_disagg_table_vertical <- function(indicator_row, columns, 
                                          delimiter = "!-", 
                                          descriptions = COLUMN_DESCRIPTIONS,
@@ -630,7 +462,6 @@ render_disagg_table_vertical <- function(indicator_row, columns,
 # Enhanced navigation helper with active filters display and Add All/Remove All buttons
 
 enhanced_navigation_helper <- function(filtered_indicators, total_indicators, active_filters = NULL,
-                                       selected_count = 0, filtered_ids = character(),
                                        active_set_name = "My Indicators") {
   n <- nrow(filtered_indicators)
   N <- nrow(total_indicators)
@@ -656,353 +487,116 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   )
   
   div(
-    class = "navigation-header",
-    style = paste0(
-      "background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%); ",
-      "color: white; ",
-      "padding: 24px; ",
-      "border-radius: 16px; ",
-      "margin-bottom: 32px; ",
-      "box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);"
-    ),
-    
-    # Main title and count row with Add All / Remove All buttons
+    class = "navigation-header nav-header-banner",
+
+    # Main title row with Add All / Remove All buttons
     div(
-      style = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 16px; flex-wrap: wrap;",
-      
+      style = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 16px; flex-wrap: wrap;",
+
       # Left side - title and description
       div(
         style = "flex: 1; min-width: 300px;",
-        h2(
-          "Regulatory indicators with a sociodemographic lens",
-          style = "margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);"
-        ),
-        p(
-          paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
-          style = "margin: 8px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 300;"
-        )
+        h2("Regulatory indicators with a sociodemographic lens",
+           style = "margin: 0; font-size: 22px; font-weight: 700;"),
+        p(paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
+          style = "margin: 6px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 300;")
       ),
-      
+
       # Right side - Active set name + Add All / Remove All buttons
       div(
         style = "display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;",
-        
-        # Active set name label
+
         div(
-          style = paste0(
-            "display: flex; ",
-            "align-items: center; ",
-            "gap: 6px; ",
-            "padding: 6px 12px; ",
-            "background: rgba(255, 255, 255, 0.15); ",
-            "border-radius: 16px; ",
-            "font-size: 13px; ",
-            "backdrop-filter: blur(10px);"
-          ),
+          class = "active-set-label",
           icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
           span("Adding to:", style = "opacity: 0.8;"),
-          span(
-            active_set_name,
-            style = "font-weight: 600;"
-          )
+          span(active_set_name, style = "font-weight: 600;")
         ),
-        
-        # Buttons row
+
         div(
           style = "display: flex; gap: 8px; align-items: center;",
-          
-          # Add All button
-          actionButton(
-            "add_all_filtered",
-            label = tagList(
-              icon("plus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
-              paste("Add all", n)
-            ),
-            class = "btn btn-sm",
-            style = paste0(
-              "background: rgba(255, 255, 255, 0.95); ",
-              "color: #198754; ",
-              "border: none; ",
-              "font-weight: 600; ",
-              "font-size: 13px; ",
-              "padding: 6px 12px; ",
-              "border-radius: 16px; ",
-              "transition: all 0.2s ease; ",
-              "box-shadow: 0 2px 8px rgba(0,0,0,0.15); ",
-              "line-height: 1.4;"
-            )
-          ),
-          
-          # Remove All button
-          actionButton(
-            "remove_all_filtered",
-            label = tagList(
-              icon("minus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
-              "Remove all"
-            ),
-            class = "btn btn-sm",
-            style = paste0(
-              "background: transparent; ",
-              "color: white; ",
-              "border: 1px solid rgba(255,255,255,0.6); ",
-              "font-weight: 500; ",
-              "font-size: 13px; ",
-              "padding: 6px 12px; ",
-              "border-radius: 16px; ",
-              "transition: all 0.2s ease; ",
-              "line-height: 1.4;"
-            )
-          )
+          actionButton("add_all_filtered",
+            label = tagList(icon("plus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
+                            paste("Add all", n)),
+            class = "btn btn-sm"),
+          actionButton("remove_all_filtered",
+            label = tagList(icon("minus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
+                            "Remove all"),
+            class = "btn btn-sm")
         )
       )
     ),
-    
-    # Active filters section (only show if filters are active)
+
+    # Active filters section
     if (has_active_filters) {
       div(
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "margin-bottom: 20px;"
+        class = "active-filters-box",
+        style = "margin-bottom: 16px;",
+        div(
+          style = "display: flex; align-items: center; gap: 8px; margin-bottom: 10px;",
+          icon("filter", class = "fas", style = "font-size: 13px;"),
+          span("Active Filters:", style = "font-weight: 600; font-size: 13px;")
         ),
         div(
-          style = "display: flex; align-items: center; gap: 8px; margin-bottom: 12px;",
-          icon("filter", class = "fas", style = "font-size: 16px;"),
-          span("Active Filters:", style = "font-weight: 600; font-size: 14px;")
-        ),
-        div(
-          style = "display: flex; flex-wrap: wrap; gap: 8px;",
-          
-          # Search filter
+          style = "display: flex; flex-wrap: wrap; gap: 6px;",
           if (!is.null(active_filters$search) && active_filters$search != "") {
-            span(
-              style = paste0(
-                "background: rgba(255, 255, 255, 0.9); ",
-                "color: #667eea; ",
-                "padding: 4px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 500; ",
-                "display: flex; ",
-                "align-items: center; ",
-                "gap: 6px;"
-              ),
-              icon("search", class = "fas", style = "font-size: 10px;"),
-              paste0('"', active_filters$search, '"')
-            )
+            span(class = "filter-pill",
+                 icon("search", class = "fas", style = "font-size: 10px;"),
+                 paste0('"', active_filters$search, '"'))
           },
-          
-          # Presets foundation filter
-          # if (!is.null(active_filters$presets_foundation) && active_filters$presets_foundation == TRUE) {
-          #   span(
-          #     style = paste0(
-          #       "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-          #       "color: #856404; ",
-          #       "padding: 4px 12px; ",
-          #       "border-radius: 16px; ",
-          #       "font-size: 12px; ",
-          #       "font-weight: 600; ",
-          #       "display: flex; ",
-          #       "align-items: center; ",
-          #       "gap: 6px;"
-          #     ),
-          #     icon("building-columns", class = "fas", style = "font-size: 10px;"),
-          #     "Foundational"
-          #   )
-          # },
-          
-          # Presets digital filter
-          if (!is.null(active_filters$presets_digital) && active_filters$presets_digital == TRUE) {
-            span(
-              style = paste0(
-                "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-                "color: #856404; ",
-                "padding: 4px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 600; ",
-                "display: flex; ",
-                "align-items: center; ",
-                "gap: 6px;"
-              ),
-              icon("mobile-screen", class = "fas", style = "font-size: 10px;"),
-              "Digital"
-            )
+          if (isTRUE(active_filters$presets_digital)) {
+            span(class = "filter-pill-preset",
+                 icon("mobile-screen", class = "fas", style = "font-size: 10px;"),
+                 "Digital")
           },
-          
-          # Mandate filters
           if (length(active_filters$mandates) > 0) {
-            lapply(active_filters$mandates, function(mandate) {
-              span(
-                style = paste0(
-                  "background: rgba(255, 255, 255, 0.9); ",
-                  "color: #667eea; ",
-                  "padding: 4px 12px; ",
-                  "border-radius: 16px; ",
-                  "font-size: 12px; ",
-                  "font-weight: 500; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 6px;"
-                ),
-                icon("scroll", class = "fas", style = "font-size: 10px;"),
-                mandate
-              )
-            })
+            lapply(active_filters$mandates, function(m)
+              span(class = "filter-pill", icon("scroll", class = "fas", style = "font-size: 10px;"), m))
           },
-          
-          # Objective filters
           if (length(active_filters$objectives) > 0) {
-            lapply(active_filters$objectives, function(objective) {
-              span(
-                style = paste0(
-                  "background: rgba(255, 255, 255, 0.9); ",
-                  "color: #667eea; ",
-                  "padding: 4px 12px; ",
-                  "border-radius: 16px; ",
-                  "font-size: 12px; ",
-                  "font-weight: 500; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 6px;"
-                ),
-                icon("bullseye", class = "fas", style = "font-size: 10px;"),
-                objective
-              )
-            })
+            lapply(active_filters$objectives, function(o)
+              span(class = "filter-pill", icon("bullseye", class = "fas", style = "font-size: 10px;"), o))
           },
-          
-          # Sector filters
           if (length(active_filters$sectors) > 0) {
-            lapply(active_filters$sectors, function(sector) {
-              span(
-                style = paste0(
-                  "background: rgba(255, 255, 255, 0.9); ",
-                  "color: #667eea; ",
-                  "padding: 4px 12px; ",
-                  "border-radius: 16px; ",
-                  "font-size: 12px; ",
-                  "font-weight: 500; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 6px;"
-                ),
-                icon("chart-pie", class = "fas", style = "font-size: 10px;"),
-                sector
-              )
-            })
+            lapply(active_filters$sectors, function(s)
+              span(class = "filter-pill", icon("chart-pie", class = "fas", style = "font-size: 10px;"), s))
           }
         )
       )
     },
-    
-    # Statistics cards
+
+    # Compact statistics cards
     div(
-      style = "display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px;",
-      
-      # N Indicators cards
+      class = "stat-card-grid",
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 215, 0, 0.2); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 215, 0, 0.3); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("chart-simple", class = "fas", style = "font-size: 24px; margin-bottom: 8px; color: #ffd700;")
-        ),
-        div(
-          n, 
-          style = "font-size: 32px; font-weight: 800; margin-bottom: 4px;"
-        ),
-        div(
-          paste("of", N, "indicators"),
-          style = "font-size: 14px; opacity: 0.8; font-weight: 400;"
-        )
+        class = "stat-card stat-card-highlight",
+        div(icon("chart-simple", class = "fas", style = "font-size: 18px; color: #ffd700; margin-bottom: 4px;")),
+        div(n, style = "font-size: 26px; font-weight: 800; margin-bottom: 2px;"),
+        div(paste("of", N, "indicators"), class = "stat-card-label")
       ),
-      
-      # Mandates card
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("scroll", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
-        ),
-        div(
-          mandates_count,
-          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
-        ),
-        div(
-          "Mandates",
-          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
-        )
+        class = "stat-card stat-card-default",
+        div(icon("scroll", class = "fas stat-card-icon")),
+        div(mandates_count, class = "stat-card-value"),
+        div("Mandates", class = "stat-card-label")
       ),
-      
-      # Objectives
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("bullseye", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
-        ),
-        div(
-          objectives_count,
-          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
-        ),
-        div(
-          "Objectives",
-          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
-        )
-      ), 
-      
-      # Services (ex-sectors) card
+        class = "stat-card stat-card-default",
+        div(icon("bullseye", class = "fas stat-card-icon")),
+        div(objectives_count, class = "stat-card-value"),
+        div("Objectives", class = "stat-card-label")
+      ),
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("chart-pie", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
-        ),
-        div(
-          sectors_count,
-          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
-        ),
-        div(
-          "Services",
-          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
-        )
+        class = "stat-card stat-card-default",
+        div(icon("chart-pie", class = "fas stat-card-icon")),
+        div(sectors_count, class = "stat-card-value"),
+        div("Services", class = "stat-card-label")
       )
-      
+
     )
   )
 }
@@ -1022,75 +616,20 @@ enhanced_mandate_header <- function(mandate, count) {
   
   div(
     class = "mandate-section-header",
-    style = paste0(
-      "background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); ",
-      "border: 1px solid #e9ecef; ",
-      "border-radius: 12px; ",
-      "padding: 24px; ",
-      "margin: 32px 0 24px 0; ",
-      "box-shadow: 0 2px 12px rgba(0,0,0,0.04); ",
-      "position: relative; ",
-      "overflow: hidden;"
-    ),
-    
-    # Background pattern
+
     div(
-      style = paste0(
-        "position: absolute; ",
-        "top: -50%; ",
-        "right: -10%; ",
-        "width: 200px; ",
-        "height: 200px; ",
-        "background: radial-gradient(circle, rgba(0,123,255,0.05) 0%, transparent 70%); ",
-        "border-radius: 50%;"
-      )
+      style = "display: flex; justify-content: space-between; align-items: baseline;",
+      h3(mandate,
+         style = "margin: 0; font-size: 18px; font-weight: 700; color: #1a1a1a; text-transform: capitalize;"),
+      span(paste(count, "indicators"),
+           style = "color: #6c757d; font-size: 13px; font-weight: 500; white-space: nowrap;")
     ),
-    
-    div(
-      style = "position: relative; z-index: 1;",
-      
-      # Header row
-      div(
-        style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;",
-        
-        h3(
-          mandate,
-          style = paste0(
-            "margin: 0; ",
-            "font-size: 24px; ",
-            "font-weight: 700; ",
-            "color: #1a1a1a; ",
-            "text-transform: capitalize;"
-          )
-        ),
-        
-        span(
-          paste(count, "indicators"),
-          style = paste0(
-            "background: #007bff; ",
-            "color: white; ",
-            "padding: 6px 16px; ",
-            "border-radius: 20px; ",
-            "font-size: 14px; ",
-            "font-weight: 600; ",
-            "box-shadow: 0 2px 8px rgba(0,123,255,0.3);"
-          )
-        )
-      ),
-      
-      # Description
-      if (!is.null(descriptions[[toupper(mandate)]])) {
-        p(
-          descriptions[[toupper(mandate)]],
-          style = paste0(
-            "margin: 0; ",
-            "color: #6c757d; ",
-            "font-size: 15px; ",
-            "line-height: 1.5;"
-          )
-        )
-      }
-    )
+
+    # Description as subtitle
+    if (!is.null(descriptions[[toupper(mandate)]])) {
+      p(descriptions[[toupper(mandate)]],
+        style = "margin: 6px 0 0 0; color: #9ca3af; font-size: 13px; line-height: 1.4;")
+    }
   )
 }
 
@@ -1132,6 +671,220 @@ format_text_for_pdf <- function(text) {
   text <- gsub("\n", "<br>", text, fixed = TRUE)
   
   return(text)
+}
+
+# About modal content — extracted from app.R for maintainability
+about_modal_content <- function() {
+  modalDialog(
+    title = NULL,
+    size = "xl",
+    easyClose = TRUE,
+    footer = modalButton("Close"),
+
+    div(
+      # Header section
+      div(
+        style = paste0(
+          "background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%); ",
+          "color: white; ",
+          "padding: 30px; ",
+          "margin: -15px -15px 30px -15px; ",
+          "border-radius: 6px 6px 0 0;"
+        ),
+        h2(
+          icon("book", class = "fas", style = "margin-right: 10px;"),
+          "About CGAP LENS",
+          style = "margin: 0; font-size: 28px; font-weight: 700;"
+        ),
+        p(
+          "Regulatory Indicators with a Sociodemographic Lens",
+          style = "margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;"
+        )
+      ),
+
+      # Content sections
+      div(
+        style = "padding: 0 20px;",
+
+        # User Guide Download
+        div(
+          class = "about-section",
+          style = paste0(
+            "margin-bottom: 30px; ",
+            "background: linear-gradient(135deg, #1A5A80 0%, #2980b9 100%); ",
+            "border-radius: 8px; ",
+            "padding: 24px; ",
+            "color: white; ",
+            "position: relative; ",
+            "overflow: hidden;"
+          ),
+          div(
+            style = paste0(
+              "position: absolute; ",
+              "top: -30px; right: -30px; ",
+              "width: 120px; height: 120px; ",
+              "background: rgba(255,255,255,0.1); ",
+              "border-radius: 50%;"
+            )
+          ),
+          div(
+            style = "position: relative; z-index: 1;",
+            div(
+              style = "display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;",
+              div(
+                style = paste0(
+                  "background: rgba(255,255,255,0.2); ",
+                  "border-radius: 12px; padding: 16px; ",
+                  "display: flex; align-items: center; justify-content: center;"
+                ),
+                icon("file-pdf", class = "fas", style = "font-size: 32px; color: white;")
+              ),
+              div(
+                style = "flex: 1; min-width: 250px;",
+                h4("LENS User Guide",
+                   style = "margin: 0 0 8px 0; font-size: 20px; font-weight: 600;"),
+                p("New to LENS? Download our comprehensive user guide to learn how to navigate the indicator catalog, create custom indicator sets, and generate reports for your analysis.",
+                  style = "margin: 0 0 16px 0; font-size: 14px; opacity: 0.9; line-height: 1.5;"),
+                tags$a(
+                  href = "CGAP LENS User Guide.pdf",
+                  download = "CGAP LENS User Guide.pdf",
+                  style = paste0(
+                    "display: inline-flex; align-items: center; gap: 8px; ",
+                    "background: white; color: #1A5A80; text-decoration: none; ",
+                    "font-size: 14px; font-weight: 600; padding: 10px 20px; ",
+                    "border-radius: 6px; transition: background-color 0.2s ease;"
+                  ),
+                  class = "user-guide-download-btn",
+                  icon("download", class = "fas", style = "font-size: 14px;"),
+                  "Download User Guide (PDF)"
+                )
+              )
+            )
+          )
+        ),
+
+        # Context & Additional Resources
+        div(
+          class = "about-section",
+          style = "margin-bottom: 30px;",
+          h3(icon("graduation-cap", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
+             "Context & Additional Resources",
+             style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
+          p("LENS is one component of CGAP's project to support the mainstreaming of regulatory gender-disaggregated data (RGDD) in the financial sector and should be consulted jointly with 'Using Disaggregated Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities' and accompanying pieces",
+            style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
+          p("This Guidance package describes RGDD use cases, provides recommendations for Financial Sector Authorities on how to leverage regulatory reporting regimes to maximize the use of gender-disaggregated data for multiple FSA mandates and to support the goals of other actors (including funders and financial firms).",
+            style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
+          div(
+            style = "display: flex; gap: 10px; flex-wrap: wrap;",
+            span(class = "btn btn-outline-secondary btn-sm",
+                 style = "opacity: 0.6; pointer-events: none;",
+                 icon("book", class = "fas", style = "margin-right: 6px;"),
+                 "Technical Guide (Coming 2026/Q3)")
+          )
+        ),
+
+        # Tutorial video
+        tags$div(
+          class = "video-link-container",
+          style = "max-width: 680px; margin: 20px auto;",
+          tags$a(
+            href = "https://www.loom.com/share/30cd180dc6bb4c31b3ff78a0c85effe3",
+            target = "_blank",
+            style = "text-decoration: none; color: inherit;",
+            tags$div(
+              style = paste0(
+                "display: flex; align-items: center; gap: 16px; ",
+                "padding: 20px 24px; ",
+                "background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); ",
+                "border-radius: 8px; ",
+                "transition: background-color 0.2s ease; ",
+                "cursor: pointer;"
+              ),
+              onmouseenter = "this.style.background='linear-gradient(135deg, #252542 0%, #1e2d4a 100%)';",
+              onmouseleave = "this.style.background='linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';",
+              tags$div(
+                style = paste0(
+                  "flex-shrink: 0; width: 52px; height: 52px; ",
+                  "background: #6F5B9D; border-radius: 50%; ",
+                  "display: flex; align-items: center; justify-content: center;"
+                ),
+                tags$div(style = paste0(
+                  "width: 0; height: 0; ",
+                  "border-top: 10px solid transparent; ",
+                  "border-bottom: 10px solid transparent; ",
+                  "border-left: 16px solid #ffffff; ",
+                  "margin-left: 3px;"
+                ))
+              ),
+              tags$div(
+                tags$div(style = "font-size: 1.05em; font-weight: 600; color: #ffffff; margin-bottom: 4px;",
+                         "Watch the LENS Video Tutorial"),
+                tags$div(style = "font-size: 0.85em; color: #a0aec0;",
+                         "Learn how to explore indicators, build custom sets, and generate reports")
+              )
+            )
+          )
+        ),
+
+        # Objectives & Approach
+        div(
+          class = "about-section",
+          style = "margin-bottom: 30px;",
+          h3(icon("bullseye", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
+             "Objectives & Approach",
+             style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
+          p("LENS provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, stability and soundness, market development and sustainability. The selection of indicators is informed both by their general relevance to these different mandates and goals of financial sector authorities as well as their potential relevance for understanding the role of key sociodemographic traits, such as gender, within those dimensions. The indicators in LENS, including their definitions, assigned mandates/objectives and proposed breakdowns, do not reflect a global consensus but rather constitute an attempt at providing working definitions, classification options and analytical questions that each user should adapt to their specific country context and institutional goals.",
+            style = "line-height: 1.6; color: #555;")
+        ),
+
+        # Sources
+        div(
+          class = "about-section",
+          style = "margin-bottom: 30px;",
+          h3(icon("database", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
+             "References and sources",
+             style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
+          p("To build LENS, the CGAP team examined a variety of sources, including work from prior CGAP projects and existing indicators from international organizations focused on financial inclusion and regulation.",
+            style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
+          div(
+            style = "display: flex; gap: 10px; flex-wrap: wrap;",
+            tags$a(href = "https://data.imf.org/en/datasets/IMF.STA:FAS", target = "_blank",
+                   class = "btn btn-outline-secondary btn-sm", "IMF FAS"),
+            tags$a(href = "https://www.gpfi.org", target = "_blank",
+                   class = "btn btn-outline-secondary btn-sm", "GPFI"),
+            tags$a(href = "https://www.afi-global.org", target = "_blank",
+                   class = "btn btn-outline-secondary btn-sm", "AFI"),
+            tags$a(href = "https://www.we-fi.org/we-finance-code/#home", target = "_blank",
+                   class = "btn btn-outline-secondary btn-sm", "WE Finance Code"),
+            tags$a(href = "https://www.cgap.org/topics/collections/fema-meter", target = "_blank",
+                   class = "btn btn-outline-secondary btn-sm", "A2ii FeMa-Meter")
+          )
+        ),
+
+        # About CGAP
+        div(
+          class = "about-section",
+          style = paste0(
+            "background: #f8f9fa; ",
+            "padding: 20px; border-radius: 8px; margin-bottom: 20px; ",
+            "border: 1px solid rgba(0,0,0,0.08);"
+          ),
+          h3(icon("users", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
+             "About CGAP",
+             style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
+          p("CGAP is a global partnership of more than 40 leading development organizations that works to advance the lives of people living in poverty, especially women, through financial inclusion. CGAP works at the frontier of inclusive finance to test solutions, spark innovation, generate evidence, and share insights. Our knowledge enables public and private stakeholders to scale solutions that make financial ecosystems meet the needs of poor, vulnerable, and underserved people and of micro and small enterprises (MSEs), including through advancing women's economic empowerment.",
+            style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
+          div(
+            style = "display: flex; gap: 15px; align-items: center; flex-wrap: wrap;",
+            tags$a(href = "https://www.cgap.org", target = "_blank",
+                   class = "btn btn-primary btn-sm",
+                   icon("globe", class = "fas", style = "margin-right: 6px;"),
+                   "Visit CGAP.org")
+          )
+        )
+      )
+    )
+  )
 }
 
 create_pdf_report <- function(indicators, comments, sector_colors, active_set_name = "Selected Indicators") {
@@ -1260,7 +1013,7 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
         
         .summary-card i {
             font-size: 28px;
-            color: #667eea;
+            color: #1A5A80;
             margin-bottom: 12px;
         }
         
@@ -1564,9 +1317,6 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                                 <i class="fas fa-chart-pie"></i>
                                 ', htmlEscape(ind$main_sector), '
                             </span>',
-                  #if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
-                  #  '<span class="badge badge-priority"><i class="fas fa-building-columns"></i> Foundational</span>'
-                  #} 
                   if (!is.null(ind$preset_digital) && !is.na(ind$preset_digital) && ind$preset_digital == 1) {
                     '<span class="badge badge-priority"><i class="fas fa-mobile-screen"></i> Digital finance ecosystem </span>'
                   } else {
@@ -1679,7 +1429,7 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
             </div>
             <div class="footer-text">
                 This report was generated by the CGAP LENS platform<br>
-                For more information, visit <a href="https://www.cgap.org" style="color: #667eea;">www.cgap.org</a>
+                For more information, visit <a href="https://www.cgap.org" style="color: #1A5A80;">www.cgap.org</a>
             </div>
         </div>
     </div>

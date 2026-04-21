@@ -84,6 +84,54 @@ setManagerUI <- function(id) {
   
 }
 
+# Shared modal CSS (used by create, rename, and delete modals)
+.set_manager_modal_css <- tags$style(HTML("
+  .modal-header {
+    border-bottom: none !important;
+    padding-top: 24px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+  .modal-footer {
+    border-top: none !important;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding-bottom: 24px;
+  }
+  .modal-content {
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    border: none !important;
+  }
+  .modern-input label {
+    display: none;
+  }
+  .modern-input input {
+    text-align: center;
+    font-size: 16px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+  }
+  .modern-input input:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0,123,255, 0.1);
+    border-color: #80bdff;
+  }
+  .modal-header .close {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 10;
+  }
+  .modal-title {
+    width: 100%;
+  }
+"))
+
 # Server function
 setManagerServer <- function(id) {
   moduleServer(id, function(input, output, session) {
@@ -120,58 +168,9 @@ setManagerServer <- function(id) {
     # Create new set
     observeEvent(input$create_set, {
       showModal(modalDialog(
-        # 1. Custom CSS
-        tags$style(HTML("
-    .modal-header {
-      border-bottom: none !important;
-      padding-top: 24px;
-      /* Ensure the header itself doesn't force left alignment */
-      display: flex;
-      justify-content: center;
-      position: relative;
-    }
-    .modal-footer {
-      border-top: none !important;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding-bottom: 24px;
-    }
-    .modal-content {
-      border-radius: 16px !important;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
-      border: none !important;
-    }
-    .modern-input label {
-      display: none; 
-    }
-    .modern-input input {
-      text-align: center;
-      font-size: 16px;
-      height: 48px;
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
-      background-color: #f8f9fa;
-    }
-    .modern-input input:focus {
-      background-color: #fff;
-      box-shadow: 0 0 0 4px rgba(0,123,255, 0.1);
-      border-color: #80bdff;
-    }
-    /* Fix for the close button to stay in the corner while title centers */
-    .modal-header .close {
-      position: absolute;
-      right: 16px;
-      top: 16px;
-      z-index: 10;
-    }
-    /* Ensure the wrapper h4 spans full width to allow centering */
-    .modal-title {
-      width: 100%;
-    }
-  ")),
-        
-        # 2. Updated Title Wrapper with Explicit Flex Centering
+        .set_manager_modal_css,
+
+        # Title
         title = div(
           style = "display: flex; flex-direction: column; align-items: center; width: 100%;",
           
@@ -248,55 +247,9 @@ setManagerServer <- function(id) {
       current_name <- active_set_name()
       
       showModal(modalDialog(
-        # 1. Same Custom CSS for consistency
-        tags$style(HTML("
-    .modal-header {
-      border-bottom: none !important;
-      padding-top: 24px;
-      display: flex;
-      justify-content: center;
-      position: relative;
-    }
-    .modal-footer {
-      border-top: none !important;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding-bottom: 24px;
-    }
-    .modal-content {
-      border-radius: 16px !important;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
-      border: none !important;
-    }
-    .modern-input label {
-      display: none; 
-    }
-    .modern-input input {
-      text-align: center;
-      font-size: 16px;
-      height: 48px;
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
-      background-color: #f8f9fa;
-    }
-    .modern-input input:focus {
-      background-color: #fff;
-      box-shadow: 0 0 0 4px rgba(0,123,255, 0.1);
-      border-color: #80bdff;
-    }
-    .modal-header .close {
-      position: absolute;
-      right: 16px;
-      top: 16px;
-      z-index: 10;
-    }
-    .modal-title {
-      width: 100%;
-    }
-  ")),
-        
-        # 2. Title with Flex Centering and Pen Icon
+        .set_manager_modal_css,
+
+        # Title with Pen Icon
         title = div(
           style = "display: flex; flex-direction: column; align-items: center; width: 100%;",
           
@@ -392,39 +345,9 @@ setManagerServer <- function(id) {
       }
       
       showModal(modalDialog(
-        # 1. Consistent Custom CSS
-        tags$style(HTML("
-    .modal-header {
-      border-bottom: none !important;
-      padding-top: 24px;
-      display: flex;
-      justify-content: center;
-      position: relative;
-    }
-    .modal-footer {
-      border-top: none !important;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding-bottom: 24px;
-    }
-    .modal-content {
-      border-radius: 16px !important;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
-      border: none !important;
-    }
-    .modal-header .close {
-      position: absolute;
-      right: 16px;
-      top: 16px;
-      z-index: 10;
-    }
-    .modal-title {
-      width: 100%;
-    }
-  ")),
-        
-        # 2. Title with Red Warning Icon
+        .set_manager_modal_css,
+
+        # Title with Red Warning Icon
         title = div(
           style = "display: flex; flex-direction: column; align-items: center; width: 100%;",
           
@@ -512,6 +435,22 @@ setManagerServer <- function(id) {
         active <- active_set_name()
         if (active %in% names(sets)) {
           sets[[active]] <- setdiff(sets[[active]], indicator_id)
+          indicator_sets(sets)
+        }
+      },
+      add_many_to_active = function(indicator_ids) {
+        sets <- indicator_sets()
+        active <- active_set_name()
+        if (active %in% names(sets)) {
+          sets[[active]] <- union(sets[[active]], indicator_ids)
+          indicator_sets(sets)
+        }
+      },
+      remove_many_from_active = function(indicator_ids) {
+        sets <- indicator_sets()
+        active <- active_set_name()
+        if (active %in% names(sets)) {
+          sets[[active]] <- setdiff(sets[[active]], indicator_ids)
           indicator_sets(sets)
         }
       }
