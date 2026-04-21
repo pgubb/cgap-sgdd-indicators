@@ -5,13 +5,7 @@
   !(x %in% table)
 }
 
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
 
-conditional <- function(condition, success) {
-  if (condition) success else TRUE
-}
 
 # Text processing
 slugify <- function(text) {
@@ -186,59 +180,6 @@ create_mandate_links <- function(indicators_data) {
   )
 }
 
-# Render disaggregation table with tooltips
-render_disagg_table <- function(essential, nonessential, descriptions = BREAKDOWNS) {
-  
-  render_cell <- function(item) {
-    if (is.na(item) || item == "") return("")
-    
-    matched <- descriptions[[item]]
-    
-    if (!is.null(matched)) {
-      shiny::HTML(
-        paste0(
-          '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-          htmlEscape(item),
-          ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
-          '<div class="my-tooltiptext">',
-          paste(vapply(matched, htmlEscape, character(1)), collapse = "<br>"),
-          '</div>',
-          '</div>'
-        )
-      )
-    } else {
-      htmlEscape(item)
-    }
-  }
-  
-  essentials <- if (!is.na(essential)) unlist(strsplit(essential, ";\\s*")) else character()
-  nonessentials <- if (!is.na(nonessential)) unlist(strsplit(nonessential, ";\\s*")) else character()
-  
-  max_len <- max(length(essentials), length(nonessentials))
-  essentials <- c(essentials, rep("", max_len - length(essentials)))
-  nonessentials <- c(nonessentials, rep("", max_len - length(nonessentials)))
-  
-  tags$div(
-    tags$table(
-      style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
-      tags$thead(
-        tags$tr(
-          tags$th("High priority", style = "border: 1px solid #ccc; padding: 4px; background-color: #f2f2f2;"),
-          tags$th("Low priority", style = "border: 1px solid #ccc; padding: 4px; background-color: #f2f2f2;")
-        )
-      ),
-      tags$tbody(
-        lapply(seq_along(essentials), function(i) {
-          tags$tr(
-            tags$td(render_cell(essentials[i]), style = "border: 1px solid #ccc; padding: 4px;"),
-            tags$td(render_cell(nonessentials[i]), style = "border: 1px solid #ccc; padding: 4px;")
-          )
-        })
-      )
-    )
-  )
-}
-
 # Generalized table renderer
 render_disagg_table_generalized <- function(indicator_row, columns, 
                                             delimiter = ";", 
@@ -300,117 +241,8 @@ render_disagg_table_generalized <- function(indicator_row, columns,
 }
 
 
-render_cols_as_table <- function(indicator_row, columns, descriptions = COLUMN_DESCRIPTIONS) {
-  valid_columns <- columns[columns %in% names(indicator_row) & columns %in% names(descriptions)]
-  if (length(valid_columns) == 0) return(NULL)
-  
-  tags$div(
-    class = "table-responsive",
-    tags$table(
-      class = "table table-bordered table-sm",
-      style = "width: 100%; margin-top: 10px;",
-      tags$thead(
-        tags$tr(
-          lapply(valid_columns, function(col) {
-            tags$th(
-              descriptions[[col]] %||% col,
-              style = "background-color: #f9f9f9;"
-            )
-          })
-        )
-      ),
-      tags$tbody(
-        tags$tr(
-          lapply(valid_columns, function(col) {
-            tags$td(
-              tags$pre(style = "margin: 0; white-space: pre-wrap; word-break: break-word;", htmlEscape(indicator_row[[col]]))
-            )
-          })
-        )
-      )
-    )
-  )
-}
 
 
-
-
-# Alternative version that groups multiple values in a single cell without bullets
-render_disagg_table_vertical_grouped <- function(indicator_row, columns, 
-                                                 delimiter = ";", 
-                                                 descriptions = COLUMN_DESCRIPTIONS,
-                                                 mapping = BREAKDOWNS) {
-  
-  render_item <- function(item) {
-    item <- trimws(item)
-    if (item == "") return("")
-    
-    tooltip <- mapping[[item]]
-    if (!is.null(tooltip)) {
-      shiny::HTML(
-        paste0(
-          '<div class="my-tooltip" style="white-space: normal; display: inline-block;">',
-          htmlEscape(item),
-          ' <i class="fas fa-info-circle" style="color:#87CEFA; margin-left:5px;"></i>',
-          '<div class="my-tooltiptext">',
-          paste(vapply(tooltip, htmlEscape, character(1)), collapse = "<br>"),
-          '</div></div>'
-        )
-      )
-    } else {
-      htmlEscape(item)
-    }
-  }
-  
-  # Create rows for each column
-  rows <- lapply(columns, function(col) {
-    val <- indicator_row[[col]]
-    
-    # Handle NA, NULL, or empty values
-    if (is.na(val) || is.null(val) || val == "") {
-      content <- ""
-    } else {
-      # Split by delimiter if provided
-      items <- unlist(strsplit(val, delimiter))
-      items <- trimws(items)
-      items <- items[items != ""]
-      
-      if (length(items) == 0) {
-        content <- ""
-      } else {
-        # Render all items with line breaks between them
-        content <- tags$div(
-          lapply(seq_along(items), function(i) {
-            tagList(
-              render_item(items[i]),
-              if (i < length(items)) tags$br() else NULL
-            )
-          })
-        )
-      }
-    }
-    
-    tags$tr(
-      tags$td(
-        descriptions[[col]] %||% col,
-        style = "border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2; font-weight: bold; width: 30%; vertical-align: top;"
-      ),
-      tags$td(
-        content,
-        style = "border: 1px solid #ccc; padding: 8px; vertical-align: top;"
-      )
-    )
-  })
-  
-  # Return the table
-  tags$table(
-    style = "width: 100%; border-collapse: collapse; margin-top: 10px;",
-    tags$tbody(rows)
-  )
-}
-
-# Fixed render_disagg_table_vertical function in R/utils.R
-# Updated render_disagg_table_vertical function in R/utils.R
 render_disagg_table_vertical <- function(indicator_row, columns, 
                                          delimiter = "!-", 
                                          descriptions = COLUMN_DESCRIPTIONS,
@@ -630,7 +462,6 @@ render_disagg_table_vertical <- function(indicator_row, columns,
 # Enhanced navigation helper with active filters display and Add All/Remove All buttons
 
 enhanced_navigation_helper <- function(filtered_indicators, total_indicators, active_filters = NULL,
-                                       selected_count = 0, filtered_ids = character(),
                                        active_set_name = "My Indicators") {
   n <- nrow(filtered_indicators)
   N <- nrow(total_indicators)
@@ -794,25 +625,6 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
               paste0('"', active_filters$search, '"')
             )
           },
-          
-          # Presets foundation filter
-          # if (!is.null(active_filters$presets_foundation) && active_filters$presets_foundation == TRUE) {
-          #   span(
-          #     style = paste0(
-          #       "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-          #       "color: #856404; ",
-          #       "padding: 4px 12px; ",
-          #       "border-radius: 16px; ",
-          #       "font-size: 12px; ",
-          #       "font-weight: 600; ",
-          #       "display: flex; ",
-          #       "align-items: center; ",
-          #       "gap: 6px;"
-          #     ),
-          #     icon("building-columns", class = "fas", style = "font-size: 10px;"),
-          #     "Foundational"
-          #   )
-          # },
           
           # Presets digital filter
           if (!is.null(active_filters$presets_digital) && active_filters$presets_digital == TRUE) {
@@ -1564,9 +1376,6 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                                 <i class="fas fa-chart-pie"></i>
                                 ', htmlEscape(ind$main_sector), '
                             </span>',
-                  #if (!is.null(ind$preset_foundation) && !is.na(ind$preset_foundation) && ind$preset_foundation == 1) {
-                  #  '<span class="badge badge-priority"><i class="fas fa-building-columns"></i> Foundational</span>'
-                  #} 
                   if (!is.null(ind$preset_digital) && !is.na(ind$preset_digital) && ind$preset_digital == 1) {
                     '<span class="badge badge-priority"><i class="fas fa-mobile-screen"></i> Digital finance ecosystem </span>'
                   } else {
