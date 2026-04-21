@@ -37,9 +37,16 @@ generate_sector_styles <- function(sector_colors) {
 
 # Create indicator key legend
 
-indicator_key <- function() {
-  # Simpler, direct gradient creation using all sector colors
-  gradient_bg <- "linear-gradient(90deg, #FFB718 0%, #FFB718 14.28%, #ED7700 14.28%, #ED7700 28.56%, #17A627 28.56%, #17A627 42.84%, #38A5D6 42.84%, #38A5D6 57.12%, #C64689 57.12%, #C64689 71.4%, #EAE9E6 71.4%, #EAE9E6 85.68%, #0080B2 85.68%, #0080B2 100%)"
+indicator_key <- function(sector_colors = SECTOR_COLORS) {
+  # Generate gradient dynamically from sector colors
+  colors <- unlist(sector_colors)
+  n <- length(colors)
+  stops <- unlist(lapply(seq_along(colors), function(i) {
+    start <- round((i - 1) / n * 100, 2)
+    end <- round(i / n * 100, 2)
+    c(paste0(colors[i], " ", start, "%"), paste0(colors[i], " ", end, "%"))
+  }))
+  gradient_bg <- paste0("linear-gradient(90deg, ", paste(stops, collapse = ", "), ")")
   
   div(
     style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 0; margin-bottom: 16px;",
@@ -480,118 +487,50 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
   )
   
   div(
-    class = "navigation-header",
-    style = paste0(
-      "background: linear-gradient(135deg, #6F5B9D 0%, #402C60 100%); ",
-      "color: white; ",
-      "padding: 24px; ",
-      "border-radius: 16px; ",
-      "margin-bottom: 32px; ",
-      "box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);"
-    ),
-    
+    class = "navigation-header nav-header-banner",
+
     # Main title and count row with Add All / Remove All buttons
     div(
       style = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 16px; flex-wrap: wrap;",
-      
+
       # Left side - title and description
       div(
         style = "flex: 1; min-width: 300px;",
-        h2(
-          "Regulatory indicators with a sociodemographic lens",
-          style = "margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);"
-        ),
-        p(
-          paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
-          style = "margin: 8px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 300;"
-        )
+        h2("Regulatory indicators with a sociodemographic lens",
+           style = "margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);"),
+        p(paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
+          style = "margin: 8px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 300;")
       ),
-      
+
       # Right side - Active set name + Add All / Remove All buttons
       div(
         style = "display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;",
-        
-        # Active set name label
+
         div(
-          style = paste0(
-            "display: flex; ",
-            "align-items: center; ",
-            "gap: 6px; ",
-            "padding: 6px 12px; ",
-            "background: rgba(255, 255, 255, 0.15); ",
-            "border-radius: 16px; ",
-            "font-size: 13px; ",
-            "backdrop-filter: blur(10px);"
-          ),
+          class = "active-set-label",
           icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
           span("Adding to:", style = "opacity: 0.8;"),
-          span(
-            active_set_name,
-            style = "font-weight: 600;"
-          )
+          span(active_set_name, style = "font-weight: 600;")
         ),
-        
-        # Buttons row
+
         div(
           style = "display: flex; gap: 8px; align-items: center;",
-          
-          # Add All button
-          actionButton(
-            "add_all_filtered",
-            label = tagList(
-              icon("plus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
-              paste("Add all", n)
-            ),
-            class = "btn btn-sm",
-            style = paste0(
-              "background: rgba(255, 255, 255, 0.95); ",
-              "color: #198754; ",
-              "border: none; ",
-              "font-weight: 600; ",
-              "font-size: 13px; ",
-              "padding: 6px 12px; ",
-              "border-radius: 16px; ",
-              "transition: all 0.2s ease; ",
-              "box-shadow: 0 2px 8px rgba(0,0,0,0.15); ",
-              "line-height: 1.4;"
-            )
-          ),
-          
-          # Remove All button
-          actionButton(
-            "remove_all_filtered",
-            label = tagList(
-              icon("minus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
-              "Remove all"
-            ),
-            class = "btn btn-sm",
-            style = paste0(
-              "background: transparent; ",
-              "color: white; ",
-              "border: 1px solid rgba(255,255,255,0.6); ",
-              "font-weight: 500; ",
-              "font-size: 13px; ",
-              "padding: 6px 12px; ",
-              "border-radius: 16px; ",
-              "transition: all 0.2s ease; ",
-              "line-height: 1.4;"
-            )
-          )
+          actionButton("add_all_filtered",
+            label = tagList(icon("plus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
+                            paste("Add all", n)),
+            class = "btn btn-sm"),
+          actionButton("remove_all_filtered",
+            label = tagList(icon("minus-circle", class = "fas", style = "margin-right: 6px; font-size: 11px;"),
+                            "Remove all"),
+            class = "btn btn-sm")
         )
       )
     ),
-    
-    # Active filters section (only show if filters are active)
+
+    # Active filters section
     if (has_active_filters) {
       div(
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "margin-bottom: 20px;"
-        ),
+        class = "active-filters-box",
         div(
           style = "display: flex; align-items: center; gap: 8px; margin-bottom: 12px;",
           icon("filter", class = "fas", style = "font-size: 16px;"),
@@ -599,212 +538,62 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
         ),
         div(
           style = "display: flex; flex-wrap: wrap; gap: 8px;",
-          
-          # Search filter
           if (!is.null(active_filters$search) && active_filters$search != "") {
-            span(
-              style = paste0(
-                "background: rgba(255, 255, 255, 0.9); ",
-                "color: #667eea; ",
-                "padding: 4px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 500; ",
-                "display: flex; ",
-                "align-items: center; ",
-                "gap: 6px;"
-              ),
-              icon("search", class = "fas", style = "font-size: 10px;"),
-              paste0('"', active_filters$search, '"')
-            )
+            span(class = "filter-pill",
+                 icon("search", class = "fas", style = "font-size: 10px;"),
+                 paste0('"', active_filters$search, '"'))
           },
-          
-          # Presets digital filter
-          if (!is.null(active_filters$presets_digital) && active_filters$presets_digital == TRUE) {
-            span(
-              style = paste0(
-                "background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); ",
-                "color: #856404; ",
-                "padding: 4px 12px; ",
-                "border-radius: 16px; ",
-                "font-size: 12px; ",
-                "font-weight: 600; ",
-                "display: flex; ",
-                "align-items: center; ",
-                "gap: 6px;"
-              ),
-              icon("mobile-screen", class = "fas", style = "font-size: 10px;"),
-              "Digital"
-            )
+          if (isTRUE(active_filters$presets_digital)) {
+            span(class = "filter-pill-preset",
+                 icon("mobile-screen", class = "fas", style = "font-size: 10px;"),
+                 "Digital")
           },
-          
-          # Mandate filters
           if (length(active_filters$mandates) > 0) {
-            lapply(active_filters$mandates, function(mandate) {
-              span(
-                style = paste0(
-                  "background: rgba(255, 255, 255, 0.9); ",
-                  "color: #667eea; ",
-                  "padding: 4px 12px; ",
-                  "border-radius: 16px; ",
-                  "font-size: 12px; ",
-                  "font-weight: 500; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 6px;"
-                ),
-                icon("scroll", class = "fas", style = "font-size: 10px;"),
-                mandate
-              )
-            })
+            lapply(active_filters$mandates, function(m)
+              span(class = "filter-pill", icon("scroll", class = "fas", style = "font-size: 10px;"), m))
           },
-          
-          # Objective filters
           if (length(active_filters$objectives) > 0) {
-            lapply(active_filters$objectives, function(objective) {
-              span(
-                style = paste0(
-                  "background: rgba(255, 255, 255, 0.9); ",
-                  "color: #667eea; ",
-                  "padding: 4px 12px; ",
-                  "border-radius: 16px; ",
-                  "font-size: 12px; ",
-                  "font-weight: 500; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 6px;"
-                ),
-                icon("bullseye", class = "fas", style = "font-size: 10px;"),
-                objective
-              )
-            })
+            lapply(active_filters$objectives, function(o)
+              span(class = "filter-pill", icon("bullseye", class = "fas", style = "font-size: 10px;"), o))
           },
-          
-          # Sector filters
           if (length(active_filters$sectors) > 0) {
-            lapply(active_filters$sectors, function(sector) {
-              span(
-                style = paste0(
-                  "background: rgba(255, 255, 255, 0.9); ",
-                  "color: #667eea; ",
-                  "padding: 4px 12px; ",
-                  "border-radius: 16px; ",
-                  "font-size: 12px; ",
-                  "font-weight: 500; ",
-                  "display: flex; ",
-                  "align-items: center; ",
-                  "gap: 6px;"
-                ),
-                icon("chart-pie", class = "fas", style = "font-size: 10px;"),
-                sector
-              )
-            })
+            lapply(active_filters$sectors, function(s)
+              span(class = "filter-pill", icon("chart-pie", class = "fas", style = "font-size: 10px;"), s))
           }
         )
       )
     },
-    
+
     # Statistics cards
     div(
-      style = "display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px;",
-      
-      # N Indicators cards
+      class = "stat-card-grid",
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 215, 0, 0.2); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 215, 0, 0.3); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("chart-simple", class = "fas", style = "font-size: 24px; margin-bottom: 8px; color: #ffd700;")
-        ),
-        div(
-          n, 
-          style = "font-size: 32px; font-weight: 800; margin-bottom: 4px;"
-        ),
-        div(
-          paste("of", N, "indicators"),
-          style = "font-size: 14px; opacity: 0.8; font-weight: 400;"
-        )
+        class = "stat-card stat-card-highlight",
+        div(icon("chart-simple", class = "fas stat-card-icon", style = "color: #ffd700;")),
+        div(n, class = "stat-card-value-lg"),
+        div(paste("of", N, "indicators"), style = "font-size: 14px; opacity: 0.8; font-weight: 400;")
       ),
-      
-      # Mandates card
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("scroll", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
-        ),
-        div(
-          mandates_count,
-          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
-        ),
-        div(
-          "Mandates",
-          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
-        )
+        class = "stat-card stat-card-default",
+        div(icon("scroll", class = "fas stat-card-icon")),
+        div(mandates_count, class = "stat-card-value"),
+        div("Mandates", class = "stat-card-label")
       ),
-      
-      # Objectives
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("bullseye", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
-        ),
-        div(
-          objectives_count,
-          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
-        ),
-        div(
-          "Objectives",
-          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
-        )
-      ), 
-      
-      # Services (ex-sectors) card
+        class = "stat-card stat-card-default",
+        div(icon("bullseye", class = "fas stat-card-icon")),
+        div(objectives_count, class = "stat-card-value"),
+        div("Objectives", class = "stat-card-label")
+      ),
+
       div(
-        class = "stat-card",
-        style = paste0(
-          "background: rgba(255, 255, 255, 0.15); ",
-          "backdrop-filter: blur(10px); ",
-          "padding: 16px; ",
-          "border-radius: 12px; ",
-          "border: 1px solid rgba(255, 255, 255, 0.2); ",
-          "text-align: center; ",
-          "transition: all 0.3s ease;"
-        ),
-        div(
-          icon("chart-pie", class = "fas", style = "font-size: 24px; margin-bottom: 8px; opacity: 0.8;")
-        ),
-        div(
-          sectors_count,
-          style = "font-size: 24px; font-weight: 700; margin-bottom: 4px;"
-        ),
-        div(
-          "Services",
-          style = "font-size: 13px; opacity: 0.8; font-weight: 400;"
+        class = "stat-card stat-card-default",
+        div(icon("chart-pie", class = "fas stat-card-icon")),
+        div(sectors_count, class = "stat-card-value"),
+        div("Services", class = "stat-card-label"
         )
       )
       
@@ -827,29 +616,6 @@ enhanced_mandate_header <- function(mandate, count) {
   
   div(
     class = "mandate-section-header",
-    style = paste0(
-      "background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); ",
-      "border: 1px solid #e9ecef; ",
-      "border-radius: 12px; ",
-      "padding: 24px; ",
-      "margin: 32px 0 24px 0; ",
-      "box-shadow: 0 2px 12px rgba(0,0,0,0.04); ",
-      "position: relative; ",
-      "overflow: hidden;"
-    ),
-    
-    # Background pattern
-    div(
-      style = paste0(
-        "position: absolute; ",
-        "top: -50%; ",
-        "right: -10%; ",
-        "width: 200px; ",
-        "height: 200px; ",
-        "background: radial-gradient(circle, rgba(0,123,255,0.05) 0%, transparent 70%); ",
-        "border-radius: 50%;"
-      )
-    ),
     
     div(
       style = "position: relative; z-index: 1;",
