@@ -286,46 +286,33 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                 )
               },
               
-              # Comments section
+              # Notes — icon inside textarea via wrapper
               div(
-                style = "margin-top: auto;",
+                class = "notes-field-wrapper",
+                style = "margin-top: auto; position: relative;",
+                icon("comment-dots", class = "fas",
+                     style = "position: absolute; left: 10px; top: 10px; font-size: 12px; color: #adb5bd; z-index: 1; pointer-events: none;"),
                 textAreaInput(
                   inputId = ns(paste0("comment_", ind$indicator_id)),
-                  label = div(
-                    style = "display: flex; align-items: center; gap: 6px; margin-bottom: 8px;",
-                    icon("comment-dots", class = "fas", style = "font-size: 12px; color: #6c757d;"),
-                    span("Notes", style = "font-size: 13px; font-weight: 500; color: #495057;")
-                  ),
+                  label = NULL,
                   placeholder = "Add notes...",
                   width = "100%",
                   rows = 2,
                   resize = "vertical"
                 )
-              ), 
-              
-              # Action buttons
+              ),
+
+              # Show more/less toggle
               div(
-                style = "display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e9ecef;",
-                
-                # Expand/collapse button
+                style = "margin-top: 8px; padding-top: 8px; border-top: 1px solid #e9ecef;",
                 actionButton(
                   ns(paste0("toggle_", ind$indicator_id)),
                   label = if (is_expanded) "Show less" else "Show more",
                   icon = icon(if (is_expanded) "chevron-up" else "chevron-down"),
                   class = "btn btn-sm btn-outline-secondary",
                   style = "font-size: 12px;",
-                  onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})", 
+                  onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})",
                                     ns("toggle_expand"), ind$indicator_id)
-                ),
-                
-                # View full details button (links to browse page)
-                tags$a(
-                  href = "#",
-                  class = "btn btn-sm btn-link",
-                  style = "font-size: 12px; text-decoration: none;",
-                  onclick = "document.querySelector('[data-value=\"Browse indicators\"]').click(); return false;",
-                  icon("arrow-right", class = "fas", style = "margin-right: 4px;"),
-                  "View full details"
                 )
               )
               

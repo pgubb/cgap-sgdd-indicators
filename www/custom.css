@@ -911,17 +911,22 @@ html, body {
     }
 }
 
-/* Text area styling for comments */
-.selected-indicator-card textarea {
+/* Notes field — icon inside textarea */
+.notes-field-wrapper .form-group {
+    margin-bottom: 0;
+}
+
+.notes-field-wrapper textarea {
     font-size: 13px;
-    border: 1px solid #dee2e6;
+    border: 1px solid rgba(0,0,0,0.1);
     border-radius: 6px;
+    padding-left: 30px !important;
     transition: border-color 0.2s ease;
 }
 
-.selected-indicator-card textarea:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+.notes-field-wrapper textarea:focus {
+    border-color: #1A5A80;
+    box-shadow: 0 0 0 2px rgba(26, 90, 128, 0.15);
     outline: none;
 }
 
