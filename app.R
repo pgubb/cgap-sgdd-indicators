@@ -201,40 +201,36 @@ server <- function(input, output, session) {
   # Add all filtered indicators to the active set
   observeEvent(input$add_all_filtered, {
     filtered_ids <- isolate(filtered_indicators()$indicator_id)
-    
+
     if (length(filtered_ids) > 0) {
-      for (id in filtered_ids) {
-        set_manager$add_to_active(id)
-      }
-      
+      set_manager$add_many_to_active(filtered_ids)
+
       showNotification(
         paste("Added", length(filtered_ids), "indicators to your set"),
         type = "message",
         duration = 3
       )
-      
+
       # Re-render to update button states
       filter_trigger(filter_trigger() + 1)
     }
   })
-  
+
   # Remove all filtered indicators from the active set
   observeEvent(input$remove_all_filtered, {
     filtered_ids <- isolate(filtered_indicators()$indicator_id)
     current_selected <- isolate(set_manager$get_active_indicators())
     to_remove <- intersect(filtered_ids, current_selected)
-    
+
     if (length(to_remove) > 0) {
-      for (id in to_remove) {
-        set_manager$remove_from_active(id)
-      }
-      
+      set_manager$remove_many_from_active(to_remove)
+
       showNotification(
         paste("Removed", length(to_remove), "indicators from your set"),
         type = "message",
         duration = 3
       )
-      
+
       filter_trigger(filter_trigger() + 1)
     } else {
       showNotification(

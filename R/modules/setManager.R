@@ -514,6 +514,22 @@ setManagerServer <- function(id) {
           sets[[active]] <- setdiff(sets[[active]], indicator_id)
           indicator_sets(sets)
         }
+      },
+      add_many_to_active = function(indicator_ids) {
+        sets <- indicator_sets()
+        active <- active_set_name()
+        if (active %in% names(sets)) {
+          sets[[active]] <- union(sets[[active]], indicator_ids)
+          indicator_sets(sets)
+        }
+      },
+      remove_many_from_active = function(indicator_ids) {
+        sets <- indicator_sets()
+        active <- active_set_name()
+        if (active %in% names(sets)) {
+          sets[[active]] <- setdiff(sets[[active]], indicator_ids)
+          indicator_sets(sets)
+        }
       }
     ))
   })
