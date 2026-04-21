@@ -431,17 +431,32 @@ indicatorCardJS <- function() {
 
         var headerOffset = 100;
 
+        // Find the scrollable container (bslib uses a nested scrollable div)
+        function findScrollParent(el) {
+          var parent = el.parentElement;
+          while (parent) {
+            var style = window.getComputedStyle(parent);
+            if (/(auto|scroll)/.test(style.overflow + style.overflowY)) {
+              return parent;
+            }
+            parent = parent.parentElement;
+          }
+          return document.documentElement;
+        }
+
+        var scrollContainer = findScrollParent(target[0]);
+
         // Wait for layout to settle after collapsing cards, then scroll
         setTimeout(function() {
-          var elementPosition = target[0].getBoundingClientRect().top;
-          var targetScrollPosition = elementPosition + window.pageYOffset - headerOffset;
-          window.scrollTo({ top: targetScrollPosition, behavior: 'auto' });
+          // Try scrollIntoView first — works regardless of scroll container
+          target[0].scrollIntoView({ behavior: 'auto', block: 'start' });
 
-          // Verification pass — correct if layout shifted further
+          // Adjust for fixed header offset
           setTimeout(function() {
-            var correctedPos = target[0].getBoundingClientRect().top + window.pageYOffset - headerOffset;
-            if (Math.abs(correctedPos - window.pageYOffset) > 5) {
-              window.scrollTo(0, correctedPos);
+            if (scrollContainer === document.documentElement) {
+              window.scrollBy(0, -headerOffset);
+            } else {
+              scrollContainer.scrollTop -= headerOffset;
             }
 
             // Highlight flash
@@ -450,7 +465,7 @@ indicatorCardJS <- function() {
               target.find('.mandate-section-header').removeClass('highlight-flash');
               updateActiveMandateLink();
             }, 1500);
-          }, 100);
+          }, 50);
         }, 50);
       });
       
