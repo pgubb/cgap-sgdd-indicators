@@ -122,7 +122,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Memo trigger link (inline after preset label) */
 .preset-memo-link {
-  color: #c8960c;
+  color: #856404;
   font-size: 16px;
   margin-left: 6px;
   transition: color 0.15s ease;
@@ -131,7 +131,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .preset-memo-link:hover {
-  color: #a67c00;
+  color: #6b5003;
   text-decoration: none;
 }
 
@@ -1273,17 +1273,8 @@ html, body {
 }
 
 .catalog-download-link:hover {
-    background-color: #1A5A80 !important;
-    color: white !important;
+    opacity: 0.7;
     text-decoration: none;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(26, 90, 128, 0.3);
-}
-
-.catalog-download-link:hover i {
-    color: white !important;
-    transform: translateY(1px);
-    transition: transform 0.2s ease;
 }
 
 /* ============================================================================

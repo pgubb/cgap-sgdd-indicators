@@ -331,11 +331,15 @@ server <- function(input, output, session) {
     if (nrow(indicators_data) == 0) {
       insertUI(
         selector = "#indicator_container",
-        ui =  div(br(), span(
-          icon("times-circle", class = "text-danger", lib = "font-awesome"),
-          "No indicators match filter criteria",
-          style = "font-size: 16px;"
-        )),
+        ui = div(
+          style = paste0(
+            "text-align: center; padding: 48px 20px; margin-top: 24px; ",
+            "background: #f8f9fa; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);"
+          ),
+          icon("filter", class = "fas", style = "font-size: 32px; color: #adb5bd; margin-bottom: 12px; display: block;"),
+          h4("No indicators match your filters", style = "color: #6c757d; margin: 0 0 6px 0; font-size: 16px;"),
+          p("Try broadening your search or resetting filters", style = "color: #adb5bd; margin: 0; font-size: 13px;")
+        ),
         immediate = TRUE
       )
       session$sendCustomMessage("showLoading", FALSE)

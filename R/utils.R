@@ -109,16 +109,15 @@ indicator_key <- function(sector_colors = SECTOR_COLORS) {
       style = paste0(
         "display: inline-flex; ",
         "align-items: center; ",
-        "gap: 8px; ",
+        "gap: 6px; ",
         "color: #1A5A80; ",
         "text-decoration: none; ",
         "font-size: 13px; ",
         "font-weight: 600; ",
-        "padding: 8px 16px; ",
-        "border-radius: 20px; ",
-        "border: 1.5px solid #1A5A80; ",
-        "background: rgba(26, 90, 128, 0.05); ",
-        "transition: all 0.2s ease;"
+        "padding: 6px 0; ",
+        "border: none; ",
+        "background: transparent; ",
+        "transition: opacity 0.2s ease;"
       ),
       class = "catalog-download-link",
       icon("download", class = "fas", style = "font-size: 12px;"),
