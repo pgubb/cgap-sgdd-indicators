@@ -78,22 +78,22 @@ indicator_key <- function(sector_colors = SECTOR_COLORS) {
           "color: #1565c0; ",
           "display: inline-block; ",
           "padding: 4px 10px; ",
-          "border-radius: 16px; ",
+          "border-radius: 4px; ",
           "font-size: 12px; ",
           "font-weight: 500; ",
           "border: 1px solid #bbdefb;"
         )
       ),
-      
+
       # Main sector example with multicolor gradient
       span(
-        "Main service", 
+        "Main service",
         style = paste0(
           "background: ", gradient_bg, "; ",
           "color: #333; ",
           "display: inline-block; ",
           "padding: 4px 10px; ",
-          "border-radius: 16px; ",
+          "border-radius: 4px; ",
           "font-size: 12px; ",
           "font-weight: 600; ",
           "border: 1px solid rgba(0,0,0,0.15); ",
