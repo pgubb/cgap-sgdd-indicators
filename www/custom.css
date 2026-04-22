@@ -122,18 +122,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Memo trigger link (inline after preset label) */
 .preset-memo-link {
-  color: #1A5A80;
-  font-size: 11px;
-  margin-left: 5px;
-  opacity: 0.5;
-  transition: opacity 0.15s ease;
+  color: #6F5B9D;
+  font-size: 14px;
+  margin-left: 6px;
+  transition: color 0.15s ease;
   text-decoration: none;
   vertical-align: middle;
 }
 
 .preset-memo-link:hover {
-  opacity: 1;
-  color: #1A5A80;
+  color: #402C60;
   text-decoration: none;
 }
 
