@@ -705,7 +705,8 @@ about_modal_content <- function() {
       # Content sections
       div(
         style = "padding: 0 20px;",
-
+        p("CGAP's LENS is a curated catalog of indicators for use with regulatory adminisitrative data, helping financial sector authorities understand who uses retail financial services, under what conditions, and with what outcomes. Rather than pre-built metrics, LENS is built around high-level indicators that analysts combine with breakdowns — such as customer type, gender, or provider type — to achieve the disaggregated analysis needed for more inclusive, evidence-based financial policies and supervision. Both indicators and breakdowns should be adapted to specific country contexts. For a full explanation, consult the User Guide.", 
+          style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
         # User Guide Download
         div(
           class = "about-section",
