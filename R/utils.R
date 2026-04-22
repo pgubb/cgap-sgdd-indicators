@@ -606,11 +606,9 @@ enhanced_mandate_header <- function(mandate, count) {
   descriptions <- list(
     "FINANCIAL INCLUSION" = "Indicators measuring access, usage, and quality of financial services",
     "CONSUMER PROTECTION" = "Indicators for fair treatment, complaints handling, and consumer safety",
-    "PRUDENTIAL SUPERVISION" = "Risk management and stability indicators for financial institutions",
+    "STABILITY, SAFETY AND SOUNDNESS" = "Risk management and stability indicators for financial institutions",
     "MARKET DEVELOPMENT" = "Capital markets and competition indicators",
-    "SUSTAINABILITY" = "Climate, environmental, and gender equality indicators",
-    "STATISTICS & RESEARCH" = "Data collection and research indicators",
-    "CENTRAL BANKING" = "Currency management and central bank operations"
+    "SUSTAINABILITY" = "Climate, environmental, and gender equality indicators"
   )
   
   div(
@@ -767,8 +765,7 @@ about_modal_content <- function() {
         div(
           class = "about-section",
           style = "margin-bottom: 30px;",
-          h3(icon("graduation-cap", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
-             "Context & Additional Resources",
+          h3("Context & Additional Resources",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("LENS is one component of CGAP's project to support the mainstreaming of regulatory gender-disaggregated data (RGDD) in the financial sector and should be consulted jointly with 'Using Disaggregated Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities' and accompanying pieces",
             style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
@@ -830,8 +827,7 @@ about_modal_content <- function() {
         div(
           class = "about-section",
           style = "margin-bottom: 30px;",
-          h3(icon("bullseye", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
-             "Objectives & Approach",
+          h3("Objectives & Approach",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("LENS provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, stability and soundness, market development and sustainability. The selection of indicators is informed both by their general relevance to these different mandates and goals of financial sector authorities as well as their potential relevance for understanding the role of key sociodemographic traits, such as gender, within those dimensions. The indicators in LENS, including their definitions, assigned mandates/objectives and proposed breakdowns, do not reflect a global consensus but rather constitute an attempt at providing working definitions, classification options and analytical questions that each user should adapt to their specific country context and institutional goals.",
             style = "line-height: 1.6; color: #555;")
@@ -841,8 +837,7 @@ about_modal_content <- function() {
         div(
           class = "about-section",
           style = "margin-bottom: 30px;",
-          h3(icon("database", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
-             "References and sources",
+          h3("References and sources",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("To build LENS, the CGAP team examined a variety of sources, including work from prior CGAP projects and existing indicators from international organizations focused on financial inclusion and regulation.",
             style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
@@ -869,8 +864,7 @@ about_modal_content <- function() {
             "padding: 20px; border-radius: 8px; margin-bottom: 20px; ",
             "border: 1px solid rgba(0,0,0,0.08);"
           ),
-          h3(icon("users", class = "fas", style = "margin-right: 8px; color: #1A5A80;"),
-             "About CGAP",
+          h3("About CGAP",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
           p("CGAP is a global partnership of more than 40 leading development organizations that works to advance the lives of people living in poverty, especially women, through financial inclusion. CGAP works at the frontier of inclusive finance to test solutions, spark innovation, generate evidence, and share insights. Our knowledge enables public and private stakeholders to scale solutions that make financial ecosystems meet the needs of poor, vulnerable, and underserved people and of micro and small enterprises (MSEs), including through advancing women's economic empowerment.",
             style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
