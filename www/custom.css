@@ -1143,31 +1143,23 @@ html, body {
 
 .reset-filters-btn,
 #filters-reset {
-  background: rgba(26, 90, 128, 0.05) !important;
-  border: 1px solid #1A5A80 !important;
-  color: #1A5A80 !important;
+  background: transparent !important;
+  border: 1px solid rgba(0,0,0,0.12) !important;
+  color: #6c757d !important;
   font-weight: 500;
-  padding: 10px 20px;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-  width: 50% !important;
-  margin: 0 auto; 
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  width: 100% !important;
   display: block;
   font-size: 13px;
 }
 
 .reset-filters-btn:hover,
 #filters-reset:hover {
-  background: #1A5A80 !important;
-  color: white !important;
-  border-color: #1A5A80 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(26, 90, 128, 0.3) !important;
-}
-
-@keyframes resetPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(0.95); }
+  background: #f8f9fa !important;
+  border-color: rgba(0,0,0,0.2) !important;
+  color: #333 !important;
 }
 
 /* Navbar height and padding optimization */

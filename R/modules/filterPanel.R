@@ -173,12 +173,12 @@ filterPanelUI <- function(id) {
       
       # Reset button
       div(
-        style = "padding: 20px 0 10px 0; margin-top: 5px;",
+        style = "padding: 12px 0 4px 0;",
         actionButton(
-          ns("reset"), 
-          "Reset filters", 
-          icon = icon("rotate-left", class = "fas"),  # Modern icon
-          class = "btn btn-sm"
+          ns("reset"),
+          "Reset filters",
+          icon = icon("rotate-left", class = "fas"),
+          class = "btn btn-sm reset-filters-btn"
         )
       )
       
