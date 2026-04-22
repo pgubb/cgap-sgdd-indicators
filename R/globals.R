@@ -88,3 +88,34 @@ BREAKDOWNS <- list(
 
 )
 
+# Preset memos — narrative guidance for each preset filter
+# Each entry has: title, summary, sections (list of heading + body pairs)
+PRESET_MEMOS <- list(
+  "preset_digital" = list(
+    title = "Digital Finance Ecosystem",
+    summary = "This preset selects indicators particularly relevant to understanding and monitoring digital financial services, including mobile money, e-money, digital credit, and digital payment channels.",
+    sections = list(
+      list(
+        heading = "Rationale",
+        body = "The rapid growth of digital financial services is reshaping how people access and use financial products, particularly in emerging markets. Financial sector authorities need indicators that capture digital-specific dynamics — from mobile money adoption and digital credit growth to the risks and consumer protection challenges unique to digital channels. This preset curates indicators that are especially informative for understanding the digital finance landscape."
+      ),
+      list(
+        heading = "Key questions this preset helps address",
+        body = paste0(
+          "<ul style='margin: 0; padding-left: 20px;'>",
+          "<li>What share of financial transactions occur through digital channels vs. traditional ones?</li>",
+          "<li>How does access to and usage of digital financial services differ by gender, age, or location?</li>",
+          "<li>Are digital credit products associated with different risk profiles than traditional lending?</li>",
+          "<li>How effectively are consumer protection frameworks covering digital financial services?</li>",
+          "<li>What role do mobile money and e-money play in driving financial inclusion?</li>",
+          "</ul>"
+        )
+      ),
+      list(
+        heading = "Analytical approach",
+        body = "These indicators can be analyzed individually or combined with breakdowns such as channel type (digital vs. physical), product type (e-money, digital credit), and customer demographics (gender, age, location) to reveal patterns in digital adoption, usage intensity, and associated risks. Cross-referencing digital indicators with consumer protection metrics can highlight gaps in regulatory coverage."
+      )
+    )
+  )
+)
+

@@ -32,7 +32,7 @@ filterPanelUI <- function(id) {
           checkboxGroupInput(ns("mandates"), "", choices = NULL)
         ),
         div(
-          style = "margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
+          style = "margin-top: 10px; padding: 6px 10px; background-color: #f8f9fa; border-radius: 5px;",
           bslib::input_switch(
             ns("include_secondary_mandates"), 
             label = "Include secondary mandates",
@@ -60,7 +60,7 @@ filterPanelUI <- function(id) {
         # Hierarchical objectives display
         uiOutput(ns("objectives_ui")),
         div(
-          style = "margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
+          style = "margin-top: 10px; padding: 6px 10px; background-color: #f8f9fa; border-radius: 5px;",
           input_switch(
             ns("include_secondary_objectives"), 
             label = "Include secondary objectives",
@@ -91,7 +91,7 @@ filterPanelUI <- function(id) {
         ),
         # NEW: Toggle for multi-sector indicators
         div(
-          style = "margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
+          style = "margin-top: 10px; padding: 6px 10px; background-color: #f8f9fa; border-radius: 5px;",
           input_switch(
             ns("include_multi_sector"), 
             label = "Include cross-cutting indicators",
@@ -150,16 +150,25 @@ filterPanelUI <- function(id) {
         ), 
         icon = icon("sliders"),
         
-        # Presets
+        # Presets with inline memo link
         div(
           style = "display: flex; align-items: center; gap: 2px;",
           input_switch(
-            ns("presets_digital"), 
-            label = "Digital finance ecosystem",
+            ns("presets_digital"),
+            label = tagList(
+              "Digital finance ecosystem",
+              tags$a(
+                class = "preset-memo-link",
+                href = "#",
+                title = "Read about this preset",
+                onclick = "openPresetMemo('preset_digital'); return false;",
+                icon("file-lines", class = "fas")
+              )
+            ),
             value = FALSE
           )
         ),
-        
+
       ),
       
       # Reset button
