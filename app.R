@@ -74,12 +74,7 @@ ui <- page_navbar(
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
     indicatorCardJS(),
 
-    # Preset memo drawer (slide-in panel)
-    div(
-      id = "memo-backdrop",
-      class = "memo-backdrop",
-      onclick = "closePresetMemo();"
-    ),
+    # Preset memo drawer (slide-in panel, non-blocking)
     div(
       id = "memo-drawer",
       class = "memo-drawer",
@@ -127,13 +122,18 @@ ui <- page_navbar(
         });
 
         body.innerHTML = html;
-        document.getElementById('memo-drawer').classList.add('open');
-        document.getElementById('memo-backdrop').classList.add('open');
+
+        var drawer = document.getElementById('memo-drawer');
+        // Toggle: if already open, close it; otherwise open
+        if (drawer.classList.contains('open')) {
+          drawer.classList.remove('open');
+        } else {
+          drawer.classList.add('open');
+        }
       }
 
       function closePresetMemo() {
         document.getElementById('memo-drawer').classList.remove('open');
-        document.getElementById('memo-backdrop').classList.remove('open');
       }
 
       // Close on Escape key

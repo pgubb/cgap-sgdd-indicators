@@ -26,32 +26,13 @@ h1, h2, h3, h4, h5, h6 {
    PRESET MEMO DRAWER
    ============================================ */
 
-/* Backdrop overlay */
-.memo-backdrop {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 10000;
-  transition: opacity 0.25s ease;
-  opacity: 0;
-}
-
-.memo-backdrop.open {
-  display: block;
-  opacity: 1;
-}
-
-/* Slide-in drawer */
+/* Slide-in drawer — non-blocking, no backdrop */
 .memo-drawer {
   position: fixed;
   top: 0;
   left: 0;
-  width: 420px;
-  max-width: 90vw;
+  width: 400px;
+  max-width: 85vw;
   height: 100vh;
   background: white;
   z-index: 10001;
@@ -59,7 +40,8 @@ h1, h2, h3, h4, h5, h6 {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+  border-right: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 2px 0 12px rgba(0,0,0,0.08);
 }
 
 .memo-drawer.open {
@@ -138,26 +120,21 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 6px;
 }
 
-/* Memo trigger button (next to preset toggle) */
-.preset-memo-btn {
-  background: none;
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 6px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+/* Memo trigger link (inline after preset label) */
+.preset-memo-link {
   color: #1A5A80;
-  font-size: 12px;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-  flex-shrink: 0;
+  font-size: 11px;
+  margin-left: 5px;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+  text-decoration: none;
+  vertical-align: middle;
 }
 
-.preset-memo-btn:hover {
-  background: rgba(26, 90, 128, 0.08);
-  border-color: #1A5A80;
+.preset-memo-link:hover {
+  opacity: 1;
+  color: #1A5A80;
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {

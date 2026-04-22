@@ -150,23 +150,22 @@ filterPanelUI <- function(id) {
         ), 
         icon = icon("sliders"),
         
-        # Presets with memo icons
+        # Presets with inline memo link
         div(
-          style = "display: flex; align-items: center; gap: 6px;",
-          div(
-            style = "flex: 1;",
-            input_switch(
-              ns("presets_digital"),
-              label = "Digital finance ecosystem",
-              value = FALSE
-            )
-          ),
-          tags$button(
-            class = "preset-memo-btn",
-            `data-preset` = "preset_digital",
-            title = "Read about this preset",
-            onclick = "openPresetMemo('preset_digital');",
-            icon("file-lines", class = "fas")
+          style = "display: flex; align-items: center; gap: 2px;",
+          input_switch(
+            ns("presets_digital"),
+            label = tagList(
+              "Digital finance ecosystem",
+              tags$a(
+                class = "preset-memo-link",
+                href = "#",
+                title = "Read about this preset",
+                onclick = "openPresetMemo('preset_digital'); return false;",
+                icon("file-lines", class = "fas")
+              )
+            ),
+            value = FALSE
           )
         ),
 
