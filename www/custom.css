@@ -407,6 +407,7 @@ html, body {
 /* Input switch styling */
 .form-check.form-switch {
     padding-left: 0;
+    margin-bottom: 0;
 }
 
 .form-check.form-switch .form-check-input {
