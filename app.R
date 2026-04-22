@@ -72,7 +72,76 @@ ui <- page_navbar(
   header = tagList(
     includeCSS("www/custom.css"),
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
-    indicatorCardJS()
+    indicatorCardJS(),
+
+    # Preset memo drawer (slide-in panel)
+    div(
+      id = "memo-backdrop",
+      class = "memo-backdrop",
+      onclick = "closePresetMemo();"
+    ),
+    div(
+      id = "memo-drawer",
+      class = "memo-drawer",
+
+      # Drawer header
+      div(
+        class = "memo-drawer-header",
+        div(
+          style = "display: flex; align-items: center; gap: 8px;",
+          icon("file-lines", class = "fas", style = "font-size: 16px;"),
+          span(id = "memo-drawer-title", "Preset Memo", style = "font-weight: 600; font-size: 16px;")
+        ),
+        tags$button(
+          class = "memo-drawer-close",
+          onclick = "closePresetMemo();",
+          icon("times", class = "fas")
+        )
+      ),
+
+      # Drawer body (populated by JS)
+      div(
+        id = "memo-drawer-body",
+        class = "memo-drawer-body"
+      )
+    ),
+
+    # Memo data and JS
+    tags$script(HTML(paste0(
+      "var presetMemos = ", jsonlite::toJSON(PRESET_MEMOS, auto_unbox = TRUE), ";\n",
+      "
+      function openPresetMemo(presetId) {
+        var memo = presetMemos[presetId];
+        if (!memo) return;
+
+        document.getElementById('memo-drawer-title').textContent = memo.title;
+
+        var body = document.getElementById('memo-drawer-body');
+        var html = '<p class=\"memo-summary\">' + memo.summary + '</p>';
+
+        memo.sections.forEach(function(section) {
+          html += '<div class=\"memo-section\">';
+          html += '<h4>' + section.heading + '</h4>';
+          html += '<div>' + section.body + '</div>';
+          html += '</div>';
+        });
+
+        body.innerHTML = html;
+        document.getElementById('memo-drawer').classList.add('open');
+        document.getElementById('memo-backdrop').classList.add('open');
+      }
+
+      function closePresetMemo() {
+        document.getElementById('memo-drawer').classList.remove('open');
+        document.getElementById('memo-backdrop').classList.remove('open');
+      }
+
+      // Close on Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closePresetMemo();
+      });
+      "
+    )))
   ),
   
   sidebar = sidebar(

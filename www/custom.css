@@ -23,6 +23,151 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================
+   PRESET MEMO DRAWER
+   ============================================ */
+
+/* Backdrop overlay */
+.memo-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 10000;
+  transition: opacity 0.25s ease;
+  opacity: 0;
+}
+
+.memo-backdrop.open {
+  display: block;
+  opacity: 1;
+}
+
+/* Slide-in drawer */
+.memo-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 420px;
+  max-width: 90vw;
+  height: 100vh;
+  background: white;
+  z-index: 10001;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+}
+
+.memo-drawer.open {
+  transform: translateX(0);
+}
+
+/* Drawer header */
+.memo-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  color: #1A5A80;
+  flex-shrink: 0;
+}
+
+.memo-drawer-close {
+  background: none;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6c757d;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.memo-drawer-close:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+/* Drawer body */
+.memo-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.memo-summary {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #495057;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.memo-section {
+  margin-bottom: 20px;
+}
+
+.memo-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A5A80;
+  margin: 0 0 8px 0;
+}
+
+.memo-section div,
+.memo-section p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.memo-section ul {
+  margin: 4px 0;
+}
+
+.memo-section li {
+  margin-bottom: 6px;
+}
+
+/* Memo trigger button (next to preset toggle) */
+.preset-memo-btn {
+  background: none;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1A5A80;
+  font-size: 12px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.preset-memo-btn:hover {
+  background: rgba(26, 90, 128, 0.08);
+  border-color: #1A5A80;
+}
+
+@media (max-width: 768px) {
+  .memo-drawer {
+    width: 100vw;
+    max-width: 100vw;
+  }
+}
+
+/* ============================================
    REUSABLE COMPONENT CLASSES
    (Replacing inline paste0() styles in R code)
    ============================================ */
