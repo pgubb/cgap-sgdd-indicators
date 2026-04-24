@@ -42,7 +42,6 @@ COLUMN_DESCRIPTIONS <- c(
   "secondary_mandate_objective" = "Secondary mandate (secondary objectives)", 
   "main_sector" = "Main financial service",               
   "secondary_sectors" = "Other applicable services",      
-  "preset_foundation" = "Basic preset", 
   "IMF" = "IMF-FAS",                  
   "GPFI" = "GPFI",                  
   "AFI" = "AFI", 
@@ -114,6 +113,185 @@ PRESET_MEMOS <- list(
       list(
         heading = "Analytical approach",
         body = "These indicators can be analyzed individually or combined with breakdowns such as channel type (digital vs. physical), product type (e-money, digital credit), and customer demographics (gender, age, location) to reveal patterns in digital adoption, usage intensity, and associated risks. Cross-referencing digital indicators with consumer protection metrics can highlight gaps in regulatory coverage."
+      )
+    )
+  ),
+  "preset_msme" = list(
+    title = "MSME Focus",
+    summary = "This preset selects indicators particularly relevant to understanding and monitoring micro, small and medium enterprises (MSMEs) in the financial sector.",
+    sections = list(
+      list(
+        heading = "Rationale",
+        body = "MSMEs are the backbone of most economies, yet they often face significant barriers to accessing financial services. Financial sector authorities need indicators that capture MSME-specific dynamics — from credit access and loan performance to the gender dimensions of enterprise finance. This preset curates indicators that are especially informative for understanding how financial systems serve MSMEs."
+      ),
+      list(
+        heading = "Key questions this preset helps address",
+        body = paste0(
+          "<ul style='margin: 0; padding-left: 20px;'>",
+          "<li>What share of credit is directed toward MSMEs, and how does this vary by enterprise size?</li>",
+          "<li>How does access to finance differ for female-owned vs. male-owned MSMEs?</li>",
+          "<li>What are the risk profiles associated with MSME lending portfolios?</li>",
+          "<li>Are financial products designed to meet the specific needs of micro and small enterprises?</li>",
+          "<li>How do collateral requirements and loan terms affect MSME borrowing?</li>",
+          "</ul>"
+        )
+      ),
+      list(
+        heading = "Analytical approach",
+        body = "These indicators can be analyzed individually or combined with breakdowns such as customer type (micro, small, medium enterprise), customer gender, product type, and FSP type to reveal patterns in MSME finance. Cross-referencing MSME indicators with inclusion and stability metrics can highlight trade-offs and opportunities in MSME lending policy."
+      )
+    )
+  ),
+  "preset_finhealth" = list(
+    title = "Financial Health",
+    pages = list(
+      list(
+        label = "Overview",
+        summary = "This preset selects LENS indicators that map to the CGAP Financial Health Measurement Framework, a forthcoming framework introduced in a CGAP working paper that translates the G20/GPFI definition of financial health into six measurement constructs and seventeen metrics.",
+        sections = list(
+          list(
+            heading = "About the framework",
+            body = paste0(
+              "The framework is grounded in a comprehensive review of seventy-one existing measurement initiatives ",
+              "and is designed around three principles: multidimensionality, use of complementary data sources, and adaptability to local context. ",
+              "It translates the four dimensions of the G20/GPFI definition of financial health &mdash; the ability to manage financial needs and obligations, ",
+              "to cope with shocks, to pursue aspirations, and to feel satisfied and confident &mdash; into six measurable constructs and seventeen metrics ",
+              "that financial sector authorities and others can use."
+            )
+          ),
+          list(
+            heading = "How this preset connects to the framework",
+            body = paste0(
+              "<p>Of the seventeen metrics in the framework, nine can be directly measured or approximated using supply-side regulatory indicators. ",
+              "This preset selects those nine LENS indicators. In some cases, the LENS indicator name differs from the framework metric name ",
+              "but measures the same underlying concept.</p>",
+              "<p>The remaining eight metrics &mdash; including all four subjective metrics and several resilience and asset metrics &mdash; ",
+              "require demand-side survey data and are not included in the LENS catalog. ",
+              "See the <strong>Framework</strong> page for the full mapping.</p>"
+            )
+          ),
+          list(
+            heading = "Key questions this preset helps address",
+            body = paste0(
+              "<ul style='margin: 0; padding-left: 20px;'>",
+              "<li>Are consumers building adequate savings and financial cushions?</li>",
+              "<li>What are the patterns of over-indebtedness and loan delinquency, and do they differ by gender?</li>",
+              "<li>How effectively are consumer protection mechanisms safeguarding financial well-being?</li>",
+              "<li>Are insurance and pension products contributing to long-term financial resilience?</li>",
+              "<li>What is the relationship between financial product usage and financial health outcomes?</li>",
+              "</ul>"
+            )
+          ),
+          list(
+            heading = "Reference",
+            body = paste0(
+              "<p style='font-size: 12px; color: #6c757d;'>Nielsen, K., Gubbins, P. and Alonso, T. (2026). ",
+              "<em>Measuring Financial Health: A Framework.</em> Working Paper. Washington, DC: CGAP.</p>"
+            )
+          )
+        )
+      ),
+      list(
+        label = "Framework",
+        summary = paste0(
+          "The table below shows all seventeen metrics in the CGAP Financial Health Measurement Framework. ",
+          "Highlighted rows indicate metrics that map to a LENS indicator in this preset. ",
+          "Where the LENS indicator name differs from the framework metric, both names are shown."
+        ),
+        sections = list(
+          list(
+            heading = "The Financial Health Measurement Framework",
+            body = paste0(
+              "<table class='memo-framework-table'>",
+              "<thead>",
+              "<tr><th class='fh-col-dim'>Dimension</th><th class='fh-col-construct'>Construct</th><th class='fh-col-num'>#</th><th class='fh-col-metric'>Metric</th><th class='fh-col-lens'>LENS indicator</th></tr>",
+              "</thead>",
+              "<tbody>",
+
+              # Dimension 1: Manage needs — Construct 1 (4 metrics)
+              "<tr class='fh-mapped'>",
+              "<td rowspan='7' class='fh-dim-cell fh-dim-manage'>Manage needs &amp; obligations</td>",
+              "<td rowspan='4' class='fh-construct-cell'>1. Pays for basic needs without significant strain</td>",
+              "<td>1</td><td>Positive net cashflow</td>",
+              "<td class='fh-match'><i class='fas fa-check-circle'></i> Positive net cashflow</td></tr>",
+
+              "<tr class='fh-unmapped'><td>2</td><td>Material deprivation</td>",
+              "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
+
+              "<tr class='fh-unmapped'><td>3</td><td>Bills in arrears</td>",
+              "<td class='fh-no-match'><span class='fh-external-tag'>External</span></td></tr>",
+
+              "<tr class='fh-mapped'><td>4</td><td>Account overdrafts / NSF events</td>",
+              "<td class='fh-match'><i class='fas fa-check-circle'></i> Account overdrafts and/or non-sufficient funds events</td></tr>",
+
+              # Construct 2 (1 metric)
+              "<tr class='fh-mapped'>",
+              "<td class='fh-construct-cell'>2. Transacts safely with financial system</td>",
+              "<td>5</td><td>Financial loss due to fraud or deception</td>",
+              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Frauds resulting in customer losses</td></tr>",
+
+              # Construct 3 (2 metrics)
+              "<tr class='fh-mapped'>",
+              "<td rowspan='2' class='fh-construct-cell'>3. Sustainable debt load &amp; repays obligations</td>",
+              "<td>6</td><td>Debt in arrears or delinquency</td>",
+              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Delinquency rate in the loan portfolio</td></tr>",
+
+              "<tr class='fh-mapped'><td>7</td><td>Sustainable debt service ratio</td>",
+              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Debt service-to-income ratio</td></tr>",
+
+              # Dimension 2: Cope with shocks — Construct 4 (3 metrics)
+              "<tr class='fh-unmapped'>",
+              "<td rowspan='3' class='fh-dim-cell fh-dim-cope'>Cope with shocks</td>",
+              "<td rowspan='3' class='fh-construct-cell'>4. Has resources to cover unexpected expenses</td>",
+              "<td>8</td><td>Reliable access to emergency funds</td>",
+              "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
+
+              "<tr class='fh-mapped'><td>9</td><td>Liquid savings (cash) buffer</td>",
+              "<td class='fh-match'><i class='fas fa-check-circle'></i> Liquid savings (cash) buffer</td></tr>",
+
+              "<tr class='fh-mapped'><td>10</td><td>Active insurance coverage</td>",
+              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Insurance policy holders</td></tr>",
+
+              # Dimension 3: Pursue aspirations — Construct 5 (3 metrics)
+              "<tr class='fh-mapped'>",
+              "<td rowspan='3' class='fh-dim-cell fh-dim-aspire'>Pursue aspirations &amp; goals</td>",
+              "<td rowspan='3' class='fh-construct-cell'>5. Participates in long-term savings / investments</td>",
+              "<td>11</td><td>Long-term saving / financial asset accumulation</td>",
+              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Long-term saving and/or financial asset accumulation</td></tr>",
+
+              "<tr class='fh-unmapped'><td>12</td><td>Investment in productive / physical assets</td>",
+              "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
+
+              "<tr class='fh-mapped'><td>13</td><td>Pension or retirement account holder</td>",
+              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Pension account holders</td></tr>",
+
+              # Dimension 4: Feels satisfied — Construct 6 (4 metrics)
+              "<tr class='fh-unmapped'>",
+              "<td rowspan='4' class='fh-dim-cell fh-dim-satisfy'>Feels satisfied &amp; confident</td>",
+              "<td rowspan='4' class='fh-construct-cell'>6. Financial confidence, control &amp; satisfaction</td>",
+              "<td>14</td><td>Satisfaction with financial situation</td>",
+              "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
+
+              "<tr class='fh-unmapped'><td>15</td><td>Perceived financial control</td>",
+              "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
+
+              "<tr class='fh-unmapped'><td>16</td><td>Confidence in future financial outlook</td>",
+              "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
+
+              "<tr class='fh-unmapped'><td>17</td><td>Financial stress or worry</td>",
+              "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
+
+              "</tbody></table>",
+              "<p class='fh-table-legend'>",
+              "<span class='fh-legend-item'><i class='fas fa-check-circle' style='color: #28a745;'></i> Mapped to LENS indicator</span>",
+              "<span class='fh-legend-item fh-legend-diff'><i class='fas fa-check-circle' style='color: #28a745;'></i> Mapped (name differs)</span>",
+              "<span class='fh-legend-item'><span class='fh-survey-tag'>Survey</span> Requires demand-side data</span>",
+              "<span class='fh-legend-item'><span class='fh-external-tag'>External</span> Requires non-FSA data</span>",
+              "</p>",
+              "<p style='font-size: 12px; color: #6c757d; margin-top: 12px;'>Source: Nielsen, Gubbins and Alonso (2026). Adapted from Table E1.</p>"
+            )
+          )
+        )
       )
     )
   )

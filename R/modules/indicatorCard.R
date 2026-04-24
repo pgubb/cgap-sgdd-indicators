@@ -61,6 +61,14 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
             if (!is.na(indicator$preset_digital) && indicator$preset_digital == 1) {
               div(class = "badge-digital-preset",
                   icon("mobile-screen", class = "fas", style = "font-size: 10px;"))
+            },
+            if (!is.na(indicator$preset_msme) && indicator$preset_msme == 1) {
+              div(class = "badge-msme-preset",
+                  icon("building", class = "fas", style = "font-size: 10px;"))
+            },
+            if (!is.na(indicator$preset_finhealth) && indicator$preset_finhealth == 1) {
+              div(class = "badge-finhealth-preset",
+                  icon("heart-pulse", class = "fas", style = "font-size: 10px;"))
             }
           ),
 

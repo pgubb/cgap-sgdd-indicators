@@ -168,6 +168,40 @@ filterPanelUI <- function(id) {
             value = FALSE
           )
         ),
+        div(
+          style = "display: flex; align-items: center; gap: 2px;",
+          input_switch(
+            ns("presets_msme"),
+            label = tagList(
+              "MSME focus",
+              tags$a(
+                class = "preset-memo-link",
+                href = "#",
+                title = "Read about this preset",
+                onclick = "openPresetMemo('preset_msme'); return false;",
+                icon("file-lines", class = "fas")
+              )
+            ),
+            value = FALSE
+          )
+        ),
+        div(
+          style = "display: flex; align-items: center; gap: 2px;",
+          input_switch(
+            ns("presets_finhealth"),
+            label = tagList(
+              "Financial health",
+              tags$a(
+                class = "preset-memo-link",
+                href = "#",
+                title = "Read about this preset",
+                onclick = "openPresetMemo('preset_finhealth'); return false;",
+                icon("file-lines", class = "fas")
+              )
+            ),
+            value = FALSE
+          )
+        ),
 
       ),
       
@@ -412,7 +446,9 @@ filterPanelServer <- function(id, indicators_data) {
       
       # Reset presets filters to OFF (FALSE)
       updateInputSwitch(session, "presets_digital", value = FALSE)
-      
+      updateInputSwitch(session, "presets_msme", value = FALSE)
+      updateInputSwitch(session, "presets_finhealth", value = FALSE)
+
     })
     
     # Return reactive with filtered data (uses pre-computed lookups for performance)
@@ -480,9 +516,15 @@ filterPanelServer <- function(id, indicators_data) {
         filtered <- filtered[has_initiative, ]
       }
 
-      # Presets filter
+      # Presets filter (intersection when multiple active)
       if (input$presets_digital) {
         filtered <- filtered[!is.na(filtered$preset_digital) & filtered$preset_digital == 1, ]
+      }
+      if (input$presets_msme) {
+        filtered <- filtered[!is.na(filtered$preset_msme) & filtered$preset_msme == 1, ]
+      }
+      if (input$presets_finhealth) {
+        filtered <- filtered[!is.na(filtered$preset_finhealth) & filtered$preset_finhealth == 1, ]
       }
 
       # Search filter using pre-computed .search_text column

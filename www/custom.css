@@ -31,7 +31,7 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   top: 0;
   left: 0;
-  width: 400px;
+  width: 480px;
   max-width: 85vw;
   height: 100vh;
   background: white;
@@ -136,11 +136,165 @@ h1, h2, h3, h4, h5, h6 {
   filter: drop-shadow(0 0 4px rgba(0,0,0,0.35));
 }
 
+/* Page navigation pills (multi-page memos) */
+.memo-drawer-nav {
+  display: none;
+  gap: 4px;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.memo-page-pill {
+  background: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.memo-page-pill:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.memo-page-pill.active {
+  background: #1A5A80;
+  color: white;
+  border-color: #1A5A80;
+  font-weight: 600;
+}
+
+/* Framework table (financial health memo) */
+.memo-framework-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 8px;
+}
+
+.memo-framework-table thead th {
+  background: #1A5A80;
+  color: white;
+  padding: 8px 6px;
+  font-weight: 600;
+  font-size: 11px;
+  text-align: left;
+  border: 1px solid #154d6e;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.memo-framework-table td {
+  padding: 7px 6px;
+  border: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.fh-col-num { width: 24px; }
+
+/* Dimension cells — left colored accent only */
+.fh-dim-cell {
+  border-left: 3px solid;
+}
+
+.fh-dim-manage { border-left-color: #1A5A80; }
+.fh-dim-cope { border-left-color: #e67e22; }
+.fh-dim-aspire { border-left-color: #27ae60; }
+.fh-dim-satisfy { border-left-color: #8e44ad; }
+
+/* Mapped rows — highlighted */
+tr.fh-mapped td {
+}
+
+tr.fh-mapped .fh-dim-cell {
+  /* Preserve dimension color, don't override */
+}
+
+.fh-match {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.fh-match i {
+  font-size: 10px;
+  margin-right: 3px;
+}
+
+/* When LENS name differs from metric name */
+.fh-name-diff {
+  font-style: italic;
+}
+
+/* Unmapped rows */
+tr.fh-unmapped td {
+}
+
+.fh-no-match {
+  color: #adb5bd;
+  font-size: 11px;
+}
+
+.fh-survey-tag {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #888;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.fh-external-tag {
+  display: inline-block;
+  background: #fff3cd;
+  color: #856404;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* Table legend */
+.fh-table-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  font-size: 11px;
+  color: #6c757d;
+}
+
+.fh-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fh-legend-diff {
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .memo-drawer {
     width: 100vw;
     max-width: 100vw;
   }
+  .memo-framework-table {
+    font-size: 11px;
+  }
+  .fh-col-dim { display: none; }
+  .fh-dim-cell { display: none; }
+  .memo-framework-table thead th:first-child { display: none; }
 }
 
 /* ============================================
@@ -250,6 +404,30 @@ h1, h2, h3, h4, h5, h6 {
 .badge-digital-preset {
   background: #ffd700;
   color: #856404;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-msme-preset {
+  background: #d4edda;
+  color: #155724;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-finhealth-preset {
+  background: #f8d7da;
+  color: #721c24;
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 11px;

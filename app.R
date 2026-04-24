@@ -8,6 +8,9 @@ library(SnowballC)
 
 # Load data
 load("data/indicators.RData")
+if ("preset_MSME" %in% names(indicators)) {
+  indicators <- indicators %>% rename(preset_msme = preset_MSME)
+}
 
 # Source modular components
 source("R/globals.R")
@@ -94,6 +97,12 @@ ui <- page_navbar(
         )
       ),
 
+      # Page navigation (populated by JS for multi-page memos)
+      div(
+        id = "memo-drawer-nav",
+        class = "memo-drawer-nav"
+      ),
+
       # Drawer body (populated by JS)
       div(
         id = "memo-drawer-body",
@@ -104,36 +113,91 @@ ui <- page_navbar(
     # Memo data and JS
     tags$script(HTML(paste0(
       "var presetMemos = ", jsonlite::toJSON(PRESET_MEMOS, auto_unbox = TRUE), ";\n",
-      "
-      function openPresetMemo(presetId) {
-        var memo = presetMemos[presetId];
-        if (!memo) return;
+      "var _currentMemoPages = null;
 
-        document.getElementById('memo-drawer-title').textContent = memo.title;
-
+      function _renderMemoPage(pageIndex) {
+        var page = _currentMemoPages[pageIndex];
         var body = document.getElementById('memo-drawer-body');
-        var html = '<p class=\"memo-summary\">' + memo.summary + '</p>';
-
-        memo.sections.forEach(function(section) {
+        var html = '';
+        if (page.summary) {
+          html += '<p class=\"memo-summary\">' + page.summary + '</p>';
+        }
+        page.sections.forEach(function(section) {
           html += '<div class=\"memo-section\">';
           html += '<h4>' + section.heading + '</h4>';
           html += '<div>' + section.body + '</div>';
           html += '</div>';
         });
-
         body.innerHTML = html;
+        body.scrollTop = 0;
+
+        // Update active pill
+        var pills = document.querySelectorAll('.memo-page-pill');
+        pills.forEach(function(pill, i) {
+          pill.classList.toggle('active', i === pageIndex);
+        });
+      }
+
+      function _renderMemoNav(pages) {
+        var nav = document.getElementById('memo-drawer-nav');
+        if (!pages || pages.length <= 1) {
+          nav.innerHTML = '';
+          nav.style.display = 'none';
+          return;
+        }
+        nav.style.display = 'flex';
+        var html = '';
+        pages.forEach(function(page, i) {
+          html += '<button class=\"memo-page-pill' + (i === 0 ? ' active' : '') + '\" ';
+          html += 'onclick=\"_renderMemoPage(' + i + ')\">';
+          html += page.label;
+          html += '</button>';
+        });
+        nav.innerHTML = html;
+      }
+
+      function openPresetMemo(presetId) {
+        var memo = presetMemos[presetId];
+        if (!memo) return;
 
         var drawer = document.getElementById('memo-drawer');
-        // Toggle: if already open, close it; otherwise open
-        if (drawer.classList.contains('open')) {
+
+        // Toggle: if already open with same content, close it
+        if (drawer.classList.contains('open') && drawer.dataset.presetId === presetId) {
           drawer.classList.remove('open');
-        } else {
-          drawer.classList.add('open');
+          drawer.dataset.presetId = '';
+          return;
         }
+        drawer.dataset.presetId = presetId;
+        document.getElementById('memo-drawer-title').textContent = memo.title;
+
+        if (memo.pages) {
+          // Multi-page memo
+          _currentMemoPages = memo.pages;
+          _renderMemoNav(memo.pages);
+          _renderMemoPage(0);
+        } else {
+          // Single-page memo (backward compatible)
+          _currentMemoPages = null;
+          _renderMemoNav(null);
+          var body = document.getElementById('memo-drawer-body');
+          var html = '<p class=\"memo-summary\">' + memo.summary + '</p>';
+          memo.sections.forEach(function(section) {
+            html += '<div class=\"memo-section\">';
+            html += '<h4>' + section.heading + '</h4>';
+            html += '<div>' + section.body + '</div>';
+            html += '</div>';
+          });
+          body.innerHTML = html;
+        }
+
+        drawer.classList.add('open');
       }
 
       function closePresetMemo() {
-        document.getElementById('memo-drawer').classList.remove('open');
+        var drawer = document.getElementById('memo-drawer');
+        drawer.classList.remove('open');
+        drawer.dataset.presetId = '';
       }
 
       // Close on Escape key
@@ -242,7 +306,9 @@ server <- function(input, output, session) {
       sectors = input$`filters-sectors`,
       use_cases = input$`filters-use_cases`,
       search = input$`filters-search`,
-      presets_digital = input$`filters-presets_digital`
+      presets_digital = input$`filters-presets_digital`,
+      presets_msme = input$`filters-presets_msme`,
+      presets_finhealth = input$`filters-presets_finhealth`
     )
     
     # Get the active set name from set_manager

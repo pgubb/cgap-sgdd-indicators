@@ -27,6 +27,10 @@ library(googledrive)
 
 cat("=== LENS Data Prep ===\n\n")
 
+# Load globals (MND_OBJ_2 needed by data connector, %not_in% from utils)
+source("R/globals.R")
+source("R/utils.R")
+
 # Load the connector
 source("R/data_connector.R")
 

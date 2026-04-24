@@ -482,7 +482,9 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       length(active_filters$sectors) > 0 ||
       length(active_filters$use_cases) > 0 ||
       !is.null(active_filters$search) && active_filters$search != "" ||
-      isTRUE(active_filters$presets_digital)
+      isTRUE(active_filters$presets_digital) ||
+      isTRUE(active_filters$presets_msme) ||
+      isTRUE(active_filters$presets_finhealth)
   )
   
   div(
@@ -547,6 +549,16 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
             span(class = "filter-pill-preset",
                  icon("mobile-screen", class = "fas", style = "font-size: 10px;"),
                  "Digital")
+          },
+          if (isTRUE(active_filters$presets_msme)) {
+            span(class = "filter-pill-preset",
+                 icon("building", class = "fas", style = "font-size: 10px;"),
+                 "MSME")
+          },
+          if (isTRUE(active_filters$presets_finhealth)) {
+            span(class = "filter-pill-preset",
+                 icon("heart-pulse", class = "fas", style = "font-size: 10px;"),
+                 "Financial Health")
           },
           if (length(active_filters$mandates) > 0) {
             lapply(active_filters$mandates, function(m)
@@ -1313,6 +1325,16 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                             </span>',
                   if (!is.null(ind$preset_digital) && !is.na(ind$preset_digital) && ind$preset_digital == 1) {
                     '<span class="badge badge-priority"><i class="fas fa-mobile-screen"></i> Digital finance ecosystem </span>'
+                  } else {
+                    ''
+                  },
+                  if (!is.null(ind$preset_msme) && !is.na(ind$preset_msme) && ind$preset_msme == 1) {
+                    '<span class="badge badge-priority"><i class="fas fa-building"></i> MSME focus </span>'
+                  } else {
+                    ''
+                  },
+                  if (!is.null(ind$preset_finhealth) && !is.na(ind$preset_finhealth) && ind$preset_finhealth == 1) {
+                    '<span class="badge badge-priority"><i class="fas fa-heart-pulse"></i> Financial health </span>'
                   } else {
                     ''
                   }, '

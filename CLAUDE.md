@@ -136,10 +136,10 @@ is excluded from deployment via `.gitignore`.
     `BREAKDOWNS` in `globals.R` with \~20 categories
 -   **Indicator sets**: Users can create multiple named collections of
     indicators, add notes, and export as CSV or HTML report
--   **Presets**: The "Digital finance ecosystem" preset filters to
-    indicators tagged `preset_digital == 1`. A "Foundational" preset
-    exists in the data (`preset_foundation` column) but is currently
-    disabled in the UI.
+-   **Presets**: Toggle filters for cross-cutting themes — "Digital
+    finance ecosystem" (`preset_digital`), "MSME focus" (`preset_msme`),
+    and "Financial health" (`preset_finhealth`). Each filters to
+    indicators where the corresponding column equals 1.
 -   **Long descriptions**: Use `!-` as a delimiter for sections
     (Definitions, Data requirements, Limitations, Derivable indicators)
 
