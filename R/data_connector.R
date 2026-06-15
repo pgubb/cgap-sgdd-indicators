@@ -168,6 +168,15 @@ library(dplyr)
     raw[[col]] <- suppressWarnings(as.integer(as.character(raw[[col]])))
   }
   
+  # 3b. Rename objective: "Gender equality" -> "Diversity and inclusion"
+  #     Applied to the raw objective columns before derived labels are built,
+  #     so it propagates to main_mandate_objective / secondary_mandate_objective
+  #     and matches the MND_OBJ_2 hierarchy in globals.R.
+  for (col in intersect(c("main_objectives", "secondary_objectives"), names(raw))) {
+    raw[[col]] <- gsub("Gender equality", "Diversity and inclusion",
+                       raw[[col]], fixed = TRUE)
+  }
+
   # 4. Recompute derived columns (always fresh from source data)
   raw <- raw %>%
     mutate(
