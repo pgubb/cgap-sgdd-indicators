@@ -113,6 +113,7 @@ ui <- page_navbar(
     # Memo data and JS
     tags$script(HTML(paste0(
       "var presetMemos = ", jsonlite::toJSON(PRESET_MEMOS, auto_unbox = TRUE), ";\n",
+      "var techGuideMemos = ", jsonlite::toJSON(TECH_GUIDE_MEMOS, auto_unbox = TRUE), ";\n",
       "var _currentMemoPages = null;
 
       function _renderMemoPage(pageIndex) {
@@ -156,19 +157,19 @@ ui <- page_navbar(
         nav.innerHTML = html;
       }
 
-      function openPresetMemo(presetId) {
-        var memo = presetMemos[presetId];
+      // Shared opener for the slide-in drawer. `key` is a unique toggle id so
+      // clicking the same source again closes the drawer.
+      function _openMemoDrawer(memo, key) {
         if (!memo) return;
-
         var drawer = document.getElementById('memo-drawer');
 
         // Toggle: if already open with same content, close it
-        if (drawer.classList.contains('open') && drawer.dataset.presetId === presetId) {
+        if (drawer.classList.contains('open') && drawer.dataset.presetId === key) {
           drawer.classList.remove('open');
           drawer.dataset.presetId = '';
           return;
         }
-        drawer.dataset.presetId = presetId;
+        drawer.dataset.presetId = key;
         document.getElementById('memo-drawer-title').textContent = memo.title;
 
         if (memo.pages) {
@@ -182,16 +183,25 @@ ui <- page_navbar(
           _renderMemoNav(null);
           var body = document.getElementById('memo-drawer-body');
           var html = '<p class=\"memo-summary\">' + memo.summary + '</p>';
-          memo.sections.forEach(function(section) {
+          (memo.sections || []).forEach(function(section) {
             html += '<div class=\"memo-section\">';
             html += '<h4>' + section.heading + '</h4>';
             html += '<div>' + section.body + '</div>';
             html += '</div>';
           });
           body.innerHTML = html;
+          body.scrollTop = 0;
         }
 
         drawer.classList.add('open');
+      }
+
+      function openPresetMemo(presetId) {
+        _openMemoDrawer(presetMemos[presetId], presetId);
+      }
+
+      function openTechGuide(mandateId) {
+        _openMemoDrawer(techGuideMemos[mandateId], 'tg_' + mandateId);
       }
 
       function closePresetMemo() {
@@ -308,7 +318,8 @@ server <- function(input, output, session) {
       search = input$`filters-search`,
       presets_digital = input$`filters-presets_digital`,
       presets_msme = input$`filters-presets_msme`,
-      presets_finhealth = input$`filters-presets_finhealth`
+      presets_finhealth = input$`filters-presets_finhealth`,
+      presets_di = input$`filters-presets_di`
     )
     
     # Get the active set name from set_manager

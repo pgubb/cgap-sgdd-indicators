@@ -202,6 +202,23 @@ filterPanelUI <- function(id) {
             value = FALSE
           )
         ),
+        div(
+          style = "display: flex; align-items: center; gap: 2px;",
+          input_switch(
+            ns("presets_di"),
+            label = tagList(
+              "Diversity & inclusion",
+              tags$a(
+                class = "preset-memo-link",
+                href = "#",
+                title = "Read about this preset",
+                onclick = "openPresetMemo('preset_di'); return false;",
+                icon("file-lines", class = "fas")
+              )
+            ),
+            value = FALSE
+          )
+        ),
 
       ),
       
@@ -300,10 +317,22 @@ filterPanelServer <- function(id, indicators_data) {
 
     # --- Initialize filters with no selections ---
     observe({
-      # Mandates
+      # Mandates — render each with a clickable Technical Guide icon that opens
+      # the memo drawer. choiceValues keep the plain mandate strings used by the
+      # filter logic; choiceNames carry the label + icon HTML.
+      mandate_levels <- levels(indicators_data$main_mandate)
+      mandate_names <- lapply(mandate_levels, function(m) {
+        tg_id <- MANDATE_TG_ID[[m]]
+        span(
+          class = "mandate-choice-label",
+          span(m),
+          if (!is.null(tg_id) && !is.na(tg_id)) tech_guide_icon(tg_id)
+        )
+      })
       updateCheckboxGroupInput(
         session, "mandates",
-        choices = levels(indicators_data$main_mandate),
+        choiceNames = mandate_names,
+        choiceValues = as.list(mandate_levels),
         selected = character(0)
       )
 
@@ -448,6 +477,7 @@ filterPanelServer <- function(id, indicators_data) {
       updateInputSwitch(session, "presets_digital", value = FALSE)
       updateInputSwitch(session, "presets_msme", value = FALSE)
       updateInputSwitch(session, "presets_finhealth", value = FALSE)
+      updateInputSwitch(session, "presets_di", value = FALSE)
 
     })
     
@@ -525,6 +555,9 @@ filterPanelServer <- function(id, indicators_data) {
       }
       if (input$presets_finhealth) {
         filtered <- filtered[!is.na(filtered$preset_finhealth) & filtered$preset_finhealth == 1, ]
+      }
+      if (input$presets_di) {
+        filtered <- filtered[!is.na(filtered$preset_di) & filtered$preset_di == 1, ]
       }
 
       # Search filter using pre-computed .search_text column

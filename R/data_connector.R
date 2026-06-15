@@ -163,7 +163,8 @@ library(dplyr)
   
   # 3. Coerce numeric columns (safe: character → integer)
   int_cols <- c("indicator_id", "indicator_order", "main_mandate_order",
-                "preset_digital", "preset_msme", "preset_finhealth", "sources_any", "FEMAMETER")
+                "preset_digital", "preset_msme", "preset_finhealth", "preset_di",
+                "sources_any", "FEMAMETER")
   for (col in intersect(int_cols, names(raw))) {
     raw[[col]] <- suppressWarnings(as.integer(as.character(raw[[col]])))
   }

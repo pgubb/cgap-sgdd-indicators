@@ -69,6 +69,10 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
             if (!is.na(indicator$preset_finhealth) && indicator$preset_finhealth == 1) {
               div(class = "badge-finhealth-preset",
                   icon("heart-pulse", class = "fas", style = "font-size: 10px;"))
+            },
+            if (!is.na(indicator$preset_di) && indicator$preset_di == 1) {
+              div(class = "badge-di-preset",
+                  icon("users", class = "fas", style = "font-size: 10px;"))
             }
           ),
 

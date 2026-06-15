@@ -142,6 +142,67 @@ PRESET_MEMOS <- list(
       )
     )
   ),
+  "preset_di" = list(
+    title = "Diversity & Inclusion",
+    summary = paste0(
+      "This preset selects indicators particularly relevant to understanding and ",
+      "monitoring diversity and inclusion (D&amp;I) within financial service ",
+      "providers and in the financial sector, including gender representation, pay ",
+      "gaps, and diversity in leadership and decision-making roles, as well as the ",
+      "potential relevance of these gaps to stability and safety and soundness ",
+      "mandates."
+    ),
+    sections = list(
+      list(
+        heading = "Rationale",
+        body = paste0(
+          "Stronger diversity in the financial sector may support better governance ",
+          "and help mitigate prudential and conduct risks. Even without an explicit ",
+          "D&amp;I or sustainability (ESG) mandate, financial sector authorities may ",
+          "use indicators that capture diversity dynamics &mdash; from gender ",
+          "representation in management bodies and pay gaps across FSPs to diversity ",
+          "within the authorities' own institutions. This preset curates indicators ",
+          "that are informative for assessing diversity gaps and evolution and ",
+          "informing action both within the financial sector and in financial ",
+          "authorities themselves."
+        )
+      ),
+      list(
+        heading = "Key questions this preset helps address",
+        body = paste0(
+          "<ul style='margin: 0; padding-left: 20px;'>",
+          "<li>How are different genders represented across FSPs, particularly in ",
+          "management bodies and decision-making roles?</li>",
+          "<li>Which types of FSPs or functions present the greatest gender ",
+          "disparities and pay gaps?</li>",
+          "<li>Is greater gender diversity at FSPs associated with a broader customer ",
+          "base, better governance, lower risk-taking, stronger financial ",
+          "performance, and lower supervisory risk scoring?</li>",
+          "<li>How does gender representation within the FSA itself compare across ",
+          "core functions (such as supervision and regulation) and administrative ",
+          "roles?</li>",
+          "<li>Are licensing and authorization outcomes consistent regardless of the ",
+          "gender of applicants' leadership and the gender of the FSA staff?</li>",
+          "</ul>"
+        )
+      ),
+      list(
+        heading = "Analytical approach",
+        body = paste0(
+          "These indicators can be analyzed individually or combined with breakdowns ",
+          "such as FSP type, function or role type, and seniority level to reveal ",
+          "patterns in representation, pay equity, and leadership diversity. ",
+          "Benchmarking results against peer jurisdictions or over time can help ",
+          "detect outlier FSPs, while cross-referencing diversity indicators with ",
+          "prudential, conduct, and stability metrics can highlight links between ",
+          "diversity and performance. Diversity indicators can also feed into ",
+          "prudential analysis, as highlighted in our Technical Guide (section 2.4): ",
+          "a growing body of literature suggests that gender diversity within FSPs is ",
+          "associated with stronger risk management."
+        )
+      )
+    )
+  ),
   "preset_finhealth" = list(
     title = "Financial Health",
     pages = list(
@@ -294,6 +355,129 @@ PRESET_MEMOS <- list(
         )
       )
     )
+  )
+)
+
+# ---------------------------------------------------------------------------
+# Technical Guide memos — narrative ("why this matters") for each mandate
+# ---------------------------------------------------------------------------
+# Surfaced via the custom technical-guide icon next to each mandate in the
+# filter panel. Clicking the icon opens the shared memo drawer (openTechGuide).
+# Keyed by the slug in MANDATE_TG_ID below. Each memo mirrors the single-page
+# PRESET_MEMOS shape: title, summary, sections.
+
+# Mandate (main_mandate level) -> technical-guide drawer id
+MANDATE_TG_ID <- c(
+  "Financial inclusion"             = "financial_inclusion",
+  "Consumer protection"             = "consumer_protection",
+  "Stability, safety and soundness" = "stability",
+  "Sustainability"                  = "sustainability",
+  "Market development"              = "market_development"
+)
+
+# Shared footer pointing readers to the companion Technical Guide.
+.tg_footer_body <- paste0(
+  "<p style='margin: 0 0 10px;'>This narrative draws on CGAP's companion ",
+  "Technical Guide, <em>Using Disaggregated Data to Improve Policy, Regulation ",
+  "and Supervision: A Technical Guide for Financial Sector Authorities</em> ",
+  "&mdash; read jointly with LENS to connect indicators to mandates.</p>",
+  "<span class='tg-guide-pill'><i class='fas fa-book'></i> ",
+  "Technical Guide (Coming 2026/Q3)</span>"
+)
+
+TECH_GUIDE_MEMOS <- list(
+  "financial_inclusion" = list(
+    title = "Financial inclusion",
+    summary = paste0(
+      "Aggregate indicators can mask deep structural disparities that hinder ",
+      "progress on financial inclusion. As highlighted in our Technical Guide ",
+      "(section 2.3), data segmented by socio-demographics allows authorities to ",
+      "establish baselines of gaps across priority groups, monitor how disparities ",
+      "evolve, and evaluate whether financial inclusion interventions deliver the ",
+      "intended results &mdash; across all five inclusion dimensions: access, ",
+      "uptake, usage, quality, and outcomes. Segmented analysis can reveal, for ",
+      "example, that women face higher loan rejection rates despite stronger ",
+      "repayment performance, pointing to potential biases in credit assessment ",
+      "rather than genuine risk differences. Such evidence has already informed ",
+      "concrete action in some countries, from adjusted provisioning rules and ",
+      "gender-sensitive reporting requirements to better-calibrated national ",
+      "financial inclusion targets."
+    ),
+    sections = list(list(heading = "Companion Technical Guide", body = .tg_footer_body))
+  ),
+  "consumer_protection" = list(
+    title = "Consumer protection",
+    summary = paste0(
+      "As argued in our Technical Guide (section 2.4.1), weak competition and ",
+      "poor conduct could disproportionately harm vulnerable consumers. ",
+      "Socio-demographic data enables authorities to identify which consumer ",
+      "segments are being underserved, overcharged, have fewer provider options, ",
+      "or are being treated unfairly &mdash; by which providers and in which ",
+      "products and channels. Analyzing rejection rates, fees, complaint patterns, ",
+      "claims ratios, and switching barriers across gender, age, income, and ",
+      "location can distinguish legitimate risk differentials from potential bias ",
+      "or discrimination, and reveal conduct risks and structural competition ",
+      "failures affecting specific segments. Findings can drive supervisory ",
+      "engagement and enforcement, stricter suitability rules, vulnerability-based ",
+      "supervisory prioritization, push for greater market transparency, and ",
+      "legal and regulatory reforms to increase competition."
+    ),
+    sections = list(list(heading = "Companion Technical Guide", body = .tg_footer_body))
+  ),
+  "stability" = list(
+    title = "Stability, safety and soundness",
+    summary = paste0(
+      "Socio-demographic characteristics remain largely absent from prudential ",
+      "supervision, yet growing evidence suggests they can be relevant to ",
+      "financial risk. Segmented analysis can show whether certain customer ",
+      "segments are systematically associated with higher or lower credit risk, ",
+      "whether specific groups are disproportionately exposed to fraud that could ",
+      "increase legal and reputation risks, and whether some depositor segments ",
+      "exhibit more stable saving behavior &mdash; with implications for ",
+      "system-level resilience. Gender diversity within providers can also be ",
+      "examined as a variable correlated with risk management and performance, ",
+      "including with overall supervisory risk scoring assigned to each provider. ",
+      "These insights can help authorities sharpen risk assessments, refine ",
+      "risk-based supervision, and improve supervisory targeting in support of ",
+      "their core mandates. Section 2.4.3 of our Technical Guide expands on this ",
+      "topic, giving examples of potential analyses and actions based on such ",
+      "analyses."
+    ),
+    sections = list(list(heading = "Companion Technical Guide", body = .tg_footer_body))
+  ),
+  "sustainability" = list(
+    title = "Sustainability",
+    summary = paste0(
+      "As argued in Section 2.4.4 of our Technical Guide, disaggregated data can ",
+      "reveal whether the expansion of green and sustainable financial products ",
+      "is reaching vulnerable segments &mdash; such as low-income women, female ",
+      "smallholder farmers, and women-led MSMEs &mdash; or remaining concentrated ",
+      "among large corporate clients. Combining socio-demographic, geographic, and ",
+      "portfolio information allows authorities to assess whether climate-related ",
+      "regulations are inadvertently excluding vulnerable groups, and whether more ",
+      "diverse providers serve these segments more effectively. Findings can inform ",
+      "efforts to close climate insurance coverage gaps, ease access to green ",
+      "finance instruments, and set clearer expectations for inclusive sustainable ",
+      "finance."
+    ),
+    sections = list(list(heading = "Companion Technical Guide", body = .tg_footer_body))
+  ),
+  "market_development" = list(
+    title = "Capital markets development",
+    summary = paste0(
+      "As explored in Section 2.4.4 of our Technical Guide, segmented analysis ",
+      "can help authorities assess whether certain groups face disproportionate ",
+      "barriers to accessing funding through capital markets and alternative ",
+      "channels such as crowdfunding platforms. Examining disparities in funding ",
+      "project success rates, amounts raised, returns, and investor behavior ",
+      "across gender can surface structural barriers and investor bias &mdash; ",
+      "evidence shows women-led ventures tend to request smaller amounts despite ",
+      "performing well, yet remain underrepresented in crowdfunding platforms. ",
+      "Authorities can respond by reviewing entry requirements for issuers and ",
+      "retail investors, disseminating project return data that counters bias, and ",
+      "raising awareness among underrepresented entrepreneurs."
+    ),
+    sections = list(list(heading = "Companion Technical Guide", body = .tg_footer_body))
   )
 )
 

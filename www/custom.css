@@ -136,6 +136,50 @@ h1, h2, h3, h4, h5, h6 {
   filter: drop-shadow(0 0 4px rgba(0,0,0,0.35));
 }
 
+/* Technical Guide icon next to each mandate in the filter */
+.mandate-choice-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tech-guide-link {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  line-height: 0;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.15s ease, filter 0.15s ease, transform 0.15s ease;
+}
+
+.tech-guide-link:hover {
+  opacity: 1;
+  text-decoration: none;
+  transform: translateY(-1px);
+  filter: drop-shadow(0 0 3px rgba(237,119,0,0.5));
+}
+
+.tech-guide-mark {
+  height: 16px;
+  width: auto;
+  display: block;
+}
+
+/* "Coming soon" pill linking the drawer to the companion Technical Guide */
+.tg-guide-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1A5A80;
+  background: #eef3f7;
+  border: 1px solid #d3e0e9;
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+
 /* Page navigation pills (multi-page memos) */
 .memo-drawer-nav {
   display: none;
@@ -428,6 +472,18 @@ tr.fh-unmapped td {
 .badge-finhealth-preset {
   background: #f8d7da;
   color: #721c24;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-di-preset {
+  background: #e7e3f0;
+  color: #402C60;
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 11px;

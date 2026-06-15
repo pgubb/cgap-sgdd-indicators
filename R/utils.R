@@ -20,6 +20,33 @@ slugify <- function(text) {
 htmlEscape <- htmltools::htmlEscape
 
 
+# --- Technical Guide icon ---------------------------------------------------
+# Uses the orange CGAP mark (extracted from the logo, recoloured to the brand
+# orange #ED7700 on a transparent background — see www/cgap_mark.png). Ties the
+# affordance to CGAP's identity and reads differently from the preset
+# "file-lines" icon.
+
+#' Clickable technical-guide icon for a mandate.
+#' Opens the shared memo drawer via openTechGuide(<id>). stopPropagation keeps
+#' the click from toggling the mandate checkbox it lives inside.
+tech_guide_icon <- function(tg_id) {
+  tags$a(
+    class = "tech-guide-link",
+    href = "#",
+    title = "Why this matters — companion Technical Guide",
+    `aria-label` = "Open the Technical Guide note for this mandate",
+    onclick = sprintf(
+      "openTechGuide('%s'); event.stopPropagation(); return false;", tg_id
+    ),
+    tags$img(
+      src = "cgap_mark.png",
+      class = "tech-guide-mark",
+      alt = "CGAP Technical Guide"
+    )
+  )
+}
+
+
 # Generate CSS for sector colors
 generate_sector_styles <- function(sector_colors) {
   paste(
@@ -484,7 +511,8 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       !is.null(active_filters$search) && active_filters$search != "" ||
       isTRUE(active_filters$presets_digital) ||
       isTRUE(active_filters$presets_msme) ||
-      isTRUE(active_filters$presets_finhealth)
+      isTRUE(active_filters$presets_finhealth) ||
+      isTRUE(active_filters$presets_di)
   )
   
   div(
@@ -559,6 +587,11 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
             span(class = "filter-pill-preset",
                  icon("heart-pulse", class = "fas", style = "font-size: 10px;"),
                  "Financial Health")
+          },
+          if (isTRUE(active_filters$presets_di)) {
+            span(class = "filter-pill-preset",
+                 icon("users", class = "fas", style = "font-size: 10px;"),
+                 "Diversity & Inclusion")
           },
           if (length(active_filters$mandates) > 0) {
             lapply(active_filters$mandates, function(m)
@@ -1335,6 +1368,11 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                   },
                   if (!is.null(ind$preset_finhealth) && !is.na(ind$preset_finhealth) && ind$preset_finhealth == 1) {
                     '<span class="badge badge-priority"><i class="fas fa-heart-pulse"></i> Financial health </span>'
+                  } else {
+                    ''
+                  },
+                  if (!is.null(ind$preset_di) && !is.na(ind$preset_di) && ind$preset_di == 1) {
+                    '<span class="badge badge-priority"><i class="fas fa-users"></i> Diversity &amp; inclusion </span>'
                   } else {
                     ''
                   }, '
