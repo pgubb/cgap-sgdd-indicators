@@ -488,7 +488,7 @@ render_disagg_table_vertical <- function(indicator_row, columns,
 # Enhanced navigation helper with active filters display and Add All/Remove All buttons
 
 enhanced_navigation_helper <- function(filtered_indicators, total_indicators, active_filters = NULL,
-                                       active_set_name = "My Indicators") {
+                                       active_set_name = "My Indicators", all_sets = NULL) {
   n <- nrow(filtered_indicators)
   N <- nrow(total_indicators)
   
@@ -535,12 +535,45 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       div(
         style = "display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;",
 
-        div(
-          class = "active-set-label",
-          icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
-          span("Adding to:", style = "opacity: 0.8;"),
-          span(active_set_name, style = "font-weight: 600;")
-        ),
+        # Active-set switcher: when more than one set exists, click the name to
+        # pick which set indicators are added to. With a single set it stays a
+        # plain, non-interactive label.
+        if (!is.null(all_sets) && length(all_sets) > 1) {
+          div(
+            class = "active-set-label active-set-switcher",
+            icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
+            span("Adding to:", style = "opacity: 0.8;"),
+            tags$button(
+              type = "button",
+              class = "active-set-trigger",
+              onclick = "toggleSetMenu(event)",
+              `aria-label` = "Switch the set indicators are added to",
+              span(active_set_name, class = "active-set-name"),
+              icon("chevron-down", class = "fas active-set-caret")
+            ),
+            div(
+              id = "active-set-menu",
+              class = "active-set-menu",
+              lapply(all_sets, function(s) {
+                tags$button(
+                  type = "button",
+                  class = paste("active-set-option", if (identical(s, active_set_name)) "is-active" else ""),
+                  `data-set-name` = s,
+                  onclick = "selectBannerSetEl(this)",
+                  icon("check", class = "fas active-set-check"),
+                  span(s, class = "active-set-option-label")
+                )
+              })
+            )
+          )
+        } else {
+          div(
+            class = "active-set-label",
+            icon("layer-group", class = "fas", style = "font-size: 11px; opacity: 0.8;"),
+            span("Adding to:", style = "opacity: 0.8;"),
+            span(active_set_name, style = "font-weight: 600;")
+          )
+        },
 
         div(
           style = "display: flex; gap: 8px; align-items: center;",

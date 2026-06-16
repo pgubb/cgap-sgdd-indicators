@@ -413,6 +413,11 @@ setManagerServer <- function(id) {
     return(list(
       sets = indicator_sets,
       active_set = active_set_name,
+      set_active = function(name) {
+        if (!is.null(name) && name %in% names(indicator_sets())) {
+          active_set_name(name)
+        }
+      },
       get_active_indicators = reactive({
         sets <- indicator_sets()
         active <- active_set_name()

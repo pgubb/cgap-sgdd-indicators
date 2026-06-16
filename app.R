@@ -215,7 +215,44 @@ ui <- page_navbar(
         if (e.key === 'Escape') closePresetMemo();
       });
       "
-    )))
+    ))),
+
+    # Active-set switcher (Browse banner dropdown)
+    tags$script(HTML("
+      function toggleSetMenu(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var menu = document.getElementById('active-set-menu');
+        if (!menu) return;
+        var willOpen = !menu.classList.contains('open');
+        menu.classList.toggle('open', willOpen);
+        var caret = document.querySelector('.active-set-caret');
+        if (caret) caret.style.transform = willOpen ? 'rotate(180deg)' : '';
+        if (willOpen) {
+          setTimeout(function(){ document.addEventListener('click', _closeSetMenuOnce); }, 0);
+        } else {
+          document.removeEventListener('click', _closeSetMenuOnce);
+        }
+      }
+      function _closeSetMenuOnce(ev) {
+        var sw = document.querySelector('.active-set-switcher');
+        if (sw && sw.contains(ev.target)) return;
+        var menu = document.getElementById('active-set-menu');
+        if (menu) menu.classList.remove('open');
+        var caret = document.querySelector('.active-set-caret');
+        if (caret) caret.style.transform = '';
+        document.removeEventListener('click', _closeSetMenuOnce);
+      }
+      function selectBannerSetEl(el) {
+        if (!el) return;
+        var name = el.getAttribute('data-set-name');
+        var menu = document.getElementById('active-set-menu');
+        if (menu) menu.classList.remove('open');
+        document.removeEventListener('click', _closeSetMenuOnce);
+        if (window.Shiny && Shiny.setInputValue) {
+          Shiny.setInputValue('banner_set_select', {name: name, ts: Date.now()}, {priority: 'event'});
+        }
+      }
+    "))
   ),
   
   sidebar = sidebar(
@@ -322,16 +359,25 @@ server <- function(input, output, session) {
       presets_di = input$`filters-presets_di`
     )
     
-    # Get the active set name from set_manager
+    # Get the active set name + all set names from set_manager
     active_set_name <- set_manager$active_set()
-    
+    all_sets <- names(set_manager$sets())
+
     enhanced_navigation_helper(
-      indicators_data, 
-      indicators, 
+      indicators_data,
+      indicators,
       active_filters,
-      active_set_name = active_set_name
+      active_set_name = active_set_name,
+      all_sets = all_sets
     )
   })
+
+  # Switch active set from the Browse banner dropdown
+  observeEvent(input$banner_set_select, {
+    sel <- input$banner_set_select
+    name <- if (is.list(sel)) sel$name else sel
+    set_manager$set_active(name)
+  }, ignoreInit = TRUE)
   
   # Key
   output$key <- renderUI({
@@ -474,6 +520,16 @@ server <- function(input, output, session) {
       }
     })
   }, ignoreNULL = TRUE, ignoreInit = TRUE)
+
+  # Re-map the card Add/Added buttons whenever the active set changes, so they
+  # reflect the currently selected set (not whichever set was active at render).
+  observeEvent(set_manager$active_set(), {
+    selected_codes <- isolate(set_manager$get_active_indicators())
+    session$sendCustomMessage(
+      "updateSelectedButtons",
+      list(ids = as.character(selected_codes))
+    )
+  }, ignoreInit = TRUE)
   
   # Selected tab title
   output$selected_tab_title <- renderUI({

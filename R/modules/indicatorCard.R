@@ -457,6 +457,47 @@ indicatorCardJS <- function() {
       });
     });
     
+    // Re-map every card's Add/Added button to a given set's membership.
+    // Called when the active set changes so buttons reflect the current set
+    // without re-rendering the cards (preserves expanded/scroll state).
+    Shiny.addCustomMessageHandler('updateSelectedButtons', function(data) {
+      // ids may arrive as an array, a single scalar (auto_unbox), or be absent
+      var raw = (data && data.ids != null) ? data.ids : [];
+      var ids = Array.isArray(raw) ? raw : [raw];
+      var selected = {};
+      ids.forEach(function(id) { selected[String(id)] = true; });
+
+      $('.select-indicator-btn-modern').each(function() {
+        var btn = $(this);
+        var isSel = selected[String(btn.data('indicator-id'))] === true;
+        btn.data('selected', isSel);
+        if (isSel) {
+          btn.removeClass('btn-unselected').addClass('btn-selected');
+          btn.find('i').removeClass('fa-plus').addClass('fa-check');
+          btn.find('.btn-text').text('Added');
+        } else {
+          btn.removeClass('btn-selected').addClass('btn-unselected');
+          btn.find('i').removeClass('fa-check').addClass('fa-plus');
+          btn.find('.btn-text').text('Add');
+        }
+      });
+
+      $('.select-indicator-btn').each(function() {
+        var btn = $(this);
+        var isSel = selected[String(btn.data('indicator-id'))] === true;
+        btn.data('selected', isSel);
+        if (isSel) {
+          btn.removeClass('btn-outline-primary').addClass('btn-success');
+          btn.find('i').removeClass('fa-plus-circle').addClass('fa-check-circle');
+          btn.find('.btn-text').text('Remove from list');
+        } else {
+          btn.removeClass('btn-success').addClass('btn-outline-primary');
+          btn.find('i').removeClass('fa-check-circle').addClass('fa-plus-circle');
+          btn.find('.btn-text').text('Add to list');
+        }
+      });
+    });
+
     Shiny.addCustomMessageHandler('showLoading', function(show) {
       if (show) {
         $('#loading_spinner').fadeIn(200);

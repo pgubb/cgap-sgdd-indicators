@@ -514,6 +514,109 @@ tr.fh-unmapped td {
   backdrop-filter: blur(10px);
 }
 
+/* Active-set switcher (click the set name to switch) */
+.active-set-switcher {
+  position: relative;
+  /* Lift above the stat cards below, which each create their own stacking
+     context via backdrop-filter and would otherwise paint over the menu. */
+  z-index: 50;
+}
+
+.active-set-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  padding: 1px 2px;
+  margin: 0;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+  text-underline-offset: 3px;
+}
+
+.active-set-trigger:hover {
+  opacity: 0.9;
+  text-decoration-color: rgba(255, 255, 255, 0.9);
+}
+
+.active-set-caret {
+  font-size: 9px;
+  opacity: 0.75;
+  transition: transform 0.15s ease;
+}
+
+.active-set-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 190px;
+  max-width: 300px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  z-index: 1050;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.active-set-menu.open {
+  display: flex;
+}
+
+.active-set-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.active-set-option-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.active-set-option:hover {
+  background: #f1f3f5;
+}
+
+.active-set-option.is-active {
+  color: #1A5A80;
+  font-weight: 600;
+}
+
+.active-set-check {
+  font-size: 10px;
+  color: #1A5A80;
+  flex-shrink: 0;
+}
+
+.active-set-option:not(.is-active) .active-set-check {
+  visibility: hidden;
+}
+
 /* Global Smooth Scrolling */
 
 /* Controlled smooth scrolling - allows JavaScript override */
