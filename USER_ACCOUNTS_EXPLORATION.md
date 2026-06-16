@@ -216,6 +216,29 @@ security boundary is the **RTDB security rules**, not secrecy of the API key.
    ```
 5. Register a **Web app** and copy its config into `.Renviron` (above).
 
+### Verified by the Phase-0 demo (`firebase_demo.R`)
+
+Tested live against project `cgap-lens-2e3dd`: register → sign in → signed-in
+user on the server → sign out all work. `get_signed_in()` returns:
+
+```
+$success : TRUE
+$response$uid            : "m9fe77VECiPKYvcCjo4nWpuHHhm2"
+$response$email          : "paul.gubbins@gmail.com"
+$response$emailVerified  : FALSE
+$response$stsTokenManager$accessToken : "<Firebase ID token / JWT>"   # <- for RTDB auth
+$response$stsTokenManager$refreshToken: "..."
+$response$createdAt / lastLoginAt     : epoch-ms strings
+```
+
+So the field paths for the integration are `user$response$uid` and
+`user$response$email`. **For Phase 3 persistence**, authorize RTDB REST calls
+with the ID token at `user$response$stsTokenManager$accessToken` (or
+`f$get_id_token()`), e.g.
+`PATCH {FIREBASE_DATABASE_URL}/user_sets/{uid}.json?auth={idToken}` — the
+security rules then enforce `auth.uid === uid`. ID tokens expire ~1h; re-read
+the current token at save time.
+
 ### Data model (RTDB)
 
 ```
