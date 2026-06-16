@@ -111,9 +111,8 @@ server <- function(input, output, session) {
   })
 
   output$status <- renderUI({
-    signed_in <- tryCatch(f$is_signed_in(), error = function(e) FALSE)
-    if (isTRUE(signed_in)) {
-      user <- f$get_signed_in()
+    user <- tryCatch(f$get_signed_in(), error = function(e) NULL)
+    if (!is.null(user) && isTRUE(user$success)) {
       email <- tryCatch(user$response$email, error = function(e) NULL)
       uid   <- tryCatch(user$response$uid,   error = function(e) NULL)
       tagList(

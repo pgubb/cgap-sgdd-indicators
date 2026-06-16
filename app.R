@@ -336,10 +336,11 @@ server <- function(input, output, session) {
   fb <- FirebaseEmailPassword$new()
 
   # current_user: list(uid, email, token) when signed in, else NULL.
+  # Uses get_signed_in() (is_signed_in() is deprecated). When signed out the
+  # firebase package reports success = FALSE / no response.
   current_user <- reactive({
-    if (!isTRUE(tryCatch(fb$is_signed_in(), error = function(e) FALSE))) return(NULL)
     u <- tryCatch(fb$get_signed_in(), error = function(e) NULL)
-    if (is.null(u) || is.null(u$response$uid)) return(NULL)
+    if (is.null(u) || !isTRUE(u$success) || is.null(u$response$uid)) return(NULL)
     list(uid = u$response$uid,
          email = u$response$email,
          token = u$response$stsTokenManager$accessToken)
