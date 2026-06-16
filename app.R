@@ -390,13 +390,28 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$auth_register, {
+    message("[auth] register clicked for: ", if (is.null(input$auth_email)) "<empty>" else input$auth_email)
     req(input$auth_email, input$auth_password)
     fb$create(input$auth_email, input$auth_password)
   })
   observeEvent(input$auth_signin, {
+    message("[auth] sign-in clicked for: ", if (is.null(input$auth_email)) "<empty>" else input$auth_email)
     req(input$auth_email, input$auth_password)
     fb$sign_in(input$auth_email, input$auth_password)
   })
+
+  # Surface sign-in results/errors (firebase reports them via get_signed_in()).
+  observeEvent(fb$get_signed_in(), {
+    res <- fb$get_signed_in()
+    if (is.null(res)) return()
+    if (isTRUE(res$success)) {
+      message("[auth] signed in: ", res$response$email)
+    } else {
+      msg <- tryCatch(res$response$message, error = function(e) NULL)
+      message("[auth] sign-in failed: ", if (is.null(msg)) "unknown" else msg)
+      if (!is.null(msg)) showNotification(paste("Sign-in failed:", msg), type = "error", duration = 8)
+    }
+  }, ignoreInit = TRUE)
   observeEvent(input$auth_signout, {
     fb$sign_out()
     removeModal()
