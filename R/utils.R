@@ -812,7 +812,7 @@ about_modal_content <- function() {
           style = "margin-bottom: 30px;",
           h3("Context & Additional Resources",
              style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
-          p("LENS is one component of CGAP's project to support the mainstreaming of regulatory gender-disaggregated data (RGDD) in the financial sector and should be consulted jointly with 'Using Disaggregated Data to Improve Policy, Regulation and Supervision: A Technical Guide for Financial Sector Authorities' and accompanying pieces",
+          p("LENS is one component of CGAP's project to support the mainstreaming of regulatory gender-disaggregated data (RGDD) in the financial sector and should be consulted jointly with 'Technical Guide for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Inclusion and Other Policy Goals' and accompanying pieces",
             style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
           p("This Guidance package describes RGDD use cases, provides recommendations for Financial Sector Authorities on how to leverage regulatory reporting regimes to maximize the use of gender-disaggregated data for multiple FSA mandates and to support the goals of other actors (including funders and financial firms).",
             style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
