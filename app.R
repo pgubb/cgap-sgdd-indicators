@@ -1,9 +1,11 @@
 options(shiny.autoload.r = FALSE)
 
 # Load local environment vars (.Renviron) at app start so FIREBASE_* config is
-# present even if the R session predates them. On deploy (.Renviron not present)
-# the host-provided environment variables are used instead.
+# present even if the R session predates them. On shinyapps.io there is no
+# .Renviron; a bundled firebase.env (FIREBASE_* publishable web config only)
+# supplies the Firebase config instead.
 if (file.exists(".Renviron")) readRenviron(".Renviron")
+if (file.exists("firebase.env")) readRenviron("firebase.env")
 
 library(shiny)
 library(dplyr)

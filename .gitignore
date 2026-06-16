@@ -57,3 +57,6 @@ NOT_PUBLIC/
 
 # R profile
 .Rprofile
+
+# Bundled Firebase web config for shinyapps.io deploy (publishable, but not in git)
+firebase.env
