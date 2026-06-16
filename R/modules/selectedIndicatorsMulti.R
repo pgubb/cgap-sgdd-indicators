@@ -42,12 +42,12 @@ selectedIndicatorsMultiUI <- function(id) {
 }
 
 # Server function  
-selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
+selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors, current_user = reactive(NULL)) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    
-    # Initialize set manager
-    set_manager <- setManagerServer("set_manager")
+
+    # Initialize set manager (current_user drives account hydration/persistence)
+    set_manager <- setManagerServer("set_manager", current_user = current_user)
     
     # Reactive to track expanded cards
     expanded_cards <- reactiveVal(character(0))

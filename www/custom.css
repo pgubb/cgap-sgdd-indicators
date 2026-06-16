@@ -514,6 +514,24 @@ tr.fh-unmapped td {
   backdrop-filter: blur(10px);
 }
 
+/* Navbar account / sign-in control */
+.account-nav-btn {
+  color: inherit !important;
+  text-decoration: none !important;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  padding: 0 4px;
+}
+.account-nav-btn:hover {
+  text-decoration: underline !important;
+}
+.account-nav-btn .fas {
+  margin-right: 6px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
 /* Active-set switcher (click the set name to switch) */
 .active-set-switcher {
   position: relative;

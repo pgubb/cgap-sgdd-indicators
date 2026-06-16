@@ -133,17 +133,55 @@ setManagerUI <- function(id) {
 "))
 
 # Server function
-setManagerServer <- function(id) {
+setManagerServer <- function(id, current_user = reactive(NULL)) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    
+
     # Initialize with one default set
     indicator_sets <- reactiveVal(list(
       "My Indicators" = character()
     ))
-    
+
     active_set_name <- reactiveVal("My Indicators")
-    
+
+    # --- Account hydration / persistence -------------------------------------
+    # When a user signs in, load their saved sets; when they sign out, revert to
+    # a fresh guest set. Guests (current_user() == NULL) keep today's in-memory
+    # behaviour with no I/O. Keyed on uid so a token refresh doesn't re-hydrate.
+    .hydrated_uid <- reactiveVal(NULL)
+
+    observeEvent(current_user(), {
+      cu <- current_user()
+      new_uid <- if (is.null(cu)) NULL else cu$uid
+      if (identical(new_uid, .hydrated_uid())) return()  # same user / token refresh
+      .hydrated_uid(new_uid)
+
+      if (is.null(new_uid)) {
+        indicator_sets(list("My Indicators" = character()))
+        active_set_name("My Indicators")
+        return()
+      }
+      # Signed in: load saved sets (keep current ones if the account has none yet)
+      remote <- tryCatch(as_load_sets(new_uid, cu$token), error = function(e) list())
+      if (length(remote) > 0) {
+        indicator_sets(remote)
+        active_set_name(names(remote)[[1]])
+      }
+    }, ignoreNULL = FALSE)
+
+    # Debounced save: persist whenever sets change while signed in (no-op guest).
+    .sets_debounced <- debounce(reactive(indicator_sets()), 1500)
+    observeEvent(.sets_debounced(), {
+      cu <- isolate(current_user())
+      if (is.null(cu) || is.null(cu$uid)) return()
+      tryCatch(
+        as_save_sets(cu$uid, .sets_debounced(), cu$token),
+        error = function(e) showNotification(
+          paste("Couldn't save your sets:", conditionMessage(e)),
+          type = "warning", duration = 6)
+      )
+    }, ignoreInit = TRUE)
+
     # Update dropdown choices whenever sets change
     observe({
       sets <- indicator_sets()

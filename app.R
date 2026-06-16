@@ -5,6 +5,7 @@ library(dplyr)
 library(stringr)
 library(bslib)
 library(SnowballC)
+library(firebase)
 
 # Load data
 load("data/indicators.RData")
@@ -17,8 +18,9 @@ source("R/globals.R")
 source("R/utils.R")
 source("R/modules/indicatorCard.R")
 source("R/modules/filterPanel.R")
-source("R/modules/setManager.R")                    
-source("R/modules/selectedIndicatorsMulti.R") 
+source("R/modules/setManager.R")
+source("R/modules/selectedIndicatorsMulti.R")
+source("R/account_store.R")                          # optional-account persistence (Firebase RTDB)
 
 
 # UI ----------
@@ -73,6 +75,7 @@ ui <- page_navbar(
   ),
   
   header = tagList(
+    useFirebase(),  # Firebase JS SDK (auth) — config from FIREBASE_* env vars
     includeCSS("www/custom.css"),
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
     indicatorCardJS(),
@@ -313,18 +316,113 @@ ui <- page_navbar(
       class = "btn-link",
       style = "color: inherit; text-decoration: none; border: none; background: transparent; font-size: 14px;"
     )
+  ),
+
+  nav_item(
+    uiOutput("account_nav", inline = TRUE)
   )
-  
+
 )
 
 # SERVER ----------
 server <- function(input, output, session) {
-  
-  # Initialize set manager
+
+  # --- Optional accounts (Firebase email/password auth) ---------------------
+  fb <- FirebaseEmailPassword$new()
+
+  # current_user: list(uid, email, token) when signed in, else NULL.
+  current_user <- reactive({
+    if (!isTRUE(tryCatch(fb$is_signed_in(), error = function(e) FALSE))) return(NULL)
+    u <- tryCatch(fb$get_signed_in(), error = function(e) NULL)
+    if (is.null(u) || is.null(u$response$uid)) return(NULL)
+    list(uid = u$response$uid,
+         email = u$response$email,
+         token = u$response$stsTokenManager$accessToken)
+  })
+
+  # Navbar control: "Sign in" when signed out, the email when signed in.
+  output$account_nav <- renderUI({
+    cu <- current_user()
+    if (is.null(cu)) {
+      actionButton("account_btn", "Sign in", class = "btn-link account-nav-btn",
+                   icon = icon("right-to-bracket", class = "fas"))
+    } else {
+      actionButton("account_btn",
+                   label = tagList(icon("circle-user", class = "fas"), cu$email),
+                   class = "btn-link account-nav-btn")
+    }
+  })
+
+  # Open the auth modal (signed out) or the account modal (signed in).
+  observeEvent(input$account_btn, {
+    cu <- current_user()
+    if (is.null(cu)) {
+      showModal(modalDialog(
+        title = "Sign in or create an account", size = "s", easyClose = TRUE,
+        textInput("auth_email", "Email", placeholder = "you@example.com", width = "100%"),
+        passwordInput("auth_password", "Password", placeholder = "at least 6 characters", width = "100%"),
+        p(style = "font-size: 12px; color: #6c757d;",
+          "Accounts are optional — they let you save your indicator sets and sign back in later."),
+        footer = tagList(
+          modalButton("Cancel"),
+          actionButton("auth_register", "Create account", class = "btn btn-outline-primary"),
+          actionButton("auth_signin", "Sign in", class = "btn btn-primary")
+        )
+      ))
+    } else {
+      showModal(modalDialog(
+        title = "Account", size = "s", easyClose = TRUE,
+        p("Signed in as ", strong(cu$email), "."),
+        p(style = "font-size: 12px; color: #6c757d;",
+          "Your indicator sets are saved to your account automatically."),
+        footer = tagList(
+          modalButton("Close"),
+          actionButton("auth_signout", "Sign out", class = "btn btn-outline-danger")
+        )
+      ))
+    }
+  })
+
+  observeEvent(input$auth_register, {
+    req(input$auth_email, input$auth_password)
+    fb$create(input$auth_email, input$auth_password)
+  })
+  observeEvent(input$auth_signin, {
+    req(input$auth_email, input$auth_password)
+    fb$sign_in(input$auth_email, input$auth_password)
+  })
+  observeEvent(input$auth_signout, {
+    fb$sign_out()
+    removeModal()
+  })
+
+  # Registration result: on success, sign the user straight in.
+  observeEvent(fb$get_created(), {
+    res <- fb$get_created()
+    if (isTRUE(res$success)) {
+      showNotification("Account created. Signing you in…", type = "message")
+      fb$sign_in(isolate(input$auth_email), isolate(input$auth_password))
+    } else {
+      msg <- tryCatch(res$response$message, error = function(e) NULL)
+      showNotification(paste("Could not create account:", if (is.null(msg)) "unknown error" else msg),
+                       type = "error", duration = 8)
+    }
+  })
+
+  # Close the auth modal on the signed-out -> signed-in transition only.
+  .was_signed_in <- reactiveVal(FALSE)
+  observeEvent(current_user(), {
+    now_in <- !is.null(current_user())
+    if (now_in && !.was_signed_in()) removeModal()
+    .was_signed_in(now_in)
+  }, ignoreNULL = FALSE)
+
+  # Initialize set manager (hydrates/persists sets when current_user is set)
   set_manager <- selectedIndicatorsMultiServer(
     "selected",
     indicators_data = indicators,
-    sector_colors = SECTOR_COLORS
+    sector_colors = SECTOR_COLORS,
+    current_user = current_user
   )
   
   # Filter module
