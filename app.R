@@ -1,5 +1,10 @@
 options(shiny.autoload.r = FALSE)
 
+# Load local environment vars (.Renviron) at app start so FIREBASE_* config is
+# present even if the R session predates them. On deploy (.Renviron not present)
+# the host-provided environment variables are used instead.
+if (file.exists(".Renviron")) readRenviron(".Renviron")
+
 library(shiny)
 library(dplyr)
 library(stringr)
