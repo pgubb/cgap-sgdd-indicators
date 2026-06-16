@@ -81,6 +81,23 @@ ui <- page_navbar(
   
   header = tagList(
     useFirebase(),  # Firebase JS SDK (auth) — config from FIREBASE_* env vars
+    tags$script(HTML("
+      function toggleAuthPw(btn){
+        var inp = document.getElementById('auth_password'); if(!inp) return;
+        var show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        var i = btn.querySelector('i'); if(i) i.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      }
+      Shiny.addCustomMessageHandler('setAuthBusy', function(busy){
+        var b = document.getElementById('auth_submit'); if(!b) return;
+        b.disabled = !!busy;
+        b.classList.toggle('is-loading', !!busy);
+      });
+      Shiny.addCustomMessageHandler('authMode', function(mode){
+        var m = document.querySelector('.auth-modal'); if(m) m.setAttribute('data-mode', mode);
+      });
+    ")),
     includeCSS("www/custom.css"),
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
     indicatorCardJS(),
@@ -359,75 +376,158 @@ server <- function(input, output, session) {
     }
   })
 
+  # --- Auth modal state ---
+  auth_mode  <- reactiveVal("signin")   # "signin" | "register"
+  auth_busy  <- reactiveVal(FALSE)
+  auth_error <- reactiveVal(NULL)
+
+  # Map raw Firebase auth errors to friendly, human messages.
+  .auth_friendly_error <- function(res) {
+    raw <- tolower(paste(c(res$response$code, res$response$message), collapse = " "))
+    if (grepl("email-already-in-use|already in use", raw)) return("An account with that email already exists — try signing in instead.")
+    if (grepl("invalid-credential|wrong-password|user-not-found|invalid-login", raw)) return("Incorrect email or password.")
+    if (grepl("invalid-email", raw)) return("That doesn't look like a valid email address.")
+    if (grepl("weak-password|at least 6", raw)) return("Password must be at least 6 characters.")
+    if (grepl("too-many-requests", raw)) return("Too many attempts — please wait a moment and try again.")
+    if (grepl("network", raw)) return("Network error — check your connection and try again.")
+    m <- res$response$message
+    if (is.null(m) || !nzchar(m)) "Something went wrong. Please try again." else m
+  }
+
   # Open the auth modal (signed out) or the account modal (signed in).
   observeEvent(input$account_btn, {
     cu <- current_user()
     if (is.null(cu)) {
+      auth_mode("signin"); auth_error(NULL); auth_busy(FALSE)
       showModal(modalDialog(
-        title = "Sign in or create an account", size = "s", easyClose = TRUE,
-        textInput("auth_email", "Email", placeholder = "you@example.com", width = "100%"),
-        passwordInput("auth_password", "Password", placeholder = "at least 6 characters", width = "100%"),
-        p(style = "font-size: 12px; color: #6c757d;",
-          "Accounts are optional — they let you save your indicator sets and sign back in later."),
-        footer = tagList(
-          modalButton("Cancel"),
-          actionButton("auth_register", "Create account", class = "btn btn-outline-primary"),
-          actionButton("auth_signin", "Sign in", class = "btn btn-primary")
-        )
+        div(class = "auth-modal", `data-mode` = "signin",
+          uiOutput("auth_header"),
+          uiOutput("auth_error"),
+          div(class = "auth-field",
+            tags$label("Email", class = "auth-label", `for` = "auth_email"),
+            textInput("auth_email", NULL, placeholder = "you@example.com")
+          ),
+          div(class = "auth-field",
+            div(class = "auth-label-row",
+              tags$label("Password", class = "auth-label", `for` = "auth_password"),
+              actionLink("auth_forgot", "Forgot password?", class = "auth-forgot")
+            ),
+            div(class = "auth-pw-wrap",
+              passwordInput("auth_password", NULL, placeholder = "Your password"),
+              tags$button(type = "button", class = "auth-pw-toggle",
+                          onclick = "toggleAuthPw(this)", `aria-label` = "Show password",
+                          icon("eye", class = "fas"))
+            )
+          ),
+          actionButton("auth_submit", "Sign in", class = "btn auth-submit-btn", width = "100%"),
+          div(class = "auth-toggle",
+            uiOutput("auth_toggle_text", inline = TRUE), " ",
+            actionLink("auth_toggle_mode", "Create an account")
+          )
+        ),
+        title = NULL, footer = NULL, easyClose = TRUE, size = "s"
       ))
+      updateTextInput(session, "auth_email", value = "")
+      updateTextInput(session, "auth_password", value = "")
     } else {
       showModal(modalDialog(
-        title = "Account", size = "s", easyClose = TRUE,
-        p("Signed in as ", strong(cu$email), "."),
-        p(style = "font-size: 12px; color: #6c757d;",
-          "Your indicator sets are saved to your account automatically."),
-        footer = tagList(
-          modalButton("Close"),
-          actionButton("auth_signout", "Sign out", class = "btn btn-outline-danger")
-        )
+        div(class = "account-modal",
+          div(class = "account-avatar", icon("circle-user", class = "fas")),
+          h3(class = "account-title", "Your account"),
+          p(class = "account-email", cu$email),
+          div(class = "account-note",
+            icon("cloud-arrow-up", class = "fas"),
+            span("Your indicator sets are saved to your account and restored whenever you sign in.")
+          ),
+          actionButton("auth_signout", "Sign out", class = "btn account-signout-btn", width = "100%")
+        ),
+        title = NULL, footer = NULL, easyClose = TRUE, size = "s"
       ))
     }
   })
 
-  observeEvent(input$auth_register, {
-    message("[auth] register clicked for: ", if (is.null(input$auth_email)) "<empty>" else input$auth_email)
-    req(input$auth_email, input$auth_password)
-    fb$create(input$auth_email, input$auth_password)
+  # Reactive display bits (contain NO inputs, so re-rendering won't reset typing)
+  output$auth_header <- renderUI({
+    reg <- identical(auth_mode(), "register")
+    div(class = "auth-head",
+      div(class = "auth-badge", icon(if (reg) "user-plus" else "right-to-bracket", class = "fas")),
+      h3(class = "auth-title", if (reg) "Create your account" else "Welcome back"),
+      p(class = "auth-sub", "Accounts are optional — save your indicator sets and pick up where you left off.")
+    )
   })
-  observeEvent(input$auth_signin, {
-    message("[auth] sign-in clicked for: ", if (is.null(input$auth_email)) "<empty>" else input$auth_email)
-    req(input$auth_email, input$auth_password)
-    fb$sign_in(input$auth_email, input$auth_password)
+  output$auth_error <- renderUI({
+    err <- auth_error()
+    if (is.null(err)) return(NULL)
+    div(class = "auth-error", role = "alert",
+        icon("circle-exclamation", class = "fas"), span(err))
+  })
+  output$auth_toggle_text <- renderUI({
+    if (identical(auth_mode(), "register")) "Already have an account?" else "New to LENS?"
   })
 
-  # Surface sign-in results/errors (firebase reports them via get_signed_in()).
+  # Keep static button/link labels + the modal's data-mode in sync with mode.
+  observeEvent(auth_mode(), {
+    reg <- identical(auth_mode(), "register")
+    updateActionButton(session, "auth_submit", label = if (reg) "Create account" else "Sign in")
+    updateActionButton(session, "auth_toggle_mode", label = if (reg) "Sign in" else "Create an account")
+    session$sendCustomMessage("authMode", auth_mode())
+  })
+
+  observeEvent(input$auth_toggle_mode, {
+    auth_mode(if (identical(auth_mode(), "signin")) "register" else "signin")
+    auth_error(NULL)
+  })
+
+  observeEvent(input$auth_forgot, {
+    email <- input$auth_email
+    if (is.null(email) || !nzchar(trimws(email))) {
+      auth_error("Enter your email above first, then click Forgot password.")
+      return()
+    }
+    fb$reset_password(email)
+    auth_error(NULL)
+    showNotification("Password reset email sent — check your inbox.", type = "message", duration = 6)
+  })
+
+  observeEvent(input$auth_submit, {
+    if (isTRUE(isolate(auth_busy()))) return()
+    email <- input$auth_email; pw <- input$auth_password
+    if (is.null(email) || !nzchar(trimws(email)) || is.null(pw) || !nzchar(pw)) {
+      auth_error("Please enter your email and password.")
+      return()
+    }
+    auth_error(NULL); auth_busy(TRUE)
+    session$sendCustomMessage("setAuthBusy", TRUE)
+    if (identical(auth_mode(), "register")) fb$create(email, pw) else fb$sign_in(email, pw)
+  })
+
+  # Registration result: on success, sign the user straight in (stay busy).
+  observeEvent(fb$get_created(), {
+    res <- fb$get_created()
+    if (is.null(res)) return()
+    if (isTRUE(res$success)) {
+      fb$sign_in(isolate(input$auth_email), isolate(input$auth_password))
+    } else {
+      auth_busy(FALSE); session$sendCustomMessage("setAuthBusy", FALSE)
+      auth_error(.auth_friendly_error(res))
+    }
+  }, ignoreInit = TRUE)
+
+  # Sign-in result: success closes the modal (via current_user); failure shows error.
   observeEvent(fb$get_signed_in(), {
     res <- fb$get_signed_in()
     if (is.null(res)) return()
     if (isTRUE(res$success)) {
-      message("[auth] signed in: ", res$response$email)
-    } else {
-      msg <- tryCatch(res$response$message, error = function(e) NULL)
-      message("[auth] sign-in failed: ", if (is.null(msg)) "unknown" else msg)
-      if (!is.null(msg)) showNotification(paste("Sign-in failed:", msg), type = "error", duration = 8)
+      auth_busy(FALSE); session$sendCustomMessage("setAuthBusy", FALSE)
+    } else if (isTRUE(isolate(auth_busy()))) {
+      auth_busy(FALSE); session$sendCustomMessage("setAuthBusy", FALSE)
+      auth_error(.auth_friendly_error(res))
     }
   }, ignoreInit = TRUE)
+
   observeEvent(input$auth_signout, {
     fb$sign_out()
     removeModal()
-  })
-
-  # Registration result: on success, sign the user straight in.
-  observeEvent(fb$get_created(), {
-    res <- fb$get_created()
-    if (isTRUE(res$success)) {
-      showNotification("Account created. Signing you in…", type = "message")
-      fb$sign_in(isolate(input$auth_email), isolate(input$auth_password))
-    } else {
-      msg <- tryCatch(res$response$message, error = function(e) NULL)
-      showNotification(paste("Could not create account:", if (is.null(msg)) "unknown error" else msg),
-                       type = "error", duration = 8)
-    }
   })
 
   # Close the auth modal on the signed-out -> signed-in transition only.

@@ -1,10 +1,8 @@
 # R/account_store.R --- Persistence interface for optional user accounts
 # ============================================================================
-# EXPLORATION SCAFFOLD (branch: explore/user-accounts).
-#
 # Provider-agnostic interface for loading/saving a user's indicator sets so the
 # rest of the app never depends on the chosen backend. Backend = Firebase
-# Realtime Database (see USER_ACCOUNTS_EXPLORATION.md §9). Authentication
+# Realtime Database (see USER_ACCOUNTS_EXPLORATION.md). Authentication
 # (register / sign-in / current user / ID token) is handled in app.R via
 # firebase::FirebaseEmailPassword; this file is persistence only.
 #
@@ -17,9 +15,19 @@
 #       error on failure (callers tryCatch and degrade to session-only state).
 #
 # id_token is the Firebase ID token (JWT), from
-# user$response$stsTokenManager$accessToken (or f$get_id_token()). RTDB REST
-# accepts it as ?auth=<token>; the database security rules then enforce
-# auth.uid === uid. Tokens expire ~1h, so callers should pass a fresh one.
+# user$response$stsTokenManager$accessToken. RTDB REST accepts it as
+# ?auth=<token>; the database rules then enforce auth.uid === uid.
+#
+# Storage shape (an ARRAY of {name, ids} objects, not a name-keyed map):
+#   /user_sets/<uid> = {
+#     "sets": [ {"name":"My Indicators","ids":["11","18"]}, {"name":"Credit"} ],
+#     "updated": <ms>
+#   }
+# Why an array rather than { "<name>": [ids] }:
+#   - set names may contain '.', '/', '#', '$', '[', ']' which are illegal RTDB
+#     keys; as values they are safe.
+#   - RTDB drops empty arrays, so an empty name-keyed entry would vanish; here an
+#     empty set still persists its {name} object (ids just absent on read).
 # ============================================================================
 
 # Backend selector. "guest" = no-op (accounts disabled / signed-out users).
@@ -51,8 +59,6 @@ as_save_sets <- function(uid, sets, id_token = NULL) {
 }
 
 # --- Firebase Realtime Database backend (REST) -------------------------------
-# GET/PUT {FIREBASE_DATABASE_URL}/user_sets/{uid}.json?auth={id_token}
-# Stored shape: { "sets": { "<name>": ["11","18"], ... }, "updated": <ms> }
 
 .rtdb_url <- function(uid) {
   db <- Sys.getenv("FIREBASE_DATABASE_URL")
@@ -70,18 +76,31 @@ as_save_sets <- function(uid, sets, id_token = NULL) {
     stop("RTDB load HTTP ", httr2::resp_status(resp), ": ", httr2::resp_body_string(resp), call. = FALSE)
   }
   body <- httr2::resp_body_json(resp, simplifyVector = FALSE)
-  if (is.null(body) || is.null(body$sets)) return(list())
-  # Coerce each set's id array to a plain character vector.
-  lapply(body$sets, function(ids) as.character(unlist(ids)))
+  raw <- if (is.null(body)) NULL else body$sets
+  if (is.null(raw) || length(raw) == 0) return(list())
+
+  # New format: list of {name, ids} objects (array, or "0"/"1"-keyed object).
+  if (is.list(raw[[1]]) && !is.null(raw[[1]][["name"]])) {
+    nm  <- vapply(raw, function(s) {
+      n <- s[["name"]]; if (is.null(n)) NA_character_ else as.character(n)
+    }, character(1))
+    ids <- lapply(raw, function(s) as.character(unlist(s[["ids"]])))
+    keep <- !is.na(nm)
+    return(setNames(ids[keep], nm[keep]))
+  }
+  # Legacy format: name-keyed map { "<name>": [ids] }.
+  lapply(raw, function(ids) as.character(unlist(ids)))
 }
 
 .as_save_sets_firebase <- function(uid, sets, id_token) {
   if (is.null(id_token) || !nzchar(id_token)) stop("missing id_token", call. = FALSE)
-  # as.list() on each id vector forces a JSON array even for length-1 (avoids
-  # auto_unbox turning a single id into a scalar). Note: RTDB does not persist
-  # empty arrays, so a set with zero indicators won't round-trip its emptiness.
+  # unname() -> JSON array. as.list() forces id arrays to survive (no auto_unbox
+  # scalarization of length-1). Empty ids -> [] (dropped by RTDB) -> the {name}
+  # object still persists, so empty sets keep their name.
   payload <- list(
-    sets = lapply(sets, function(ids) as.list(as.character(ids))),
+    sets = unname(lapply(names(sets), function(nm) {
+      list(name = nm, ids = as.list(as.character(sets[[nm]])))
+    })),
     updated = round(as.numeric(Sys.time()) * 1000)
   )
   resp <- httr2::request(.rtdb_url(uid)) |>

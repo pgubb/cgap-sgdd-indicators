@@ -166,6 +166,13 @@ setManagerServer <- function(id, current_user = reactive(NULL)) {
       if (length(remote) > 0) {
         indicator_sets(remote)
         active_set_name(names(remote)[[1]])
+        showNotification(
+          sprintf("Welcome back — restored %d saved %s.",
+                  length(remote), if (length(remote) == 1) "set" else "sets"),
+          type = "message", duration = 4)
+      } else {
+        showNotification("Signed in. Your sets will be saved to your account automatically.",
+                         type = "message", duration = 4)
       }
     }, ignoreNULL = FALSE)
 
