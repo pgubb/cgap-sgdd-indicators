@@ -149,7 +149,106 @@ No changes needed to filtering, cards, presets, or the memo drawer.
 
 ## 8. Open decisions (need input)
 
-1. **Provider:** Firebase vs Supabase (vs polished). Drives Phase 1.
-2. **Login methods:** email+password only, or also "Sign in with Google"?
+1. ~~**Provider:** Firebase vs Supabase (vs polished).~~ **DECIDED: Firebase.**
+2. ~~**Login methods:**~~ **DECIDED: email + password only.**
 3. **Privacy review:** does storing user emails require CGAP/WBG sign-off
-   before we ship beyond a test?
+   before we ship beyond a test? *(still open)*
+
+---
+
+## 9. DECISION: Firebase (Auth) + Realtime Database — concrete plan
+
+Chosen stack: **Firebase Authentication (email/password)** for accounts, and
+**Firebase Realtime Database (RTDB)** for persisting saved sets. Both are driven
+by the [`firebase`](https://firebase.john-coene.com) R package (John Coene),
+which embeds the Firebase JS SDK and exposes the signed-in user to the Shiny
+server. (The package supports RTDB + Storage, *not* Firestore — so we use RTDB.)
+
+### Verified auth API (`firebase` package)
+
+```r
+library(firebase)
+# server-side:
+f <- FirebaseEmailPassword$new()
+f$create(email, password)     # register a new account
+f$sign_in(email, password)    # sign in
+f$sign_out()                  # sign out (inherited)
+f$req_sign_in()               # reactive guard: require auth
+user <- f$get_signed_in()     # -> list with user$uid, user$email
+```
+
+UI deps: `useFirebase()` in the document head + the package's auth containers.
+
+### Config & secrets (`.Renviron`, never committed)
+
+From the Firebase console → Project settings → "Your apps" (Web app) config,
+set these (confirm exact names via `?firebase_config` once installed):
+
+```
+FIREBASE_API_KEY=...
+FIREBASE_PROJECT_ID=cgap-lens-...
+FIREBASE_AUTH_DOMAIN=cgap-lens-....firebaseapp.com
+FIREBASE_APP_ID=1:...:web:...
+FIREBASE_DATABASE_URL=https://cgap-lens-...-default-rtdb.firebaseio.com
+```
+
+These are *publishable* client config values (safe to ship to the browser); the
+security boundary is the **RTDB security rules**, not secrecy of the API key.
+
+### Firebase console setup (one-time, done by you)
+
+1. Create a Firebase project (can sit in the same Google account as the
+   existing service account / `cgap-lens` GCP project).
+2. **Authentication → Sign-in method → enable Email/Password.**
+3. **Realtime Database → create database.**
+4. Set security rules so each user can only read/write their own node:
+   ```json
+   {
+     "rules": {
+       "user_sets": {
+         "$uid": {
+           ".read":  "auth != null && auth.uid === $uid",
+           ".write": "auth != null && auth.uid === $uid"
+         }
+       }
+     }
+   }
+   ```
+5. Register a **Web app** and copy its config into `.Renviron` (above).
+
+### Data model (RTDB)
+
+```
+/user_sets/$uid = {
+  "sets": { "My Indicators": [11, 18, 341], "Credit set": [42] },
+  "updated": 1718500000000
+}
+```
+
+Sets are just lists of indicator ids — tiny, low-sensitivity payloads.
+
+### Integration points (Firebase-specific; see also §5)
+
+- `R/account_store.R` — thin interface: `as_load_sets(uid)` / `as_save_sets(uid,
+  sets)` over RTDB; auth handled by `FirebaseEmailPassword` in `app.R`.
+- `setManagerServer` — on `get_signed_in()` non-null: hydrate `indicator_sets`
+  from `as_load_sets(uid)`; `observe()` (debounced) → `as_save_sets()` while
+  signed in; on sign-out, revert to the guest default. Guests = today's
+  behaviour (in-memory, no I/O).
+- Navbar **"Sign in / Register"** button → modal; no login wall.
+
+### renv / deployment
+
+- Add `firebase` to `renv.lock`. Local `renv::restore()` is currently blocked by
+  a broken CommandLineTools C++ toolchain (see session notes), but **shinyapps.io
+  builds packages on Posit's servers**, so deployment is unaffected. Local
+  testing can use the system R library (binaries) as we've been doing.
+
+### What's needed to proceed to Phase 1
+
+Nothing is wired into `app.R` yet (the live app is untouched). To build and test
+the auth + persistence round-trip we need a **Firebase project + its web config
+values** in `.Renviron`. Once those exist, the next step is a small **isolated
+demo app** (`firebase_demo.R`) proving register → sign-in → save → reload,
+*before* touching `setManager` — so the main app is never destabilised by an
+untested integration.
