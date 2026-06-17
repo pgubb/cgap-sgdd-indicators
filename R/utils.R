@@ -624,7 +624,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           if (isTRUE(active_filters$presets_di)) {
             span(class = "filter-pill-preset",
                  icon("users", class = "fas", style = "font-size: 10px;"),
-                 "Diversity & Inclusion")
+                 "Gender diversity")
           },
           if (length(active_filters$mandates) > 0) {
             lapply(active_filters$mandates, function(m)
@@ -1405,7 +1405,7 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                     ''
                   },
                   if (!is.null(ind$preset_di) && !is.na(ind$preset_di) && ind$preset_di == 1) {
-                    '<span class="badge badge-priority"><i class="fas fa-users"></i> Diversity &amp; inclusion </span>'
+                    '<span class="badge badge-priority"><i class="fas fa-users"></i> Gender diversity </span>'
                   } else {
                     ''
                   }, '

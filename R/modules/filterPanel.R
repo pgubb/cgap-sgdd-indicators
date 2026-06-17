@@ -207,7 +207,7 @@ filterPanelUI <- function(id) {
           input_switch(
             ns("presets_di"),
             label = tagList(
-              "Diversity & inclusion",
+              "Gender diversity",
               tags$a(
                 class = "preset-memo-link",
                 href = "#",

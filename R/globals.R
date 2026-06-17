@@ -143,10 +143,10 @@ PRESET_MEMOS <- list(
     )
   ),
   "preset_di" = list(
-    title = "Diversity & Inclusion",
+    title = "Gender diversity",
     summary = paste0(
       "This preset selects indicators particularly relevant to understanding and ",
-      "monitoring diversity and inclusion (D&amp;I) within financial service ",
+      "monitoring gender diversity within financial service ",
       "providers and in the financial sector, including gender representation, pay ",
       "gaps, and diversity in leadership and decision-making roles, as well as the ",
       "potential relevance of these gaps to stability and safety and soundness ",
@@ -162,7 +162,7 @@ PRESET_MEMOS <- list(
           "use indicators that capture diversity dynamics &mdash; from gender ",
           "representation in management bodies and pay gaps across FSPs to diversity ",
           "within the authorities' own institutions. This preset curates indicators ",
-          "that are informative for assessing diversity gaps and evolution and ",
+          "that are informative for assessing gender diversity gaps and evolution and ",
           "informing action both within the financial sector and in financial ",
           "authorities themselves."
         )
