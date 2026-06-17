@@ -130,7 +130,21 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
         expanded_cards(c(current_expanded, indicator_id))
       }
     })
-    
+
+    # Remove an indicator from the active set (from the "Your Indicator Sets" tab).
+    # The grid re-renders automatically (reactive on the active set); we also push
+    # the updated selection to the Browse tab so that card's button flips to "Add".
+    observeEvent(input$remove_clicked, {
+      id <- input$remove_clicked
+      req(id)
+      set_manager$remove_from_active(id)
+      session$sendCustomMessage(
+        "updateSelectedButtons",
+        list(ids = as.character(isolate(set_manager$get_active_indicators())))
+      )
+      showNotification("Removed from set.", type = "message", duration = 2)
+    }, ignoreInit = TRUE)
+
     # Selected indicators grid (simplified version of original)
     output$indicators_grid <- renderUI({
       selected <- selected_indicators()
@@ -302,9 +316,9 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                 )
               ),
 
-              # Show more/less toggle
+              # Footer: show more/less + remove from set
               div(
-                style = "margin-top: 8px; padding-top: 8px; border-top: 1px solid #e9ecef;",
+                style = "margin-top: 8px; padding-top: 8px; border-top: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; gap: 8px;",
                 actionButton(
                   ns(paste0("toggle_", ind$indicator_id)),
                   label = if (is_expanded) "Show less" else "Show more",
@@ -313,6 +327,15 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                   style = "font-size: 12px;",
                   onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})",
                                     ns("toggle_expand"), ind$indicator_id)
+                ),
+                actionButton(
+                  ns(paste0("remove_", ind$indicator_id)),
+                  label = "Remove",
+                  icon = icon("xmark", class = "fas"),
+                  class = "btn btn-sm btn-outline-danger",
+                  style = "font-size: 12px;",
+                  onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})",
+                                    ns("remove_clicked"), ind$indicator_id)
                 )
               )
               
