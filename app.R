@@ -475,7 +475,7 @@ server <- function(input, output, session) {
       mandate_indicators <- indicators_data %>% 
         filter(main_mandate == mandate)
       
-      title_case_mandate <- str_to_title(mandate)
+      title_case_mandate <- gsub("(Esg)", "(ESG)", str_to_title(mandate), fixed = TRUE)
       mandate_id <- paste0("mandate_", slugify(title_case_mandate))
       
       insertUI(

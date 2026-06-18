@@ -180,8 +180,8 @@ create_mandate_links <- function(indicators_data) {
       # Convert mandate to character to ensure proper matching
       mandate_char <- as.character(mandate)
       
-      # Use str_to_title to match the header generation
-      title_case_mandate <- str_to_title(mandate_char)
+      # Use str_to_title to match the header generation (keep ESG uppercase)
+      title_case_mandate <- gsub("(Esg)", "(ESG)", str_to_title(mandate_char), fixed = TRUE)
       
       # Get count with fallback
       count <- ref[mandate_char]
