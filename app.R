@@ -23,7 +23,8 @@ source("R/modules/selectedIndicatorsMulti.R")
 
 # UI ----------
 ui <- page_navbar(
-  
+  id = "main_nav",
+
   title = div(
     style = paste0(
       "display: flex; ",
@@ -76,6 +77,40 @@ ui <- page_navbar(
     includeCSS("www/custom.css"),
     tags$style(HTML(generate_sector_styles(SECTOR_COLORS))),
     indicatorCardJS(),
+
+    # Copy a shareable set link to the clipboard. Runs inside the button's click
+    # (a user gesture) so navigator.clipboard.writeText is allowed; the set ids +
+    # name are read from data-* attributes the server renders onto the button.
+    tags$script(HTML("
+      function _shareFeedback(btn, ok){
+        var lab = btn.querySelector('.share-label'); if (!lab) return;
+        var prev = lab.textContent;
+        lab.textContent = ok ? 'Copied!' : 'Press ⌘C to copy';
+        setTimeout(function(){ lab.textContent = prev; }, 1600);
+      }
+      function _fallbackCopy(url, btn){
+        var t = document.createElement('textarea');
+        t.value = url; t.style.position='fixed'; t.style.opacity='0';
+        document.body.appendChild(t); t.focus(); t.select();
+        var ok=false; try { ok = document.execCommand('copy'); } catch(e){}
+        document.body.removeChild(t); _shareFeedback(btn, ok);
+      }
+      function copyShareSet(btn){
+        var ids = btn.getAttribute('data-ids') || '';
+        var name = btn.getAttribute('data-name') || '';
+        if (!ids) return;
+        var url = window.location.origin + window.location.pathname +
+                  '?set=' + ids + '&name=' + encodeURIComponent(name);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(
+            function(){ _shareFeedback(btn, true); },
+            function(){ _fallbackCopy(url, btn); }
+          );
+        } else {
+          _fallbackCopy(url, btn);
+        }
+      }
+    ")),
 
     # Preset memo drawer (slide-in panel, non-blocking)
     div(
@@ -303,6 +338,7 @@ ui <- page_navbar(
   
   nav_panel(
     title = uiOutput("selected_tab_title"),
+    value = "your_sets",
     selectedIndicatorsMultiUI("selected")
   ),
   
@@ -326,7 +362,26 @@ server <- function(input, output, session) {
     indicators_data = indicators,
     sector_colors = SECTOR_COLORS
   )
-  
+
+  # Restore a shared set from the URL (?set=<ids>&name=<name>) on first load.
+  # Non-destructive: loads as a new named set and jumps to the sets tab.
+  observeEvent(session$clientData$url_search, {
+    query <- parseQueryString(session$clientData$url_search)
+    if (!is.null(query$set) && nzchar(query$set)) {
+      ids   <- trimws(strsplit(query$set, ",")[[1]])
+      valid <- ids[ids %in% as.character(indicators$indicator_id)]
+      if (length(valid) > 0) {
+        nm <- set_manager$load_shared_set(
+          if (is.null(query$name)) "Shared set" else query$name, valid)
+        nav_select("main_nav", "your_sets")
+        showNotification(
+          sprintf("Loaded shared set “%s” (%d indicator%s).",
+                  nm, length(valid), if (length(valid) == 1) "" else "s"),
+          type = "message", duration = 5)
+      }
+    }
+  }, once = TRUE, ignoreNULL = FALSE)
+
   # Filter module
   filter_values <- filterPanelServer("filters", indicators)
   

@@ -105,13 +105,23 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
       
       if (!is.null(selected) && nrow(selected) > 0) {
         tagList(
-          downloadButton(ns("download_csv"), 
-                         "CSV", 
+          tags$button(
+            type = "button",
+            class = "btn btn-light btn-sm",
+            style = "font-weight: 500;",
+            title = "Copy a shareable link to this set",
+            onclick = "copyShareSet(this)",
+            `data-ids`  = paste(selected$indicator_id, collapse = ","),
+            `data-name` = set_manager$active_set(),
+            icon("link"), tags$span(class = "share-label", "Share")
+          ),
+          downloadButton(ns("download_csv"),
+                         "CSV",
                          icon = icon("download"),
                          class = "btn btn-light btn-sm",
                          style = "font-weight: 500;"),
-          actionButton(ns("open_pdf"), 
-                       "Print Report", 
+          actionButton(ns("open_pdf"),
+                       "Print Report",
                        icon = icon("file-pdf"),
                        class = "btn btn-light btn-sm",
                        style = "font-weight: 500;")
@@ -345,6 +355,9 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
       )
     })
     
+    # (Share is handled client-side: the Share button's onclick builds the link
+    # from its data-ids/data-name and copies it — see copyShareSet() in app.R.)
+
     # Open PDF in new tab
     observeEvent(input$open_pdf, {
       selected <- selected_indicators()

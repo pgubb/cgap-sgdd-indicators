@@ -418,6 +418,18 @@ setManagerServer <- function(id) {
           active_set_name(name)
         }
       },
+      # Create a new uniquely-named set from a shared link and make it active.
+      # Non-destructive: never overwrites an existing set. Returns the name used.
+      load_shared_set = function(name, ids) {
+        sets <- indicator_sets()
+        base <- if (is.null(name) || !nzchar(name)) "Shared set" else name
+        nm <- base; i <- 2
+        while (nm %in% names(sets)) { nm <- paste0(base, " (", i, ")"); i <- i + 1 }
+        sets[[nm]] <- as.character(ids)
+        indicator_sets(sets)
+        active_set_name(nm)
+        nm
+      },
       get_active_indicators = reactive({
         sets <- indicator_sets()
         active <- active_set_name()
