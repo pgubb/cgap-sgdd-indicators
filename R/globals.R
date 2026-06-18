@@ -17,7 +17,7 @@ MND_OBJ_2 <-
     "Financial inclusion" = c("Access", "Uptake (account ownership)", "Usage", "Quality", "Outcomes"), 
     "Consumer protection" = c("Data privacy and protection", "Fair treatment", "Complaints handling", "Safety and security", "Suitability", "Depositor protection"), 
     "Market development" = c("Capital markets development", "Competition"), 
-    "Sustainability" = c("Climate and environmental objectives", "Diversity and inclusion"),
+    "Sustainability (ESG)" = c("Climate and environmental objectives", "Diversity and inclusion"),
     "Stability, safety and soundness" = c("Credit risk", "Market risk", "Operational risk", "Liquidity risk", "Soundness", "AML/CFT")
   )
 
@@ -371,7 +371,7 @@ MANDATE_TG_ID <- c(
   "Financial inclusion"             = "financial_inclusion",
   "Consumer protection"             = "consumer_protection",
   "Stability, safety and soundness" = "stability",
-  "Sustainability"                  = "sustainability",
+  "Sustainability (ESG)"            = "sustainability",
   "Market development"              = "market_development"
 )
 
@@ -447,7 +447,7 @@ TECH_GUIDE_MEMOS <- list(
     sections = list(list(heading = "Companion Technical Guide", body = .tg_footer_body))
   ),
   "sustainability" = list(
-    title = "Sustainability",
+    title = "Sustainability (ESG)",
     summary = paste0(
       "As argued in Section 2.4.4 of our Technical Guide, disaggregated data can ",
       "reveal whether the expansion of green and sustainable financial products ",
