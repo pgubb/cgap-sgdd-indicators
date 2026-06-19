@@ -298,10 +298,10 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                     )
                   },
                   
-                  # Gender questions
+                  # Exploratory analysis questions
                   if (!is.na(ind$gender_questions) && ind$gender_questions != "") {
                     div(
-                      strong("Gender Analysis Questions:", style = "color: #495057; display: block; margin-bottom: 4px;"),
+                      strong("Exploratory Analysis Questions:", style = "color: #495057; display: block; margin-bottom: 4px;"),
                       p(substr(ind$gender_questions, 1, 200),
                         if(nchar(ind$gender_questions) > 200) "...",
                         style = "margin: 0; color: #6c757d; line-height: 1.4;")

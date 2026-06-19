@@ -1432,7 +1432,7 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                   if (!is.null(ind$gender_questions) && !is.na(ind$gender_questions) && ind$gender_questions != "") {
                     paste0('
                         <div class="detail-item">
-                            <div class="detail-label"><i class="fas fa-question-circle"></i> Gender Analysis Questions</div>
+                            <div class="detail-label"><i class="fas fa-question-circle"></i> Exploratory Analysis Questions</div>
                             <div class="detail-value">', substr(htmlEscape(ind$gender_questions), 1, 1000),
                            if(nchar(ind$gender_questions) > 1000) '...' else '', '</div>
                         </div>')

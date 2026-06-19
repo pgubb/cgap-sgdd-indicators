@@ -30,7 +30,7 @@ COLUMN_DESCRIPTIONS <- c(
   "indicator_long_description" = "Detailed description", 
   "unit_of_analysis" = "Unit of analysis", 
   "measurement_type" = "Measurement type",       
-  "gender_questions" = "Exploratory questions that can help guide analysis by gender",         
+  "gender_questions" = "Exploratory questions that can help guide analysis by socio-demographic segments",
   "formula1" = "Formula 1",        
   "formula2" = "Formula 2",            
   "formula3" = "Formulas 3",          
