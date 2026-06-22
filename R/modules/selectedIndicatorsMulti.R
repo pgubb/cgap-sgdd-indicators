@@ -115,8 +115,8 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
             `data-name` = set_manager$active_set(),
             icon("link"), tags$span(class = "share-label", "Share")
           ),
-          downloadButton(ns("download_csv"),
-                         "CSV",
+          downloadButton(ns("download_xlsx"),
+                         "Excel",
                          icon = icon("download"),
                          class = "btn btn-light btn-sm",
                          style = "font-weight: 500;"),
@@ -310,6 +310,26 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
                 )
               },
               
+              # Suggested breakdowns (names only) — always visible, before notes
+              if (!is.null(ind$disaggregation_vars) && !is.na(ind$disaggregation_vars) && ind$disaggregation_vars != "") {
+                breakdown_names <- trimws(unlist(strsplit(ind$disaggregation_vars, ";")))
+                breakdown_names <- breakdown_names[breakdown_names != ""]
+                if (length(breakdown_names) > 0) {
+                  div(
+                    style = "margin-bottom: 16px;",
+                    div(
+                      icon("layer-group", class = "fas", style = "font-size: 11px; margin-right: 5px; color: #80868b;"),
+                      "Suggested breakdowns",
+                      style = "font-size: 11px; font-weight: 600; color: #5f6368; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px;"
+                    ),
+                    div(
+                      style = "display: flex; flex-wrap: wrap; gap: 4px;",
+                      lapply(breakdown_names, function(b) span(b, class = "breakdown-chip"))
+                    )
+                  )
+                }
+              },
+
               # Notes — icon inside textarea via wrapper
               div(
                 class = "notes-field-wrapper",
@@ -376,24 +396,38 @@ selectedIndicatorsMultiServer <- function(id, indicators_data, sector_colors) {
       }
     })
     
-    # CSV download handler with set name in filename
-    output$download_csv <- downloadHandler(
+    # Excel (.xlsx) download handler with set name in filename. Column headers
+    # use the full names shown on the indicator cards (COLUMN_DESCRIPTIONS), with
+    # explicit labels for the preset flags and the notes column.
+    output$download_xlsx <- downloadHandler(
       filename = function() {
         set_name <- gsub("[^A-Za-z0-9_-]", "_", set_manager$active_set())
-        paste0(set_name, "_", Sys.Date(), ".csv")
+        paste0(set_name, "_", Sys.Date(), ".xlsx")
       },
       content = function(file) {
         selected <- selected_indicators()
-        
+
         if (!is.null(selected) && nrow(selected) > 0) {
           # Update comments from UI
           selected$comment <- vapply(selected$indicator_id, function(id) {
             input[[paste0("comment_", id)]] %||% ""
           }, character(1))
-          
-          write.csv(selected, file, row.names = FALSE)
+
+          # Map raw column names to the full names used in the indicator cards.
+          label_map <- c(
+            COLUMN_DESCRIPTIONS,
+            preset_digital   = "Digital finance ecosystem",
+            preset_msme      = "MSME focus",
+            preset_finhealth = "Financial health",
+            preset_di        = "Gender diversity",
+            comment          = "Notes"
+          )
+          nm <- names(selected)
+          names(selected) <- ifelse(nm %in% names(label_map), label_map[nm], nm)
+
+          writexl::write_xlsx(selected, file)
         } else {
-          write.csv(data.frame(), file, row.names = FALSE)
+          writexl::write_xlsx(data.frame(Note = "No indicators selected"), file)
         }
       }
     )

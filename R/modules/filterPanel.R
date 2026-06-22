@@ -119,21 +119,22 @@ filterPanelUI <- function(id) {
         div(
           class = "modern-checkbox-group",
           checkboxGroupInput(
-            ns("initiatives"), 
-            "", 
-            choices = c(
-              "GPFI" = "GPFI",
-              "IMF-FAS" = "IMF",
-              "AFI" = "AFI",
-              "WE Finance Code" = "WEF", 
-              "A2ii FeMa-Meter" = "FEMAMETER"
+            ns("initiatives"),
+            "",
+            choiceNames = list(
+              initiative_choice_label("GPFI", "https://www.gpfi.org"),
+              initiative_choice_label("IMF-FAS", "https://data.imf.org/en/datasets/IMF.STA:FAS"),
+              initiative_choice_label("AFI", "https://www.afi-global.org"),
+              initiative_choice_label("WE Finance Code", "https://www.we-fi.org/we-finance-code/#home"),
+              initiative_choice_label("A2ii FeMa-Meter", "https://www.cgap.org/topics/collections/fema-meter")
             ),
+            choiceValues = list("GPFI", "IMF", "AFI", "WEF", "FEMAMETER"),
             selected = character(0)
           )
         )
       ),
       
-      # Presets filter with toggle and CSS tooltip
+      # Presets filter (checkbox group) with CSS tooltip
       accordion_panel(
         value = "presets",
         title = div(
@@ -149,77 +150,24 @@ filterPanelUI <- function(id) {
           )
         ), 
         icon = icon("sliders"),
-        
-        # Presets with inline memo link
-        div(
-          style = "display: flex; align-items: center; gap: 2px;",
-          input_switch(
-            ns("presets_digital"),
-            label = tagList(
-              "Digital finance ecosystem",
-              tags$a(
-                class = "preset-memo-link",
-                href = "#",
-                title = "Read about this preset",
-                onclick = "openPresetMemo('preset_digital'); return false;",
-                icon("file-lines", class = "fas")
-              )
-            ),
-            value = FALSE
-          )
-        ),
-        div(
-          style = "display: flex; align-items: center; gap: 2px;",
-          input_switch(
-            ns("presets_msme"),
-            label = tagList(
-              "MSME focus",
-              tags$a(
-                class = "preset-memo-link",
-                href = "#",
-                title = "Read about this preset",
-                onclick = "openPresetMemo('preset_msme'); return false;",
-                icon("file-lines", class = "fas")
-              )
-            ),
-            value = FALSE
-          )
-        ),
-        div(
-          style = "display: flex; align-items: center; gap: 2px;",
-          input_switch(
-            ns("presets_finhealth"),
-            label = tagList(
-              "Financial health",
-              tags$a(
-                class = "preset-memo-link",
-                href = "#",
-                title = "Read about this preset",
-                onclick = "openPresetMemo('preset_finhealth'); return false;",
-                icon("file-lines", class = "fas")
-              )
-            ),
-            value = FALSE
-          )
-        ),
-        div(
-          style = "display: flex; align-items: center; gap: 2px;",
-          input_switch(
-            ns("presets_di"),
-            label = tagList(
-              "Gender diversity",
-              tags$a(
-                class = "preset-memo-link",
-                href = "#",
-                title = "Read about this preset",
-                onclick = "openPresetMemo('preset_di'); return false;",
-                icon("file-lines", class = "fas")
-              )
-            ),
-            value = FALSE
-          )
-        ),
 
+        # Presets as a checkbox group (consistent with the other filters). Each
+        # label carries the memo pill that opens the slide-in preset memo.
+        div(
+          class = "modern-checkbox-group",
+          checkboxGroupInput(
+            ns("presets"),
+            "",
+            choiceNames = list(
+              preset_choice_label("Digital finance ecosystem", "preset_digital", "badge-digital-preset", "mobile-screen"),
+              preset_choice_label("MSME focus", "preset_msme", "badge-msme-preset", "building"),
+              preset_choice_label("Financial health", "preset_finhealth", "badge-finhealth-preset", "heart-pulse"),
+              preset_choice_label("Gender diversity", "preset_di", "badge-di-preset", "users")
+            ),
+            choiceValues = list("preset_digital", "preset_msme", "preset_finhealth", "preset_di"),
+            selected = character(0)
+          )
+        )
       ),
       
       # Reset button
@@ -326,7 +274,7 @@ filterPanelServer <- function(id, indicators_data) {
         span(
           class = "mandate-choice-label",
           span(m),
-          if (!is.null(tg_id) && !is.na(tg_id)) tech_guide_icon(tg_id)
+          if (!is.null(tg_id) && !is.na(tg_id)) tech_guide_icon(tg_id, unname(MANDATE_TG_SECTION[tg_id]))
         )
       })
       updateCheckboxGroupInput(
@@ -473,11 +421,8 @@ filterPanelServer <- function(id, indicators_data) {
       updateInputSwitch(session, "include_secondary_objectives", value = TRUE)
       updateInputSwitch(session, "include_multi_sector", value = TRUE)
       
-      # Reset presets filters to OFF (FALSE)
-      updateInputSwitch(session, "presets_digital", value = FALSE)
-      updateInputSwitch(session, "presets_msme", value = FALSE)
-      updateInputSwitch(session, "presets_finhealth", value = FALSE)
-      updateInputSwitch(session, "presets_di", value = FALSE)
+      # Reset presets (clear all checkbox selections)
+      updateCheckboxGroupInput(session, "presets", selected = character(0))
 
     })
     
@@ -546,18 +491,14 @@ filterPanelServer <- function(id, indicators_data) {
         filtered <- filtered[has_initiative, ]
       }
 
-      # Presets filter (intersection when multiple active)
-      if (input$presets_digital) {
-        filtered <- filtered[!is.na(filtered$preset_digital) & filtered$preset_digital == 1, ]
-      }
-      if (input$presets_msme) {
-        filtered <- filtered[!is.na(filtered$preset_msme) & filtered$preset_msme == 1, ]
-      }
-      if (input$presets_finhealth) {
-        filtered <- filtered[!is.na(filtered$preset_finhealth) & filtered$preset_finhealth == 1, ]
-      }
-      if (input$presets_di) {
-        filtered <- filtered[!is.na(filtered$preset_di) & filtered$preset_di == 1, ]
+      # Presets filter (intersection when multiple selected). Each selected
+      # value is the name of a 0/1 indicator column.
+      if (length(input$presets) > 0) {
+        for (preset_col in input$presets) {
+          if (preset_col %in% names(filtered)) {
+            filtered <- filtered[!is.na(filtered[[preset_col]]) & filtered[[preset_col]] == 1, ]
+          }
+        }
       }
 
       # Search filter using pre-computed .search_text column

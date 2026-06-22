@@ -29,7 +29,7 @@ htmlEscape <- htmltools::htmlEscape
 #' Clickable technical-guide icon for a mandate.
 #' Opens the shared memo drawer via openTechGuide(<id>). stopPropagation keeps
 #' the click from toggling the mandate checkbox it lives inside.
-tech_guide_icon <- function(tg_id) {
+tech_guide_icon <- function(tg_id, section = NULL) {
   tags$a(
     class = "tech-guide-link",
     href = "#",
@@ -42,6 +42,56 @@ tech_guide_icon <- function(tg_id) {
       src = "cgap_mark.png",
       class = "tech-guide-mark",
       alt = "CGAP Technical Guide"
+    ),
+    # Technical Guide section number referenced in this mandate's memo.
+    if (!is.null(section) && !is.na(section) && nzchar(section)) {
+      tags$span(section, class = "tech-guide-section")
+    }
+  )
+}
+
+
+# External-link button shown next to an "other initiatives" checkbox label,
+# mirroring the Technical Guide icon next to mandate labels. Opens the
+# initiative's site in a new tab; stopPropagation keeps the click from toggling
+# the checkbox. URLs match those listed in the About section.
+initiative_choice_label <- function(label, url) {
+  span(
+    class = "initiative-choice-label",
+    span(label),
+    tags$a(
+      class = "initiative-link",
+      href = url,
+      target = "_blank",
+      rel = "noopener noreferrer",
+      title = paste0("Visit ", label, " website"),
+      `aria-label` = paste0("Visit ", label, " website"),
+      onclick = "event.stopPropagation();",
+      icon("up-right-from-square", class = "fas")
+    )
+  )
+}
+
+
+# Preset checkbox label: preset name plus the memo pill (preset-specific icon +
+# horizontal lines) that opens the slide-in memo. Mirrors the mandate labels'
+# Technical Guide icon. stopPropagation keeps the memo click from toggling the
+# checkbox.
+preset_choice_label <- function(label, preset_id, badge_class, icon_name) {
+  span(
+    class = "mandate-choice-label",
+    span(label),
+    tags$a(
+      class = "preset-memo-link",
+      href = "#",
+      title = "Read about this preset",
+      `aria-label` = paste0("Read about the ", label, " preset"),
+      onclick = sprintf("openPresetMemo('%s'); event.stopPropagation(); return false;", preset_id),
+      span(
+        class = paste(badge_class, "preset-memo-badge"),
+        icon(icon_name, class = "fas", style = "font-size: 10px;"),
+        icon("bars", class = "fas", style = "font-size: 9px;")
+      )
     )
   )
 }
@@ -501,7 +551,15 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
     unique() %>%
     length()
   objectives_count <- length(unique(filtered_indicators$main_objectives))
-  
+
+  # Count of discrete (de-duplicated) suggested breakdowns across the filtered
+  # set. disaggregation_vars is a ";"-separated list of breakdown names (each a
+  # key into BREAKDOWNS); we count the distinct names, not the categories within.
+  breakdowns_count <- {
+    bk <- trimws(unlist(strsplit(filtered_indicators$disaggregation_vars, ";")))
+    length(unique(bk[!is.na(bk) & bk != ""]))
+  }
+
   # Check if any filters are active
   has_active_filters <- !is.null(active_filters) && (
     length(active_filters$mandates) > 0 ||
@@ -672,6 +730,13 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
         div(icon("chart-pie", class = "fas stat-card-icon")),
         div(sectors_count, class = "stat-card-value"),
         div("Services", class = "stat-card-label")
+      ),
+
+      div(
+        class = "stat-card stat-card-default",
+        div(icon("table-cells", class = "fas stat-card-icon")),
+        div(breakdowns_count, class = "stat-card-value"),
+        div("Suggested breakdowns", class = "stat-card-label")
       )
 
     )
@@ -780,13 +845,17 @@ about_modal_content <- function() {
       # Content sections
       div(
         style = "padding: 0 20px;",
-        p("CGAP's LENS is a curated catalog of indicators for use with regulatory adminisitrative data, helping financial sector authorities understand who uses retail financial services, under what conditions, and with what outcomes. Rather than pre-built metrics, LENS is built around high-level indicators that analysts combine with breakdowns — such as customer type, gender, or provider type — to achieve the disaggregated analysis needed for more inclusive, evidence-based financial policies and supervision. Both indicators and breakdowns should be adapted to specific country contexts. For a full explanation, consult the User Guide.", 
+        p("CGAP's LENS is a curated catalog of indicators for use with regulatory adminisitrative data, helping financial sector authorities understand who uses retail financial services, under what conditions, and with what outcomes. Rather than pre-built metrics, LENS is built around high-level indicators that analysts combine with breakdowns — such as customer type, gender, or provider type — to achieve the disaggregated analysis needed for more inclusive, evidence-based financial policies and supervision. Both indicators and breakdowns should be adapted to specific country contexts. For a full explanation, consult the User Guide. The selection of indicators is informed both by their general relevance to these different mandates and goals of financial sector authorities as well as their potential relevance for understanding the role of key sociodemographic traits, such as gender, within those dimensions. The indicators in LENS, including their definitions, assigned mandates/objectives and proposed breakdowns, do not reflect a global consensus but rather constitute an attempt at providing working definitions, classification options and analytical questions that each user should adapt to their specific country context and institutional goals.",
           style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
+        # User Guide & Technical Guide banners — side by side (2-col, wraps on narrow screens)
+        div(
+          style = "display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch; margin-bottom: 30px;",
+
         # User Guide Download
         div(
           class = "about-section",
           style = paste0(
-            "margin-bottom: 30px; ",
+            "flex: 1 1 320px; ",
             "background: linear-gradient(135deg, #1A5A80 0%, #2980b9 100%); ",
             "border-radius: 8px; ",
             "padding: 24px; ",
@@ -817,7 +886,7 @@ about_modal_content <- function() {
               ),
               div(
                 style = "flex: 1; min-width: 250px;",
-                h4("LENS User Guide",
+                h4("LENS User Guide & Video Tutorial",
                    style = "margin: 0 0 8px 0; font-size: 20px; font-weight: 600;"),
                 p("New to LENS? Download our comprehensive user guide to learn how to navigate the indicator catalog, create custom indicator sets, and generate reports for your analysis.",
                   style = "margin: 0 0 16px 0; font-size: 14px; opacity: 0.9; line-height: 1.5;"),
@@ -833,82 +902,106 @@ about_modal_content <- function() {
                   class = "user-guide-download-btn",
                   icon("download", class = "fas", style = "font-size: 14px;"),
                   "Download User Guide (PDF)"
+                ),
+
+                # Video tutorial — sits below the download button, sized to content
+                tags$a(
+                  href = "https://www.loom.com/share/30cd180dc6bb4c31b3ff78a0c85effe3",
+                  target = "_blank",
+                  class = "video-link-container",
+                  style = "text-decoration: none; color: inherit; display: flex; width: fit-content; margin-top: 12px;",
+                  tags$div(
+                    style = paste0(
+                      "display: inline-flex; align-items: center; gap: 12px; ",
+                      "padding: 8px 16px 8px 8px; ",
+                      "background: rgba(255,255,255,0.12); ",
+                      "border: 1px solid rgba(255,255,255,0.25); ",
+                      "border-radius: 6px; ",
+                      "transition: background-color 0.2s ease; ",
+                      "cursor: pointer;"
+                    ),
+                    onmouseenter = "this.style.background='rgba(255,255,255,0.2)';",
+                    onmouseleave = "this.style.background='rgba(255,255,255,0.12)';",
+                    tags$div(
+                      style = paste0(
+                        "flex-shrink: 0; width: 32px; height: 32px; ",
+                        "background: #6F5B9D; border-radius: 50%; ",
+                        "display: flex; align-items: center; justify-content: center;"
+                      ),
+                      tags$div(style = paste0(
+                        "width: 0; height: 0; ",
+                        "border-top: 7px solid transparent; ",
+                        "border-bottom: 7px solid transparent; ",
+                        "border-left: 11px solid #ffffff; ",
+                        "margin-left: 2px;"
+                      ))
+                    ),
+                    tags$div(style = "font-size: 14px; font-weight: 600; color: #ffffff;",
+                             "Watch the LENS Video Tutorial")
+                  )
                 )
               )
             )
           )
         ),
 
-        # Context & Additional Resources
+        # Technical Guide banner — companion guidance package
         div(
           class = "about-section",
-          style = "margin-bottom: 30px;",
-          h3("Context & Additional Resources",
-             style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
-          p("LENS is one component of CGAP's project to support the mainstreaming of regulatory gender-disaggregated data (RGDD) in the financial sector and should be consulted jointly with 'Technical Guide for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Inclusion and Other Policy Goals' and accompanying pieces",
-            style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
-          p("This Guidance package describes RGDD use cases, provides recommendations for Financial Sector Authorities on how to leverage regulatory reporting regimes to maximize the use of gender-disaggregated data for multiple FSA mandates and to support the goals of other actors (including funders and financial firms).",
-            style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
+          style = paste0(
+            "flex: 1 1 320px; ",
+            "background: linear-gradient(135deg, #157A6E 0%, #0E4D45 100%); ",
+            "border-radius: 8px; ",
+            "padding: 24px; ",
+            "color: white; ",
+            "position: relative; ",
+            "overflow: hidden;"
+          ),
           div(
-            style = "display: flex; gap: 10px; flex-wrap: wrap;",
-            span(class = "btn btn-outline-secondary btn-sm",
-                 style = "opacity: 0.6; pointer-events: none;",
-                 icon("book", class = "fas", style = "margin-right: 6px;"),
-                 "Technical Guide (Coming 2026/Q3)")
-          )
-        ),
-
-        # Tutorial video
-        tags$div(
-          class = "video-link-container",
-          style = "max-width: 680px; margin: 20px auto;",
-          tags$a(
-            href = "https://www.loom.com/share/30cd180dc6bb4c31b3ff78a0c85effe3",
-            target = "_blank",
-            style = "text-decoration: none; color: inherit;",
-            tags$div(
-              style = paste0(
-                "display: flex; align-items: center; gap: 16px; ",
-                "padding: 20px 24px; ",
-                "background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); ",
-                "border-radius: 8px; ",
-                "transition: background-color 0.2s ease; ",
-                "cursor: pointer;"
-              ),
-              onmouseenter = "this.style.background='linear-gradient(135deg, #252542 0%, #1e2d4a 100%)';",
-              onmouseleave = "this.style.background='linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';",
-              tags$div(
+            style = paste0(
+              "position: absolute; ",
+              "top: -30px; right: -30px; ",
+              "width: 120px; height: 120px; ",
+              "background: rgba(255,255,255,0.1); ",
+              "border-radius: 50%;"
+            )
+          ),
+          div(
+            style = "position: relative; z-index: 1;",
+            div(
+              style = "display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;",
+              div(
                 style = paste0(
-                  "flex-shrink: 0; width: 52px; height: 52px; ",
-                  "background: #6F5B9D; border-radius: 50%; ",
+                  "background: rgba(255,255,255,0.2); ",
+                  "border-radius: 12px; padding: 16px; ",
                   "display: flex; align-items: center; justify-content: center;"
                 ),
-                tags$div(style = paste0(
-                  "width: 0; height: 0; ",
-                  "border-top: 10px solid transparent; ",
-                  "border-bottom: 10px solid transparent; ",
-                  "border-left: 16px solid #ffffff; ",
-                  "margin-left: 3px;"
-                ))
+                icon("book", class = "fas", style = "font-size: 32px; color: white;")
               ),
-              tags$div(
-                tags$div(style = "font-size: 1.05em; font-weight: 600; color: #ffffff; margin-bottom: 4px;",
-                         "Watch the LENS Video Tutorial"),
-                tags$div(style = "font-size: 0.85em; color: #a0aec0;",
-                         "Learn how to explore indicators, build custom sets, and generate reports")
+              div(
+                style = "flex: 1; min-width: 250px;",
+                h4("Technical Guide",
+                   style = "margin: 0 0 8px 0; font-size: 20px; font-weight: 600;"),
+                p("LENS is one component of CGAP's project to mainstream regulatory gender-disaggregated data (RGDD). It is best used alongside the Technical Guide for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Inclusion and Other Policy Goals, which describes RGDD use cases and provides recommendations for leveraging regulatory reporting regimes to maximize the use of gender-disaggregated data across FSA mandates.",
+                  style = "margin: 0 0 16px 0; font-size: 14px; opacity: 0.9; line-height: 1.5;"),
+                tags$a(
+                  href = "",
+                  target = "_blank",
+                  rel = "noopener noreferrer",
+                  style = paste0(
+                    "display: inline-flex; align-items: center; gap: 8px; ",
+                    "background: white; color: #0E4D45; text-decoration: none; ",
+                    "font-size: 14px; font-weight: 600; padding: 10px 20px; ",
+                    "border-radius: 6px; transition: background-color 0.2s ease;"
+                  ),
+                  class = "user-guide-download-btn",
+                  icon("download", class = "fas", style = "font-size: 14px;"),
+                  "Download Technical Guide"
+                )
               )
             )
           )
-        ),
-
-        # Objectives & Approach
-        div(
-          class = "about-section",
-          style = "margin-bottom: 30px;",
-          h3("Objectives & Approach",
-             style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
-          p("LENS provides a way of interacting with a curated catalog of indicators compiled and developed by CGAP that are relevant for measuring and describing different aspects of the financial system and for supporting common goals of regulatory decision-making, including those relating to financial inclusion, consumer protection, stability and soundness, market development and sustainability. The selection of indicators is informed both by their general relevance to these different mandates and goals of financial sector authorities as well as their potential relevance for understanding the role of key sociodemographic traits, such as gender, within those dimensions. The indicators in LENS, including their definitions, assigned mandates/objectives and proposed breakdowns, do not reflect a global consensus but rather constitute an attempt at providing working definitions, classification options and analytical questions that each user should adapt to their specific country context and institutional goals.",
-            style = "line-height: 1.6; color: #555;")
+        )
         ),
 
         # Sources

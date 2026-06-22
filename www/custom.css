@@ -136,11 +136,64 @@ h1, h2, h3, h4, h5, h6 {
   filter: drop-shadow(0 0 4px rgba(0,0,0,0.35));
 }
 
+/* Preset memo button: preset-specific badge combined with horizontal lines.
+   Scoped under .preset-memo-link so it beats the .badge-*-preset display:flex
+   rules (which would otherwise stretch the pill full-width and push it below
+   the label). */
+.preset-memo-link .preset-memo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  width: auto;
+  flex: 0 0 auto;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
 /* Technical Guide icon next to each mandate in the filter */
 .mandate-choice-label {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+/* "Other initiatives" checkbox labels: external-link button to the right */
+.initiative-choice-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.initiative-link {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  line-height: 0;
+  font-size: 11px;
+  color: #1A5A80;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.initiative-link:hover {
+  opacity: 1;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* Suggested-breakdown name chips on the "Your indicator sets" cards */
+.breakdown-chip {
+  display: inline-block;
+  background: #eef0f3;
+  color: #495057;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid #e2e5ea;
+  line-height: 1.5;
 }
 
 .tech-guide-link {
@@ -158,6 +211,14 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: none;
   transform: translateY(-1px);
   filter: drop-shadow(0 0 3px rgba(237,119,0,0.5));
+}
+
+.tech-guide-section {
+  font-size: 10px;
+  font-weight: 700;
+  color: #5f6368;
+  margin-left: 2px;
+  line-height: 1;
 }
 
 .tech-guide-mark {

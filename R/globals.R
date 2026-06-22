@@ -375,6 +375,16 @@ MANDATE_TG_ID <- c(
   "Market development"              = "market_development"
 )
 
+# Technical Guide section number referenced in each mandate's memo. Shown after
+# the CGAP mark next to the mandate label in the filter (keyed by tg_id).
+MANDATE_TG_SECTION <- c(
+  "financial_inclusion" = "2.3",
+  "consumer_protection" = "2.4.1",
+  "stability"           = "2.4.3",
+  "sustainability"      = "2.4.4",
+  "market_development"  = "2.4.4"
+)
+
 # Shared footer pointing readers to the companion Technical Guide.
 .tg_footer_body <- paste0(
   "<p style='margin: 0 0 10px;'>This narrative draws on CGAP's companion ",

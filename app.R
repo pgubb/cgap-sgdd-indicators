@@ -122,7 +122,7 @@ ui <- page_navbar(
         class = "memo-drawer-header",
         div(
           style = "display: flex; align-items: center; gap: 8px;",
-          icon("file-lines", class = "fas", style = "font-size: 16px;"),
+          icon("bars", class = "fas", style = "font-size: 15px; color: #b0b4ba;"),
           span(id = "memo-drawer-title", "Preset Memo", style = "font-weight: 600; font-size: 16px;")
         ),
         tags$button(
@@ -293,10 +293,19 @@ ui <- page_navbar(
   sidebar = sidebar(
     width = 400,
     p(style = "font-size: 13px; color: #555; line-height: 1.5;",
-      "A curated catalog of indicators for use with data collected by supervisors from regulated financial institutions to support more inclusive financial policies for both retail consumers and MSMEs. See ",
+      "LENS is a companion resource to CGAP's ",
+      tags$a("Technical Guide", href = "", target = "_blank", rel = "noopener noreferrer",
+             style = "color: #1A5A80; font-weight: 600; font-style: italic; text-decoration: none;"),
+      em(" for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Inclusion and Other Policy Goals."),
+      " LENS provides an interactive curated catalog of indicators for use with data collected by supervisors from regulated financial institutions. See ",
       tags$a("User Guide", onclick = "document.getElementById('show_about').click(); return false;",
              href = "#", style = "color: #1A5A80; font-weight: 600; text-decoration: none;"),
       " for details."
+    ),
+    p(style = "font-size: 11px; color: #777; line-height: 1.5; margin-top: -6px;",
+      "References in LENS to the technical guide are denoted with ",
+      tags$img(src = "cgap_mark.png", alt = "CGAP Technical Guide",
+               style = "height: 13px; width: auto; vertical-align: text-bottom; display: inline;")
     ),
     filterPanelUI("filters")
   ),
@@ -408,10 +417,10 @@ server <- function(input, output, session) {
       sectors = input$`filters-sectors`,
       use_cases = input$`filters-use_cases`,
       search = input$`filters-search`,
-      presets_digital = input$`filters-presets_digital`,
-      presets_msme = input$`filters-presets_msme`,
-      presets_finhealth = input$`filters-presets_finhealth`,
-      presets_di = input$`filters-presets_di`
+      presets_digital = "preset_digital" %in% input$`filters-presets`,
+      presets_msme = "preset_msme" %in% input$`filters-presets`,
+      presets_finhealth = "preset_finhealth" %in% input$`filters-presets`,
+      presets_di = "preset_di" %in% input$`filters-presets`
     )
     
     # Get the active set name + all set names from set_manager
