@@ -527,7 +527,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
         style = "flex: 1; min-width: 300px;",
         h2("Regulatory indicators with a sociodemographic lens",
            style = "margin: 0; font-size: 22px; font-weight: 700;"),
-        p(paste("Explore", N, "curated indicators designed to support evidence-based financial regulation & policy"),
+        p(paste("Explore", N, "curated indicators designed to support evidence based customer-centric financial policy and supervision."),
           style = "margin: 6px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 300;")
       ),
 

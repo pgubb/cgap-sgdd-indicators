@@ -293,8 +293,8 @@ ui <- page_navbar(
   sidebar = sidebar(
     width = 400,
     p(style = "font-size: 13px; color: #555; line-height: 1.5;",
-      "A curated catalog of indicators for use with regulatory data that analysts combine with breakdowns — such as gender, customer type, or provider type — to support disaggregated analysis for more inclusive financial policies for both retail consumers and MSMEs. ",
-      tags$a("See User Guide", onclick = "document.getElementById('show_about').click(); return false;",
+      "A curated catalog of indicators for use with data collected by supervisors from regulated financial institutions to support more inclusive financial policies for both retail consumers and MSMEs. See ",
+      tags$a("User Guide", onclick = "document.getElementById('show_about').click(); return false;",
              href = "#", style = "color: #1A5A80; font-weight: 600; text-decoration: none;"),
       " for details."
     ),
