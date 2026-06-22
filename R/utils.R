@@ -478,10 +478,14 @@ render_disagg_table_vertical <- function(indicator_row, columns,
   rows <- lapply(columns_with_content, function(col) {
     val <- indicator_row[[col]]
     use_pre <- col %in% pre_columns
-    
+
+    # disaggregation_vars is ";"-separated (one breakdown name per item),
+    # unlike the "!-"-delimited prose columns.
+    col_delimiter <- if (identical(col, "disaggregation_vars")) ";" else delimiter
+
     # We already know this column has content from the filter above
     # Split by delimiter if provided
-    items <- unlist(strsplit(val, delimiter))
+    items <- unlist(strsplit(val, col_delimiter))
     items <- trimws(items)
     items <- items[items != ""]
     

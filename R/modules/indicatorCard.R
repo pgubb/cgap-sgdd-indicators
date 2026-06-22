@@ -146,17 +146,11 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
         div(
           style = "margin-bottom: 24px;",
           render_disagg_table_vertical(
-            indicator, 
-            columns = c("indicator_description", "indicator_long_description", "gender_questions","unit_of_analysis", "main_mandate_objective", "secondary_mandate_objective", "main_sector")
+            indicator,
+            columns = c("indicator_description", "indicator_long_description", "gender_questions", "unit_of_analysis", "disaggregation_vars", "main_mandate_objective", "secondary_mandate_objective", "main_sector")
           )
         ),
-        
-        # Breakdowns section
-        div(
-          style = "margin-bottom: 24px;",
-          render_disagg_table_generalized(indicator, c("disaggregation_vars"))
-        ),
-        
+
         # Sources section (if applicable)
         if (show_sources) {
           div(
