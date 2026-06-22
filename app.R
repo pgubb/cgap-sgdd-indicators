@@ -296,14 +296,14 @@ ui <- page_navbar(
       "LENS is a companion resource to CGAP's ",
       tags$a("Technical Guide", href = "", target = "_blank", rel = "noopener noreferrer",
              style = "color: #1A5A80; font-weight: 600; font-style: italic; text-decoration: none;"),
-      em(" for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Inclusion and Other Policy Goals."),
+      em(" for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Inclusion and Other Policy Goals*."),
       " LENS provides an interactive curated catalog of indicators for use with data collected by supervisors from regulated financial institutions. See ",
       tags$a("User Guide", onclick = "document.getElementById('show_about').click(); return false;",
              href = "#", style = "color: #1A5A80; font-weight: 600; text-decoration: none;"),
       " for details."
     ),
     p(style = "font-size: 11px; color: #777; line-height: 1.5; margin-top: -6px;",
-      "References in LENS to the technical guide are denoted with ",
+      "*References in LENS to sections of technical guide are denoted with ",
       tags$img(src = "cgap_mark.png", alt = "CGAP Technical Guide",
                style = "height: 13px; width: auto; vertical-align: text-bottom; display: inline;")
     ),
