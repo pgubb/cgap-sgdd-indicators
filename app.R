@@ -303,7 +303,7 @@ ui <- page_navbar(
       " for details."
     ),
     p(style = "font-size: 11px; color: #777; line-height: 1.5; margin-top: -6px;",
-      "*References in LENS to sections of technical guide are denoted with ",
+      "*References in LENS to the technical guide are denoted with ",
       tags$img(src = "cgap_mark.png", alt = "CGAP Technical Guide",
                style = "height: 13px; width: auto; vertical-align: text-bottom; display: inline;")
     ),
