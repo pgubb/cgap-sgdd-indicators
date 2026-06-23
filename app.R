@@ -293,11 +293,11 @@ ui <- page_navbar(
   sidebar = sidebar(
     width = 400,
     p(style = "font-size: 13px; color: #555; line-height: 1.5;",
-      "LENS is a companion resource to CGAP's ",
+      "LENS provides an interactive curated catalog of indicators to support customer segmented analysis using data collected from regulated financial institutions. LENS is a companion resource to CGAP's ",
       tags$a("Technical Guide", href = "", target = "_blank", rel = "noopener noreferrer",
              style = "color: #1A5A80; font-weight: 600; font-style: italic; text-decoration: none;"),
-      em(" for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Inclusion and Other Policy Goals*."),
-      " LENS provides an interactive curated catalog of indicators for use with data collected by supervisors from regulated financial institutions. See ",
+      em(" for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Policy and Supervision*."),
+      " See ",
       tags$a("User Guide", onclick = "document.getElementById('show_about').click(); return false;",
              href = "#", style = "color: #1A5A80; font-weight: 600; text-decoration: none;"),
       " for details."

@@ -389,8 +389,8 @@ MANDATE_TG_SECTION <- c(
 .tg_footer_body <- paste0(
   "<p style='margin: 0 0 10px;'>This narrative draws on CGAP's companion ",
   "guide, <em>Technical Guide for Financial Sector Authorities on Using ",
-  "Disaggregated Regulatory Data to Support Financial Inclusion and Other ",
-  "Policy Goals</em> &mdash; read jointly with LENS to connect indicators ",
+  "Disaggregated Regulatory Data to Support Financial Policy and ",
+  "Supervision</em> &mdash; read jointly with LENS to connect indicators ",
   "to mandates.</p>",
   "<span class='tg-guide-pill'><i class='fas fa-book'></i> ",
   "Technical Guide (Coming 2026/Q3)</span>"
