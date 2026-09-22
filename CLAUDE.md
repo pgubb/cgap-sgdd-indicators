@@ -18,8 +18,7 @@ relevant to sociodemographic (especially gender) disaggregated analysis
 in financial regulation. Part of CGAP's Supply-side Gender Disaggregated
 Data (S-GDD) project.
 
-**Live app:** `datanalytics.worldbank.org/cgap-lens/` (Beta, final
-release targeted June 2026)
+**Live app:** `datanalytics.worldbank.org/cgap-lens/`
 
 LENS is one component of a broader deliverable package that includes a
 Technical Guide for FSAs ("Using Disaggregated Regulatory Data to
@@ -87,12 +86,12 @@ selections across named sets → export via CSV or HTML report.
 
 ### Performance Notes
 
--   Filter lookups (mandates, objectives, sectors, search text) are
-    pre-computed at module init, not on every reactive tick
--   `add_many_to_active()` / `remove_many_from_active()` perform bulk
-    set operations in a single reactive write
--   Search uses SnowballC stemming with dual-match (original word +
-    stemmed)
+- Filter lookups (mandates, objectives, sectors, search text) are
+  pre-computed at module init, not on every reactive tick
+- `add_many_to_active()` / `remove_many_from_active()` perform bulk set
+  operations in a single reactive write
+- Search uses SnowballC stemming with dual-match (original word +
+  stemmed)
 
 ### UI Framework
 
@@ -101,18 +100,18 @@ selections across named sets → export via CSV or HTML report.
 
 ### Design System
 
--   **Font:** Figtree (Google Fonts) — do not change
--   **Brand colors:** Purple gradient `#6F5B9D` → `#402C60` (Browse
-    header), Brand blue `#1A5A80` (navbar, Indicator Sets header,
-    accents) — do not change
--   **Sector colors:** Defined in `SECTOR_COLORS` in `globals.R` — each
-    financial service has a distinct color
--   **Card design:** Border-driven depth (no box-shadows), flat buttons,
-    8px border-radius on cards, 4px on badges
--   **Hover states:** Border-color and background-color transitions only
-    — no translateY lifts or growing shadows
--   **Page background:** `#fafaf8` (subtle warm tint) so white cards
-    separate naturally
+- **Font:** Figtree (Google Fonts) — do not change
+- **Brand colors:** Purple gradient `#6F5B9D` → `#402C60` (Browse
+  header), Brand blue `#1A5A80` (navbar, Indicator Sets header, accents)
+  — do not change
+- **Sector colors:** Defined in `SECTOR_COLORS` in `globals.R` — each
+  financial service has a distinct color
+- **Card design:** Border-driven depth (no box-shadows), flat buttons,
+  8px border-radius on cards, 4px on badges
+- **Hover states:** Border-color and background-color transitions only —
+  no translateY lifts or growing shadows
+- **Page background:** `#fafaf8` (subtle warm tint) so white cards
+  separate naturally
 
 ## Deployment
 
@@ -122,26 +121,25 @@ is excluded from deployment via `.gitignore`.
 
 ## Key Domain Concepts
 
--   **Mandates**: Top-level regulatory categories — Financial inclusion,
-    Consumer protection, Stability/safety/soundness, Sustainability,
-    Market development (5 mandates, ordered)
--   **Objectives**: Sub-categories within mandates, defined in
-    `MND_OBJ_2` in `globals.R` (e.g., Access, Usage, Fair treatment,
-    Credit risk)
--   **Sectors/Services**: Financial service types — Payments, Credit,
-    Insurance, Investments, Pensions, Savings, Several/other — each with
-    a distinct color in `SECTOR_COLORS`
--   **Breakdowns**: Suggested dimensions for disaggregated analysis
-    (gender, age, location, FSP type, product type, etc.) — defined in
-    `BREAKDOWNS` in `globals.R` with \~20 categories
--   **Indicator sets**: Users can create multiple named collections of
-    indicators, add notes, and export as CSV or HTML report
--   **Presets**: Toggle filters for cross-cutting themes — "Digital
-    finance ecosystem" (`preset_digital`), "MSME focus" (`preset_msme`),
-    and "Financial health" (`preset_finhealth`). Each filters to
-    indicators where the corresponding column equals 1.
--   **Long descriptions**: Use `!-` as a delimiter for sections
-    (Definitions, Data requirements, Limitations, Derivable indicators)
+- **Mandates**: Top-level regulatory categories — Financial inclusion,
+  Consumer protection, Stability/safety/soundness, Sustainability,
+  Market development (5 mandates, ordered)
+- **Objectives**: Sub-categories within mandates, defined in `MND_OBJ_2`
+  in `globals.R` (e.g., Access, Usage, Fair treatment, Credit risk)
+- **Sectors/Services**: Financial service types — Payments, Credit,
+  Insurance, Investments, Pensions, Savings, Several/other — each with a
+  distinct color in `SECTOR_COLORS`
+- **Breakdowns**: Suggested dimensions for disaggregated analysis
+  (gender, age, location, FSP type, product type, etc.) — defined in
+  `BREAKDOWNS` in `globals.R` with \~20 categories
+- **Indicator sets**: Users can create multiple named collections of
+  indicators, add notes, and export as CSV or HTML report
+- **Presets**: Toggle filters for cross-cutting themes — "Digital
+  finance ecosystem" (`preset_digital`), "MSME focus" (`preset_msme`),
+  and "Financial health" (`preset_finhealth`). Each filters to
+  indicators where the corresponding column equals 1.
+- **Long descriptions**: Use `!-` as a delimiter for sections
+  (Definitions, Data requirements, Limitations, Derivable indicators)
 
 ## File Structure
 
