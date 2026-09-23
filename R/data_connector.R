@@ -1,25 +1,27 @@
 # ============================================================================
 # LENS Catalog — Google Sheets Data Connector
 # ============================================================================
-# Drop-in replacement for: load("data/indicators.RData")
+# Loads the indicator catalog at runtime from the Google Sheet maintained by
+# the CGAP LENS admin app, falling back to the committed snapshot
+# (data/indicators.RData) when the sheet cannot be reached.
 #
-# Usage in app.R:
-#   # BEFORE:
-#   load("data/indicators.RData")
-#
-#   # AFTER:
-#   source("R/globals.R")          # MND_OBJ_2 must be loaded first
+# Usage in app.R (after R/globals.R and R/utils.R are sourced):
 #   source("R/data_connector.R")
-#   indicators <- load_indicators()
+#   indicators <- lens_get_indicators()   # never errors; sheet or snapshot
 #
-# Environment variables required:
-#   LENS_SHEET_ID                - Google Sheet ID
+# Environment variables:
+#   LENS_SHEET_ID                - Google Sheet ID (required for live data)
 #   LENS_SHEET_NAME              - Tab name (default: "indicators")
 #   GOOGLE_SERVICE_ACCOUNT_KEY   - Path to JSON key file, or raw JSON string
+#   LENS_DATA_SOURCE             - "sheet" (default) or "snapshot" to force
+#                                  the committed snapshot and skip the API
+#   LENS_CACHE_TTL_SECONDS       - In-memory cache lifetime (default: 300)
 #
 # Caching:
 #   Data is cached in-memory with a configurable TTL (default: 5 min).
-#   All sessions within the same R process share the cache.
+#   All sessions within the same R process share the cache. Once the TTL
+#   expires, the next new session triggers a refresh from the sheet; if that
+#   refresh fails, the stale cache is served rather than the snapshot.
 #   Call load_indicators(force_refresh = TRUE) to bypass the cache.
 # ============================================================================
 
@@ -29,15 +31,22 @@ library(dplyr)
 
 # --- Configuration ---
 .lens_config <- list(
-  sheet_id   = Sys.getenv("LENS_SHEET_ID", ""),
-  sheet_name = Sys.getenv("LENS_SHEET_NAME", "indicators"),
-  cache_ttl  = as.numeric(Sys.getenv("LENS_CACHE_TTL_SECONDS", "300"))  # 5 min
+  sheet_id    = Sys.getenv("LENS_SHEET_ID", ""),
+  sheet_name  = Sys.getenv("LENS_SHEET_NAME", "indicators"),
+  cache_ttl   = as.numeric(Sys.getenv("LENS_CACHE_TTL_SECONDS", "300")),  # 5 min
+  data_source = tolower(Sys.getenv("LENS_DATA_SOURCE", "sheet")),          # or "snapshot"
+  snapshot    = "data/indicators.RData"
 )
+
+# Indicators removed from the public catalog regardless of data source.
+LENS_DROPPED_INDICATORS <- c("Payroll loans", "New licenses granted to diverse FSPs")
 
 # --- In-memory cache ---
 .lens_cache <- new.env(parent = emptyenv())
-.lens_cache$data       <- NULL
-.lens_cache$timestamp  <- NULL
+.lens_cache$data       <- NULL   # finalized tibble from the sheet
+.lens_cache$timestamp  <- NULL   # when it was last read from the sheet
+.lens_cache$snapshot   <- NULL   # finalized tibble from data/indicators.RData
+.lens_cache$source     <- NULL   # "sheet" or "snapshot": what was last served
 
 # --- Authentication ---
 #' Authenticate with Google via service account.
@@ -46,6 +55,9 @@ library(dplyr)
   key <- Sys.getenv("GOOGLE_SERVICE_ACCOUNT_KEY", "")
   
   if (!nzchar(key)) {
+    if (!interactive()) {
+      stop("[LENS] GOOGLE_SERVICE_ACCOUNT_KEY is not set.", call. = FALSE)
+    }
     message("[LENS] No GOOGLE_SERVICE_ACCOUNT_KEY found. ",
             "Falling back to interactive auth.")
     googlesheets4::gs4_auth()
@@ -163,7 +175,7 @@ library(dplyr)
   
   # 3. Coerce numeric columns (safe: character → integer)
   int_cols <- c("indicator_id", "indicator_order", "main_mandate_order",
-                "preset_digital", "preset_msme", "preset_finhealth", "preset_di",
+                "preset_digital", "preset_msme", "preset_finhealth", "preset_di", "preset_fraud",
                 "sources_any", "FEMAMETER")
   for (col in intersect(int_cols, names(raw))) {
     raw[[col]] <- suppressWarnings(as.integer(as.character(raw[[col]])))
@@ -211,6 +223,34 @@ library(dplyr)
   raw
 }
 
+# --- Finalization (shared by the runtime loader and data_prep.R) ---
+
+#' Apply the catalog-level transformations that turn the raw sheet tibble into
+#' what the app expects: the "Sustainability (ESG)" mandate label, rebuilt
+#' mandate-objective labels, an ordered mandate factor, and the drop list.
+#' Idempotent, so it is safe to apply to data that was already finalized.
+finalize_indicators <- function(raw) {
+  raw %>%
+    mutate(
+      main_mandate       = sub("^Sustainability$", "Sustainability (ESG)", main_mandate),
+      secondary_mandates = gsub("Sustainability(?! \\(ESG\\))", "Sustainability (ESG)",
+                                secondary_mandates, perl = TRUE),
+      main_mandate_objective = ifelse(
+        !is.na(main_mandate) & !is.na(main_objectives),
+        paste0(main_mandate, " (", main_objectives, ")"), NA_character_),
+      secondary_mandate_objective = mapply(
+        .build_secondary_label, secondary_mandates, secondary_objectives,
+        USE.NAMES = FALSE),
+      main_mandate = factor(
+        main_mandate,
+        levels = c("Financial inclusion", "Consumer protection",
+                   "Stability, safety and soundness", "Sustainability (ESG)",
+                   "Market development"),
+        ordered = TRUE)
+    ) %>%
+    filter(!indicator_name %in% LENS_DROPPED_INDICATORS)
+}
+
 # --- Public API ---
 
 #' Load indicators, using cache when available.
@@ -238,7 +278,7 @@ load_indicators <- function(force_refresh = FALSE) {
   
   # Read fresh data
   indicators <- tryCatch(
-    .lens_read_sheet(),
+    finalize_indicators(.lens_read_sheet()),
     error = function(e) {
       # If we have stale cache, use it rather than crashing
       if (!is.null(.lens_cache$data)) {
@@ -263,4 +303,66 @@ load_indicators <- function(force_refresh = FALSE) {
 #' Force-refresh the cache. Useful for a "Refresh" button in the UI.
 refresh_indicators <- function() {
   load_indicators(force_refresh = TRUE)
+}
+
+#' Load the committed snapshot (data/indicators.RData), finalized and cached.
+load_snapshot_indicators <- function() {
+  if (is.null(.lens_cache$snapshot)) {
+    env <- new.env(parent = emptyenv())
+    load(.lens_config$snapshot, envir = env)
+    snap <- env$indicators
+    if ("preset_MSME" %in% names(snap)) {
+      snap <- snap %>% rename(preset_msme = preset_MSME)
+    }
+    .lens_cache$snapshot <- finalize_indicators(snap)
+  }
+  .lens_cache$snapshot
+}
+
+#' Get the indicator catalog for the app. Never errors.
+#'
+#' Tries the Google Sheet (via the in-memory cache) and falls back to the
+#' committed snapshot when the sheet is not configured, LENS_DATA_SOURCE is
+#' "snapshot", or the API call fails with nothing cached. Records what was
+#' served in .lens_cache$source so the UI can display it (see lens_data_status).
+lens_get_indicators <- function() {
+  use_sheet <- .lens_config$data_source != "snapshot" &&
+    nzchar(.lens_config$sheet_id)
+
+  if (use_sheet) {
+    result <- tryCatch(
+      withCallingHandlers(
+        load_indicators(),
+        warning = function(w) {
+          message(conditionMessage(w))          # stale-cache notice, keep going
+          invokeRestart("muffleWarning")
+        }
+      ),
+      error = function(e) {
+        message("[LENS] Live data unavailable (", conditionMessage(e),
+                "). Falling back to snapshot.")
+        NULL
+      }
+    )
+    if (!is.null(result)) {
+      .lens_cache$source <- "sheet"
+      return(result)
+    }
+  } else if (.lens_config$data_source == "snapshot") {
+    message("[LENS] LENS_DATA_SOURCE=snapshot; using committed snapshot.")
+  } else {
+    message("[LENS] LENS_SHEET_ID not set; using committed snapshot.")
+  }
+
+  .lens_cache$source <- "snapshot"
+  load_snapshot_indicators()
+}
+
+#' Describe what lens_get_indicators() last served: source and, for the sheet,
+#' when it was last read. Used for a small status line in the UI.
+lens_data_status <- function() {
+  list(
+    source    = if (is.null(.lens_cache$source)) "snapshot" else .lens_cache$source,
+    timestamp = if (identical(.lens_cache$source, "sheet")) .lens_cache$timestamp else NULL
+  )
 }

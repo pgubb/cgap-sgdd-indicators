@@ -34,23 +34,12 @@ source("R/utils.R")
 # Load the connector
 source("R/data_connector.R")
 
-# Pull fresh data from Google Sheets
-indicators <- load_indicators(force_refresh = TRUE) %>%
-  # Rename mandate: "Sustainability" -> "Sustainability (ESG)" across the mandate
-  # columns, then rebuild the mandate-objective labels from the renamed values
-  # (.build_secondary_label / .obj_to_mandate come from R/data_connector.R).
-  mutate(
-    main_mandate       = gsub("Sustainability", "Sustainability (ESG)", main_mandate, fixed = TRUE),
-    secondary_mandates = gsub("Sustainability", "Sustainability (ESG)", secondary_mandates, fixed = TRUE),
-    main_mandate_objective = ifelse(
-      !is.na(main_mandate) & !is.na(main_objectives),
-      paste0(main_mandate, " (", main_objectives, ")"), NA_character_),
-    secondary_mandate_objective = mapply(
-      .build_secondary_label, secondary_mandates, secondary_objectives, USE.NAMES = FALSE)
-  ) %>%
-  mutate(main_mandate = factor(main_mandate, levels = c("Financial inclusion", "Consumer protection", "Stability, safety and soundness", "Sustainability (ESG)", "Market development"), ordered = TRUE)) %>%
-  # Dropping select indicators from catalog
-  filter(indicator_name %not_in% c("Payroll loans", "New licenses granted to diverse FSPs"))
+# Pull fresh data from Google Sheets. load_indicators() already applies
+# finalize_indicators() (from R/data_connector.R): the "Sustainability (ESG)"
+# mandate label, rebuilt mandate-objective labels, the ordered mandate factor,
+# and the LENS_DROPPED_INDICATORS drop list. The runtime loader in app.R uses
+# the same function, so the snapshot and live data are shaped identically.
+indicators <- load_indicators(force_refresh = TRUE)
 
 # Quick summary
 cat("\n--- Summary ---\n")

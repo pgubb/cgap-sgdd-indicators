@@ -40,23 +40,41 @@ The app uses `renv` for dependency management. The lockfile is
 
 ## Data Pipeline
 
-The app loads indicator data from `data/indicators.RData`. To refresh
-this data from the upstream Google Sheet:
+The app reads indicator data at runtime from the upstream Google Sheet
+(maintained via the CGAP LENS admin app) through `R/data_connector.R`,
+falling back to the committed snapshot `data/indicators.RData` when the
+sheet cannot be reached. Entry point is `lens_get_indicators()`, which
+never errors:
+
+- Live data is cached in memory per R process (5-minute TTL,
+  `LENS_CACHE_TTL_SECONDS`). Each new session calls the loader, so edits
+  in the sheet appear for new sessions once the TTL expires, without a
+  redeploy.
+- If a refresh fails but a cached copy exists, the stale cache is
+  served. If nothing is cached, the snapshot is served.
+- `LENS_DATA_SOURCE=snapshot` forces the snapshot and skips the API.
+- `lens_data_status()` reports which source is in use; the sidebar shows
+  a small status line based on it.
+
+Both paths go through `finalize_indicators()` (the "Sustainability
+(ESG)" label, rebuilt mandate-objective labels, ordered mandate factor,
+and the `LENS_DROPPED_INDICATORS` drop list), so live and snapshot data
+are shaped identically.
+
+Environment variables in `.Renviron`: - `LENS_SHEET_ID` — Google Sheet
+ID - `LENS_SHEET_NAME` — tab name (default: "indicators") -
+`GOOGLE_SERVICE_ACCOUNT_KEY` — path to service account JSON file (keep
+it relative so the file resolves inside the deployment bundle) -
+`LENS_DATA_SOURCE` — `sheet` (default) or `snapshot`
+
+To refresh the committed snapshot and the public Excel download:
 
 ``` r
 source("data_prep.R")
 ```
 
-This requires environment variables in `.Renviron`: - `LENS_SHEET_ID` —
-Google Sheet ID - `LENS_SHEET_NAME` — tab name (default: "indicators") -
-`GOOGLE_SERVICE_ACCOUNT_KEY` — path to service account JSON file
-
-After running `data_prep.R`, commit the updated `data/indicators.RData`
-and `www/LENS_INDICATORS_DB.xlsx` to deploy fresh data.
-
-`R/data_connector.R` provides an alternative runtime connector with
-in-memory caching (5-min TTL), but the app currently uses the static
-`.RData` file.
+Then commit the updated `data/indicators.RData` and
+`www/LENS_INDICATORS_DB.xlsx`.
 
 ## Architecture
 
@@ -69,10 +87,11 @@ Source order in `app.R`: 1. `R/globals.R` — constants: `SECTOR_COLORS`,
 `BREAKDOWNS` 2. `R/utils.R` — helper functions: UI builders
 (`enhanced_navigation_helper`, `enhanced_mandate_header`,
 `indicator_key`, `about_modal_content`), table renderers, text
-processing, PDF report generation 3. `R/modules/indicatorCard.R` —
-renders individual indicator cards + all client-side JavaScript
-(selection, expand/collapse, scroll navigation) 4.
-`R/modules/filterPanel.R` — sidebar filter controls with pre-computed
+processing, PDF report generation 2b. `R/data_connector.R` — runtime
+data loader (Google Sheet with snapshot fallback, see Data Pipeline) 3.
+`R/modules/indicatorCard.R` — renders individual indicator cards + all
+client-side JavaScript (selection, expand/collapse, scroll navigation)
+4. `R/modules/filterPanel.R` — sidebar filter controls with pre-computed
 lookup tables for performance 5. `R/modules/setManager.R` — CRUD for
 multiple named indicator sets, with bulk add/remove operations 6.
 `R/modules/selectedIndicatorsMulti.R` — the "Your Indicator Sets" tab,
@@ -137,8 +156,14 @@ is excluded from deployment via `.gitignore`.
   indicators, add notes, and export as CSV or HTML report
 - **Presets**: Toggle filters for cross-cutting themes — "Digital
   finance ecosystem" (`preset_digital`), "MSME focus" (`preset_msme`),
-  and "Financial health" (`preset_finhealth`). Each filters to
-  indicators where the corresponding column equals 1.
+  and "Financial health" (`preset_finhealth`), "Gender diversity"
+  (`preset_di`), and "Fraud monitoring" (`preset_fraud`). Each filters
+  to indicators where the corresponding column equals 1. Adding a preset
+  touches: `filterPanel.R` (checkbox), `app.R` (active filters),
+  `utils.R` (any-active check, filter pill, report badge),
+  `indicatorCard.R` (card badge), `custom.css` (badge class),
+  `globals.R` (`PRESET_MEMOS` drawer text), and the connector's
+  integer-column list.
 - **Long descriptions**: Use `!-` as a delimiter for sections
   (Definitions, Data requirements, Limitations, Derivable indicators)
 
@@ -152,10 +177,10 @@ R/modules/indicatorCard.R       # Card rendering + all JS
 R/modules/filterPanel.R         # Filter controls + pre-computed lookups
 R/modules/setManager.R          # Named set management (CRUD + bulk ops)
 R/modules/selectedIndicatorsMulti.R  # "Your Indicator Sets" tab
-R/data_connector.R              # Google Sheets runtime connector (alternative)
+R/data_connector.R              # Runtime loader: Google Sheet + snapshot fallback
 R/_disable_autoload.R           # Prevents Shiny autoload
 data_prep.R                     # Data refresh script
-data/indicators.RData           # Pre-built indicator dataset
+data/indicators.RData           # Committed snapshot (fallback data source)
 www/custom.css                  # All custom styling
 www/CGAP Lens User Guide.pdf    # Downloadable user guide
 www/LENS_INDICATORS_DB.xlsx     # Full catalog download

@@ -162,9 +162,10 @@ filterPanelUI <- function(id) {
               preset_choice_label("Digital finance ecosystem", "preset_digital", "badge-digital-preset", "mobile-screen"),
               preset_choice_label("MSME focus", "preset_msme", "badge-msme-preset", "building"),
               preset_choice_label("Financial health", "preset_finhealth", "badge-finhealth-preset", "heart-pulse"),
-              preset_choice_label("Gender diversity", "preset_di", "badge-di-preset", "users")
+              preset_choice_label("Gender diversity", "preset_di", "badge-di-preset", "users"),
+              preset_choice_label("Fraud monitoring", "preset_fraud", "badge-fraud-preset", "shield-halved")
             ),
-            choiceValues = list("preset_digital", "preset_msme", "preset_finhealth", "preset_di"),
+            choiceValues = list("preset_digital", "preset_msme", "preset_finhealth", "preset_di", "preset_fraud"),
             selected = character(0)
           )
         )

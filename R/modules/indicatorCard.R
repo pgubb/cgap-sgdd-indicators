@@ -73,6 +73,10 @@ indicatorCardModern <- function(id, indicator, sector_colors, is_selected = FALS
             if (!is.na(indicator$preset_di) && indicator$preset_di == 1) {
               div(class = "badge-di-preset",
                   icon("users", class = "fas", style = "font-size: 10px;"))
+            },
+            if (!is.null(indicator$preset_fraud) && !is.na(indicator$preset_fraud) && indicator$preset_fraud == 1) {
+              div(class = "badge-fraud-preset",
+                  icon("shield-halved", class = "fas", style = "font-size: 10px;"))
             }
           ),
 

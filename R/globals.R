@@ -203,17 +203,82 @@ PRESET_MEMOS <- list(
       )
     )
   ),
+  "preset_fraud" = list(
+    title = "Fraud monitoring",
+    summary = paste0(
+      "This preset selects indicators particularly relevant to understanding and ",
+      "monitoring fraud affecting customers of financial service providers, ",
+      "including the incidence of fraud attempts and confirmed incidents, the ",
+      "losses customers bear, and how effectively providers detect, reimburse, ",
+      "and prevent recurring fraud."
+    ),
+    sections = list(
+      list(
+        heading = "Rationale",
+        body = paste0(
+          "Fraud and scams are among the fastest-growing risks facing retail ",
+          "financial customers, particularly as transactions shift to digital ",
+          "channels. Fraud erodes trust, causes direct financial harm, and can ",
+          "discourage the use of formal financial services by the very groups ",
+          "authorities seek to include. It is also an operational risk for ",
+          "providers. Financial sector authorities therefore need indicators that ",
+          "capture fraud dynamics &mdash; from the volume and success rate of ",
+          "fraud attempts to customer losses, reimbursement, detection lag, and ",
+          "reporting behaviour. This preset curates indicators that are informative ",
+          "for both the consumer protection (safety and security) and the ",
+          "stability, safety and soundness (operational risk) mandates."
+        )
+      ),
+      list(
+        heading = "Key questions this preset helps address",
+        body = paste0(
+          "<ul style='margin: 0; padding-left: 20px;'>",
+          "<li>How prevalent are fraud attempts and confirmed fraud incidents, and ",
+          "how are they evolving over time and across providers and channels?</li>",
+          "<li>Which customer segments &mdash; by gender, age, location, or ",
+          "customer type &mdash; are most exposed to fraud and bear the largest ",
+          "losses?</li>",
+          "<li>How effectively do providers detect fraud, and how quickly?</li>",
+          "<li>What share of defrauded customers are reimbursed, and does this ",
+          "differ across segments or product types?</li>",
+          "<li>Are customers reporting fraud, and does fraud recur for the same ",
+          "customers or providers?</li>",
+          "</ul>"
+        )
+      ),
+      list(
+        heading = "Analytical approach",
+        body = paste0(
+          "These indicators can be analyzed individually or combined with ",
+          "breakdowns such as customer gender, age, and location, product type, ",
+          "channel (digital vs. physical), and FSP type to reveal where fraud ",
+          "concentrates and who bears its cost. Comparing incidence with ",
+          "detection, reimbursement, and reporting rates helps distinguish ",
+          "providers that prevent fraud from those that merely absorb it. ",
+          "Cross-referencing fraud indicators with complaints-handling and ",
+          "operational-risk metrics can highlight gaps in provider controls and ",
+          "in the coverage of consumer protection frameworks."
+        )
+      )
+    )
+  ),
   "preset_finhealth" = list(
     title = "Financial Health",
     pages = list(
       list(
         label = "Overview",
-        summary = "This preset selects LENS indicators that map to the CGAP Financial Health Measurement Framework, a forthcoming framework introduced in a CGAP working paper that translates the G20/GPFI definition of financial health into six measurement constructs and seventeen metrics.",
+        summary = paste0(
+          "This preset selects LENS indicators that map to the ",
+          "<a href='https://www.cgap.org/research/publication/measuring-financial-health-framework' ",
+          "target='_blank' rel='noopener noreferrer'>CGAP Financial Health Measurement Framework</a>, ",
+          "introduced in a CGAP working paper that translates the G20/GPFI definition of financial ",
+          "health into six measurement constructs and seventeen metrics."
+        ),
         sections = list(
           list(
             heading = "About the framework",
             body = paste0(
-              "The framework is grounded in a comprehensive review of seventy-one existing measurement initiatives ",
+              "The framework is grounded in a comprehensive review of seventy existing measurement initiatives ",
               "and is designed around three principles: multidimensionality, use of complementary data sources, and adaptability to local context. ",
               "It translates the four dimensions of the G20/GPFI definition of financial health &mdash; the ability to manage financial needs and obligations, ",
               "to cope with shocks, to pursue aspirations, and to feel satisfied and confident &mdash; into six measurable constructs and seventeen metrics ",
@@ -272,9 +337,9 @@ PRESET_MEMOS <- list(
               # Dimension 1: Manage needs — Construct 1 (4 metrics)
               "<tr class='fh-mapped'>",
               "<td rowspan='7' class='fh-dim-cell fh-dim-manage'>Manage needs &amp; obligations</td>",
-              "<td rowspan='4' class='fh-construct-cell'>1. Pays for basic needs without significant strain</td>",
-              "<td>1</td><td>Positive net cashflow</td>",
-              "<td class='fh-match'><i class='fas fa-check-circle'></i> Positive net cashflow</td></tr>",
+              "<td rowspan='4' class='fh-construct-cell'>Pays for basic needs without significant financial or material strain</td>",
+              "<td>1</td><td>Positive net cash flow</td>",
+              "<td class='fh-match'><i class='fas fa-check-circle'></i> Positive net cash flow</td></tr>",
 
               "<tr class='fh-unmapped'><td>2</td><td>Material deprivation</td>",
               "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
@@ -282,28 +347,28 @@ PRESET_MEMOS <- list(
               "<tr class='fh-unmapped'><td>3</td><td>Bills in arrears</td>",
               "<td class='fh-no-match'><span class='fh-external-tag'>External</span></td></tr>",
 
-              "<tr class='fh-mapped'><td>4</td><td>Account overdrafts / NSF events</td>",
-              "<td class='fh-match'><i class='fas fa-check-circle'></i> Account overdrafts and/or non-sufficient funds events</td></tr>",
+              "<tr class='fh-mapped'><td>4</td><td>Account overdrafts and/or nonsufficient funds events</td>",
+              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Account overdrafts and/or non-sufficient funds events</td></tr>",
 
               # Construct 2 (1 metric)
               "<tr class='fh-mapped'>",
-              "<td class='fh-construct-cell'>2. Transacts safely with financial system</td>",
+              "<td class='fh-construct-cell'>Uses financial services without incurring financial loss from fraud or misconduct</td>",
               "<td>5</td><td>Financial loss due to fraud or deception</td>",
               "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Frauds resulting in customer losses</td></tr>",
 
               # Construct 3 (2 metrics)
               "<tr class='fh-mapped'>",
-              "<td rowspan='2' class='fh-construct-cell'>3. Sustainable debt load &amp; repays obligations</td>",
+              "<td rowspan='2' class='fh-construct-cell'>Has a sustainable debt load and repays loan obligations</td>",
               "<td>6</td><td>Debt in arrears or delinquency</td>",
               "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Delinquency rate in the loan portfolio</td></tr>",
 
-              "<tr class='fh-mapped'><td>7</td><td>Sustainable debt service ratio</td>",
-              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Debt service-to-income ratio</td></tr>",
+              "<tr class='fh-mapped'><td>7</td><td>Debt service-to-income ratio</td>",
+              "<td class='fh-match'><i class='fas fa-check-circle'></i> Debt service-to-income ratio</td></tr>",
 
               # Dimension 2: Cope with shocks — Construct 4 (3 metrics)
               "<tr class='fh-unmapped'>",
               "<td rowspan='3' class='fh-dim-cell fh-dim-cope'>Cope with shocks</td>",
-              "<td rowspan='3' class='fh-construct-cell'>4. Has resources to cover unexpected expenses</td>",
+              "<td rowspan='3' class='fh-construct-cell'>Has resources to cover unexpected expenses</td>",
               "<td>8</td><td>Reliable access to emergency funds</td>",
               "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
 
@@ -316,11 +381,11 @@ PRESET_MEMOS <- list(
               # Dimension 3: Pursue aspirations — Construct 5 (3 metrics)
               "<tr class='fh-mapped'>",
               "<td rowspan='3' class='fh-dim-cell fh-dim-aspire'>Pursue aspirations &amp; goals</td>",
-              "<td rowspan='3' class='fh-construct-cell'>5. Participates in long-term savings / investments</td>",
-              "<td>11</td><td>Long-term saving / financial asset accumulation</td>",
-              "<td class='fh-match fh-name-diff'><i class='fas fa-check-circle'></i> Long-term saving and/or financial asset accumulation</td></tr>",
+              "<td rowspan='3' class='fh-construct-cell'>Participates in long-term savings and/or investments</td>",
+              "<td>11</td><td>Long-term saving and/or financial asset accumulation</td>",
+              "<td class='fh-match'><i class='fas fa-check-circle'></i> Long-term saving and/or financial asset accumulation</td></tr>",
 
-              "<tr class='fh-unmapped'><td>12</td><td>Investment in productive / physical assets</td>",
+              "<tr class='fh-unmapped'><td>12</td><td>Investment in long-term productive and/or physical assets</td>",
               "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
 
               "<tr class='fh-mapped'><td>13</td><td>Pension or retirement account holder</td>",
@@ -329,17 +394,17 @@ PRESET_MEMOS <- list(
               # Dimension 4: Feels satisfied — Construct 6 (4 metrics)
               "<tr class='fh-unmapped'>",
               "<td rowspan='4' class='fh-dim-cell fh-dim-satisfy'>Feels satisfied &amp; confident</td>",
-              "<td rowspan='4' class='fh-construct-cell'>6. Financial confidence, control &amp; satisfaction</td>",
-              "<td>14</td><td>Satisfaction with financial situation</td>",
+              "<td rowspan='4' class='fh-construct-cell'>Has financial confidence, control, and satisfaction</td>",
+              "<td>14</td><td>Satisfaction with financial situation (present state)</td>",
               "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
 
-              "<tr class='fh-unmapped'><td>15</td><td>Perceived financial control</td>",
+              "<tr class='fh-unmapped'><td>15</td><td>Perceived financial control (agency/locus of control)</td>",
               "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
 
-              "<tr class='fh-unmapped'><td>16</td><td>Confidence in future financial outlook</td>",
+              "<tr class='fh-unmapped'><td>16</td><td>Confidence in future financial outlook (expectations/optimism)</td>",
               "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
 
-              "<tr class='fh-unmapped'><td>17</td><td>Financial stress or worry</td>",
+              "<tr class='fh-unmapped'><td>17</td><td>Financial stress or worry (emotional burden)</td>",
               "<td class='fh-no-match'><span class='fh-survey-tag'>Survey</span></td></tr>",
 
               "</tbody></table>",

@@ -6,19 +6,21 @@ library(stringr)
 library(bslib)
 library(SnowballC)
 
-# Load data
-load("data/indicators.RData")
-if ("preset_MSME" %in% names(indicators)) {
-  indicators <- indicators %>% rename(preset_msme = preset_MSME)
-}
-
 # Source modular components
 source("R/globals.R")
 source("R/utils.R")
+source("R/data_connector.R")   # live Google Sheet reader with snapshot fallback
 source("R/modules/indicatorCard.R")
 source("R/modules/filterPanel.R")
 source("R/modules/setManager.R")                    
 source("R/modules/selectedIndicatorsMulti.R") 
+
+# Load data once per R process to warm the cache and surface any connection
+# problem in the startup log. Each session calls lens_get_indicators() again
+# (see server), so once the cache TTL expires new sessions pick up edits made
+# through the LENS admin app without a redeploy. If the sheet cannot be
+# reached, data/indicators.RData is served instead.
+indicators <- lens_get_indicators()
 
 
 # UI ----------
@@ -294,7 +296,8 @@ ui <- page_navbar(
       tags$img(src = "cgap_mark.png", alt = "CGAP Technical Guide",
                style = "height: 13px; width: auto; vertical-align: text-bottom; display: inline;")
     ),
-    filterPanelUI("filters")
+    filterPanelUI("filters"),
+    uiOutput("data_status")
   ),
   
   nav_spacer(),
@@ -351,6 +354,22 @@ ui <- page_navbar(
 
 # SERVER ----------
 server <- function(input, output, session) {
+
+  # Catalog for this session: served from the in-memory cache, refreshed from
+  # the Google Sheet once the TTL has expired, or the snapshot as a fallback.
+  indicators <- lens_get_indicators()
+
+  # Small status line at the bottom of the sidebar showing which source is in use
+  output$data_status <- renderUI({
+    st <- lens_data_status()
+    label <- if (identical(st$source, "sheet")) {
+      sprintf("Catalog synced from database %s UTC",
+              format(st$timestamp, "%d %b %Y, %H:%M", tz = "UTC"))
+    } else {
+      "Catalog loaded from offline snapshot"
+    }
+    p(style = "font-size: 11px; color: #999; margin: 12px 0 0 0;", label)
+  })
   
   # Initialize set manager
   set_manager <- selectedIndicatorsMultiServer(
@@ -407,7 +426,8 @@ server <- function(input, output, session) {
       presets_digital = "preset_digital" %in% input$`filters-presets`,
       presets_msme = "preset_msme" %in% input$`filters-presets`,
       presets_finhealth = "preset_finhealth" %in% input$`filters-presets`,
-      presets_di = "preset_di" %in% input$`filters-presets`
+      presets_di = "preset_di" %in% input$`filters-presets`,
+      presets_fraud = "preset_fraud" %in% input$`filters-presets`
     )
     
     # Get the active set name + all set names from set_manager

@@ -574,7 +574,8 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
       isTRUE(active_filters$presets_digital) ||
       isTRUE(active_filters$presets_msme) ||
       isTRUE(active_filters$presets_finhealth) ||
-      isTRUE(active_filters$presets_di)
+      isTRUE(active_filters$presets_di) ||
+      isTRUE(active_filters$presets_fraud)
   )
   
   div(
@@ -687,6 +688,11 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
             span(class = "filter-pill-preset",
                  icon("users", class = "fas", style = "font-size: 10px;"),
                  "Gender diversity")
+          },
+          if (isTRUE(active_filters$presets_fraud)) {
+            span(class = "filter-pill-preset",
+                 icon("shield-halved", class = "fas", style = "font-size: 10px;"),
+                 "Fraud monitoring")
           },
           if (length(active_filters$mandates) > 0) {
             lapply(active_filters$mandates, function(m)
@@ -1513,6 +1519,11 @@ create_pdf_report <- function(indicators, comments, sector_colors, active_set_na
                   },
                   if (!is.null(ind$preset_di) && !is.na(ind$preset_di) && ind$preset_di == 1) {
                     '<span class="badge badge-priority"><i class="fas fa-users"></i> Gender diversity </span>'
+                  } else {
+                    ''
+                  },
+                  if (!is.null(ind$preset_fraud) && !is.na(ind$preset_fraud) && ind$preset_fraud == 1) {
+                    '<span class="badge badge-priority"><i class="fas fa-shield-halved"></i> Fraud monitoring </span>'
                   } else {
                     ''
                   }, '
