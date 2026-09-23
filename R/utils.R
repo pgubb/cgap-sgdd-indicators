@@ -849,7 +849,7 @@ about_modal_content <- function() {
       # Content sections
       div(
         style = "padding: 0 20px;",
-        p("CGAP's LENS is a curated catalog of indicators for use with regulatory administrative data, helping financial sector authorities and other stakeholders understand — through customer-segmented analysis enabled by disaggregated or granular data — who uses retail financial services, under what patterns and conditions, and with what outcomes, thereby supporting more inclusive, evidence-based financial policies and supervision. Rather than pre-built metrics, LENS is built around high-level indicators that analysts can convert into disaggregated, customized indicators by applying breakdowns such as customer type, gender, product type, or provider type. The selection of indicators is informed by their relevance to the different mandates and goals of financial sector authorities, including their potential to illuminate the role of key sociodemographic traits — such as gender — across those dimensions. The indicators in LENS, including their definitions, assigned mandates/objectives, and proposed breakdowns, do not reflect a global consensus; rather, they constitute working definitions, classifications, and disaggregation options that each user should adapt to their specific country context and institutional goals. For a full explanation, consult the User Guide.",
+        p("CGAP LENS is a curated catalog of indicators for use with financial regulatory data and in support of customer-segmented analysis. It is a companion resource to CGAP's Technical Guide for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Policy and Supervision (CGAP 2026). CGAP LENS is built around high-level indicators that analysts can convert into disaggregated, customized indicators by applying sociodemographic breakdowns such as gender and age as well as customer type, product type, or provider type. CGAP LENS is designed to help financial sector authorities understand, through the analysis of sociodemographically disaggregated regulatory data, who uses retail financial services, in what patterns and under what conditions, and with what outcomes. The indicators proposed, including their definitions, assigned mandates/objectives, and proposed breakdowns, do not reflect a global consensus; rather, they constitute working definitions, classifications, and disaggregation options that each user should adapt to their specific country context and institutional goals.",
           style = "line-height: 1.6; color: #555; margin-bottom: 15px;"),
         # User Guide & Technical Guide banners — side by side (2-col, wraps on narrow screens)
         div(
@@ -1029,6 +1029,16 @@ about_modal_content <- function() {
             tags$a(href = "https://www.cgap.org/topics/collections/fema-meter", target = "_blank",
                    class = "btn btn-outline-secondary btn-sm", "A2ii FeMa-Meter")
           )
+        ),
+
+        # Acknowledgements
+        div(
+          class = "about-section",
+          style = "margin-bottom: 30px;",
+          h3("Acknowledgements",
+             style = "color: #333; margin-bottom: 15px; font-size: 20px;"),
+          p("The LENS interactive tool and underlying database of indicators were created by Paul Gubbins, Tatiana Alonso, Juan Carlos Izaguirre, Denise Dias, with guidance from Haocong Ren and input from Yasmin Bin Humam, Tatiana Reyes, Aveesha Singh, and Olga Tomilova, and with support from Simrin Makhija and Philippe Ruellan.",
+            style = "line-height: 1.6; color: #555; margin-bottom: 0;")
         ),
 
         # About CGAP

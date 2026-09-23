@@ -21,8 +21,9 @@ Data (S-GDD) project.
 **Live app:** `datanalytics.worldbank.org/cgap-lens/`
 
 LENS is one component of a broader deliverable package that includes a
-Technical Guide for FSAs ("Using Disaggregated Regulatory Data to
-Improve Policy, Regulation and Supervision") and country case studies.
+Technical Guide for Financial Sector Authorities ("Using Disaggregated
+Regulatory Data to Support Financial Policy and Supervision") and
+country case studies.
 
 ## Running the App
 
