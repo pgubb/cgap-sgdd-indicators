@@ -52,7 +52,7 @@ filterPanelUI <- function(id) {
             tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
             div(
               class = "my-tooltiptext",
-              "Filter by specific regulatory objectives within each mandate (e.g., Access, Usage, Consumer protection). Toggle below to include secondary objectives."
+              "Filter by specific regulatory objectives within each mandate (e.g., Access, Usage). Toggle below to include secondary objectives."
             )
           )
         ), 
@@ -107,7 +107,7 @@ filterPanelUI <- function(id) {
           style = "display: inline-flex; align-items: center; gap: 8px;",
           "Links with other initiatives",
           div(
-            class = "my-tooltip",
+            class = "my-tooltip my-tooltip-left",
             tags$i(class = "fas fa-info-circle", style = "color: #87CEFA; font-size: 12px;"),
             div(
               class = "my-tooltiptext",

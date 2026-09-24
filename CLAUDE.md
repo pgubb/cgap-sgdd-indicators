@@ -149,8 +149,8 @@ contents of the key file (the connector accepts either a path or raw
 JSON). Without them the app runs on the committed snapshot and the
 sidebar status line reads "Catalog loaded from offline snapshot".
 
-The `NOT_PUBLIC/` folder contains internal documents and is excluded
-via `.gitignore`. The `rsconnect/` folder is a leftover from earlier
+The `NOT_PUBLIC/` folder contains internal documents and is excluded via
+`.gitignore`. The `rsconnect/` folder is a leftover from earlier
 shinyapps.io deployments.
 
 ## Key Domain Concepts

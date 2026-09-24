@@ -196,7 +196,7 @@ PRESET_MEMOS <- list(
           "detect outlier FSPs, while cross-referencing diversity indicators with ",
           "prudential, conduct, and stability metrics can highlight links between ",
           "diversity and performance. Diversity indicators can also feed into ",
-          "prudential analysis, as highlighted in our Technical Guide (section 2.4): ",
+          "prudential analysis, as highlighted in our Technical Guide (section 3.2): ",
           "a growing body of literature suggests that gender diversity within FSPs is ",
           "associated with stronger risk management."
         )
@@ -443,11 +443,11 @@ MANDATE_TG_ID <- c(
 # Technical Guide section number referenced in each mandate's memo. Shown after
 # the CGAP mark next to the mandate label in the filter (keyed by tg_id).
 MANDATE_TG_SECTION <- c(
-  "financial_inclusion" = "2.3",
-  "consumer_protection" = "2.4.1",
-  "stability"           = "2.4.3",
-  "sustainability"      = "2.4.4",
-  "market_development"  = "2.4.4"
+  "financial_inclusion" = "3.1",
+  "consumer_protection" = "3.2",
+  "stability"           = "3.2",
+  "sustainability"      = "3.2",
+  "market_development"  = "3.2"
 )
 
 # Shared footer pointing readers to the companion Technical Guide.
@@ -458,7 +458,7 @@ MANDATE_TG_SECTION <- c(
   "Supervision</em> &mdash; read jointly with LENS to connect indicators ",
   "to mandates.</p>",
   "<span class='tg-guide-pill'><i class='fas fa-book'></i> ",
-  "Technical Guide (Coming 2026/Q3)</span>"
+  "Technical Guide</span>"
 )
 
 TECH_GUIDE_MEMOS <- list(
@@ -467,7 +467,7 @@ TECH_GUIDE_MEMOS <- list(
     summary = paste0(
       "Aggregate indicators can mask deep structural disparities that hinder ",
       "progress on financial inclusion. As highlighted in our Technical Guide ",
-      "(section 2.3), data segmented by socio-demographics allows authorities to ",
+      "(section 3.1), data segmented by socio-demographics allows authorities to ",
       "establish baselines of gaps across priority groups, monitor how disparities ",
       "evolve, and evaluate whether financial inclusion interventions deliver the ",
       "intended results &mdash; across all five inclusion dimensions: access, ",
@@ -484,7 +484,7 @@ TECH_GUIDE_MEMOS <- list(
   "consumer_protection" = list(
     title = "Consumer protection",
     summary = paste0(
-      "As argued in our Technical Guide (section 2.4.1), weak competition and ",
+      "As argued in our Technical Guide (section 3.2), weak competition and ",
       "poor conduct could disproportionately harm vulnerable consumers. ",
       "Socio-demographic data enables authorities to identify which consumer ",
       "segments are being underserved, overcharged, have fewer provider options, ",
@@ -515,7 +515,7 @@ TECH_GUIDE_MEMOS <- list(
       "including with overall supervisory risk scoring assigned to each provider. ",
       "These insights can help authorities sharpen risk assessments, refine ",
       "risk-based supervision, and improve supervisory targeting in support of ",
-      "their core mandates. Section 2.4.3 of our Technical Guide expands on this ",
+      "their core mandates. Section 3.2 of our Technical Guide expands on this ",
       "topic, giving examples of potential analyses and actions based on such ",
       "analyses."
     ),
@@ -524,7 +524,7 @@ TECH_GUIDE_MEMOS <- list(
   "sustainability" = list(
     title = "Sustainability (ESG)",
     summary = paste0(
-      "As argued in Section 2.4.4 of our Technical Guide, disaggregated data can ",
+      "As argued in Section 3.2 of our Technical Guide, disaggregated data can ",
       "reveal whether the expansion of green and sustainable financial products ",
       "is reaching vulnerable segments &mdash; such as low-income women, female ",
       "smallholder farmers, and women-led MSMEs &mdash; or remaining concentrated ",
@@ -541,7 +541,7 @@ TECH_GUIDE_MEMOS <- list(
   "market_development" = list(
     title = "Capital markets development",
     summary = paste0(
-      "As explored in Section 2.4.4 of our Technical Guide, segmented analysis ",
+      "As explored in Section 3.2 of our Technical Guide, segmented analysis ",
       "can help authorities assess whether certain groups face disproportionate ",
       "barriers to accessing funding through capital markets and alternative ",
       "channels such as crowdfunding platforms. Examining disparities in funding ",

@@ -891,6 +891,15 @@ html, body {
     opacity: 1;
 }
 
+/* Variant that opens to the left of the info icon (right edge anchored to the
+   icon) for panels near the sidebar's right edge, where the default
+   right-opening popup gets clipped. */
+.my-tooltip.my-tooltip-left .my-tooltiptext {
+    left: auto;
+    right: 0;
+    margin-left: 0;
+}
+
 /* Tree box styling for use cases */
 .tree-box {
     display: inline-block;
