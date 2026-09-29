@@ -283,7 +283,7 @@ ui <- page_navbar(
     width = 400,
     p(style = "font-size: 13px; color: #555; line-height: 1.5;",
       "LENS provides an interactive curated catalog of indicators to support customer segmented analysis using data collected from regulated financial institutions. LENS is a companion resource to CGAP's ",
-      tags$a("Technical Guide", href = "", target = "_blank", rel = "noopener noreferrer",
+      tags$a("Technical Guide", href = "https://www.cgap.org/research/publication/using-disaggregated-regulatory-data-to-support-financial-policy-and", target = "_blank", rel = "noopener noreferrer",
              style = "color: #1A5A80; font-weight: 600; font-style: italic; text-decoration: none;"),
       em(" for Financial Sector Authorities on Using Disaggregated Regulatory Data to Support Financial Policy and Supervision*."),
       " See ",
