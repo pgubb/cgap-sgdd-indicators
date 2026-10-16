@@ -914,6 +914,13 @@ about_modal_content <- function() {
                   "Download User Guide (PDF)"
                 ),
 
+                # Last revision of the downloadable User Guide PDF.
+                p("The User Guide was updated on 13 October 2026",
+                  style = paste0(
+                    "margin: 10px 0 0 0; font-size: 12px; ",
+                    "opacity: 0.8; line-height: 1.4;"
+                  )),
+
                 # Video tutorial — sits below the download button, sized to content
                 tags$a(
                   href = "https://www.loom.com/share/30cd180dc6bb4c31b3ff78a0c85effe3",
