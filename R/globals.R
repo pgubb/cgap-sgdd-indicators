@@ -50,6 +50,17 @@ COLUMN_DESCRIPTIONS <- c(
   "disaggregation_vars" = "Suggested breakdowns for segmentation analysis"
 )
 
+# Display labels for the "Links with other initiatives" filter. Keys match the
+# checkboxGroupInput choiceValues in filterPanel.R (and the indicator columns);
+# values are what the checkbox labels and the active-filter pills show.
+INITIATIVE_LABELS <- c(
+  "GPFI"      = "GPFI",
+  "IMF"       = "IMF-FAS",
+  "AFI"       = "AFI",
+  "WEF"       = "WE Finance Code",
+  "FEMAMETER" = "A2ii FeMa-Meter"
+)
+
 BREAKDOWNS <- list(
   "Customer gender" = c("Female", "Male", "Non-binary", "Transgender"), 
   "Customer type" = c("Natural person-individual", "Legal person-entity/organization", "-Micro, Small and Medium enterprises (MSMEs)",  "--Micro enterprises", "--Small enterprises", "--Medium enterprises", "-Small and Medium enterprises (SMEs)"), 

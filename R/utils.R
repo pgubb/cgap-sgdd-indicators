@@ -569,7 +569,7 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
     length(active_filters$mandates) > 0 ||
       length(active_filters$objectives) > 0 ||
       length(active_filters$sectors) > 0 ||
-      length(active_filters$use_cases) > 0 ||
+      length(active_filters$initiatives) > 0 ||
       !is.null(active_filters$search) && active_filters$search != "" ||
       isTRUE(active_filters$presets_digital) ||
       isTRUE(active_filters$presets_msme) ||
@@ -705,6 +705,16 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
           if (length(active_filters$sectors) > 0) {
             lapply(active_filters$sectors, function(s)
               span(class = "filter-pill", icon("chart-pie", class = "fas", style = "font-size: 10px;"), s))
+          },
+          # "Links with other initiatives": map the column key selected in the
+          # filter (GPFI, IMF, ...) to its display label.
+          if (length(active_filters$initiatives) > 0) {
+            lapply(active_filters$initiatives, function(i) {
+              # Unmapped keys fall back to the raw value rather than erroring,
+              # so adding a column to the filter cannot break the banner.
+              lbl <- if (i %in% names(INITIATIVE_LABELS)) INITIATIVE_LABELS[[i]] else i
+              span(class = "filter-pill", icon("link", class = "fas", style = "font-size: 10px;"), lbl)
+            })
           }
         )
       )
