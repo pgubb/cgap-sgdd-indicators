@@ -55,5 +55,6 @@ cgap-lens-*.json
 # Internal documents (not for deployment)
 NOT_PUBLIC/
 
-# R profile
-.Rprofile
+# NOTE: .Rprofile is intentionally tracked - it holds renv's activation hook
+# (source("renv/activate.R")), without which a fresh clone will not bootstrap
+# the project library. renv/.gitignore excludes renv/library and renv/staging.

@@ -26,4 +26,4 @@ This requires environment variables in `.Renviron` (see `CLAUDE.md` for details)
 
 ## Architecture
 
-Single-file R Shiny app (`app.R`) with modular components in `R/modules/`. Uses `bslib` for UI, `renv` for dependency management, and deploys to shinyapps.io. See `CLAUDE.md` for full architectural details.
+Single-file R Shiny app (`app.R`) with modular components in `R/modules/`. Uses `bslib` for UI and `renv` for dependency management. Deployed on Posit Connect Cloud, which builds from `main` on push. See `CLAUDE.md` for full architectural details.

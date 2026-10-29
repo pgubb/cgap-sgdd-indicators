@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use CGAP LENS, please cite it using these metadata."
+title: "CGAP LENS"
+abstract: >-
+  CGAP LENS is an interactive catalog of regulatory indicators for financial
+  sector authorities. It helps users explore, filter, and build custom sets of
+  indicators relevant to sociodemographically disaggregated analysis in
+  financial regulation, with a particular focus on gender. Indicators are
+  organized by supervisory mandate and objective, and are designed to be
+  customized by applying breakdowns such as gender, age, location, provider
+  type, and product type. LENS is part of CGAP's Supply-side Gender
+  Disaggregated Data (S-GDD) project and is a companion resource to CGAP's
+  Technical Guide for Financial Sector Authorities.
+type: software
+authors:
+  - name: "CGAP (Consultative Group to Assist the Poor)"
+    website: "https://www.cgap.org"
+repository-code: "https://github.com/pgubb/cgap-sgdd-indicators"
+url: "https://datanalytics.worldbank.org/cgap-lens/"
+version: 1.0.0
+date-released: 2026-10-29
+keywords:
+  - financial inclusion
+  - financial regulation
+  - gender-disaggregated data
+  - regulatory indicators
+  - financial sector supervision
+  - r
+  - shiny
+references:
+  - type: report
+    title: >-
+      Using Disaggregated Regulatory Data to Support Financial Policy and
+      Supervision: A Technical Guide for Financial Sector Authorities
+    authors:
+      - name: "CGAP (Consultative Group to Assist the Poor)"
+    year: 2026
+    url: "https://www.cgap.org/research/publication/using-disaggregated-regulatory-data-to-support-financial-policy-and"
