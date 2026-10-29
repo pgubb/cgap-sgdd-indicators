@@ -564,18 +564,21 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
     length(unique(bk[!is.na(bk) & bk != ""]))
   }
 
-  # Check if any filters are active
+  # Check if any filters are active. Reads use [["key"]] rather than $key:
+  # `$` partial-matches on lists, so active_filters$presets_di would silently
+  # resolve to presets_digital for a caller that omitted the exact key. `[[`
+  # is exact and still returns NULL for keys the caller did not supply.
   has_active_filters <- !is.null(active_filters) && (
-    length(active_filters$mandates) > 0 ||
-      length(active_filters$objectives) > 0 ||
-      length(active_filters$sectors) > 0 ||
-      length(active_filters$initiatives) > 0 ||
-      !is.null(active_filters$search) && active_filters$search != "" ||
-      isTRUE(active_filters$presets_digital) ||
-      isTRUE(active_filters$presets_msme) ||
-      isTRUE(active_filters$presets_finhealth) ||
-      isTRUE(active_filters$presets_di) ||
-      isTRUE(active_filters$presets_fraud)
+    length(active_filters[["mandates"]]) > 0 ||
+      length(active_filters[["objectives"]]) > 0 ||
+      length(active_filters[["sectors"]]) > 0 ||
+      length(active_filters[["initiatives"]]) > 0 ||
+      !is.null(active_filters[["search"]]) && active_filters[["search"]] != "" ||
+      isTRUE(active_filters[["presets_digital"]]) ||
+      isTRUE(active_filters[["presets_msme"]]) ||
+      isTRUE(active_filters[["presets_finhealth"]]) ||
+      isTRUE(active_filters[["presets_di"]]) ||
+      isTRUE(active_filters[["presets_fraud"]])
   )
   
   div(
@@ -664,52 +667,52 @@ enhanced_navigation_helper <- function(filtered_indicators, total_indicators, ac
         ),
         div(
           style = "display: flex; flex-wrap: wrap; gap: 6px;",
-          if (!is.null(active_filters$search) && active_filters$search != "") {
+          if (!is.null(active_filters[["search"]]) && active_filters[["search"]] != "") {
             span(class = "filter-pill",
                  icon("search", class = "fas", style = "font-size: 10px;"),
-                 paste0('"', active_filters$search, '"'))
+                 paste0('"', active_filters[["search"]], '"'))
           },
-          if (isTRUE(active_filters$presets_digital)) {
+          if (isTRUE(active_filters[["presets_digital"]])) {
             span(class = "filter-pill-preset",
                  icon("mobile-screen", class = "fas", style = "font-size: 10px;"),
                  "Digital")
           },
-          if (isTRUE(active_filters$presets_msme)) {
+          if (isTRUE(active_filters[["presets_msme"]])) {
             span(class = "filter-pill-preset",
                  icon("building", class = "fas", style = "font-size: 10px;"),
                  "MSME")
           },
-          if (isTRUE(active_filters$presets_finhealth)) {
+          if (isTRUE(active_filters[["presets_finhealth"]])) {
             span(class = "filter-pill-preset",
                  icon("heart-pulse", class = "fas", style = "font-size: 10px;"),
                  "Financial Health")
           },
-          if (isTRUE(active_filters$presets_di)) {
+          if (isTRUE(active_filters[["presets_di"]])) {
             span(class = "filter-pill-preset",
                  icon("users", class = "fas", style = "font-size: 10px;"),
                  "Gender diversity")
           },
-          if (isTRUE(active_filters$presets_fraud)) {
+          if (isTRUE(active_filters[["presets_fraud"]])) {
             span(class = "filter-pill-preset",
                  icon("shield-halved", class = "fas", style = "font-size: 10px;"),
                  "Fraud monitoring")
           },
-          if (length(active_filters$mandates) > 0) {
-            lapply(active_filters$mandates, function(m)
+          if (length(active_filters[["mandates"]]) > 0) {
+            lapply(active_filters[["mandates"]], function(m)
               span(class = "filter-pill", icon("scroll", class = "fas", style = "font-size: 10px;"), m))
           },
-          if (length(active_filters$objectives) > 0) {
-            lapply(active_filters$objectives, function(o)
+          if (length(active_filters[["objectives"]]) > 0) {
+            lapply(active_filters[["objectives"]], function(o)
               span(class = "filter-pill", icon("bullseye", class = "fas", style = "font-size: 10px;"), o))
           },
-          if (length(active_filters$sectors) > 0) {
-            lapply(active_filters$sectors, function(s)
+          if (length(active_filters[["sectors"]]) > 0) {
+            lapply(active_filters[["sectors"]], function(s)
               span(class = "filter-pill", icon("chart-pie", class = "fas", style = "font-size: 10px;"), s))
           },
           # "Links with other initiatives": map the column key selected in the
           # filter (GPFI, IMF, ...) to its display label.
-          if (length(active_filters$initiatives) > 0) {
-            lapply(active_filters$initiatives, function(i) {
+          if (length(active_filters[["initiatives"]]) > 0) {
+            lapply(active_filters[["initiatives"]], function(i) {
               # Unmapped keys fall back to the raw value rather than erroring,
               # so adding a column to the filter cannot break the banner.
               lbl <- if (i %in% names(INITIATIVE_LABELS)) INITIATIVE_LABELS[[i]] else i
